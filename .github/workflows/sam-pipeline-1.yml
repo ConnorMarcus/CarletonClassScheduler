@@ -20,4 +20,4 @@ jobs:
   # Run Unit tests- Specify unit tests here 
   
   # sam deploy
-        - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name SchedulerBackend --s3-bucket 4thyearprojectbucket --capabilities CAPABILITY_IAM --region us-east-1
+        - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name SchedulerBackend --s3-bucket carletonschedulingtool --capabilities CAPABILITY_IAM --region us-east-1
