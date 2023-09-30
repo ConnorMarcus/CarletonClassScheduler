@@ -1,5 +1,5 @@
 import json
-from Backend import endpoints
+from Backend.src import endpoints
 import pytest
 
 

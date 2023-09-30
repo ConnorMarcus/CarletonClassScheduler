@@ -1,5 +1,5 @@
 import json
-from Backend.model.schedule import Schedule
+from .model.schedule import Schedule
 
 
 def generateSchedulesLambdaHandler(event: dict, context: object) -> dict:
