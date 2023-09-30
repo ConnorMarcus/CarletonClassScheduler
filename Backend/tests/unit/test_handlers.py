@@ -1,8 +1,6 @@
 import json
-
+from Backend import endpoints
 import pytest
-
-from hello_world import app
 
 
 @pytest.fixture()
@@ -62,11 +60,14 @@ def apigw_event():
     }
 
 
-def test_lambda_handler(apigw_event):
-
-    ret = app.lambda_handler(apigw_event, "")
+def testGenerateSchedulesLambdaHandler(apigw_event):
+    ret = endpoints.generateSchedulesLambdaHandler(apigw_event, "")
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
-    assert "message" in ret["body"]
-    assert data["message"] == "hello world"
+    assert "error" in ret["body"]
+    assert "errorReason" in ret["body"]
+    assert "schedules" in ret["body"]
+    assert data["error"] == False
+    assert data["errorReason"] == ""
+    assert data["schedules"] == []

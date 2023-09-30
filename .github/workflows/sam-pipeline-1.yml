@@ -18,6 +18,8 @@ jobs:
         - run: sam build --use-container
   
   # Run Unit tests- Specify unit tests here 
+        - run: pip install -r Backend/tests/requirements.txt
+        - run: python -m pytest tests/unit -v
   
   # sam deploy
         - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name SchedulerBackend --s3-bucket carletonschedulingtool --capabilities CAPABILITY_IAM --region us-east-1
