@@ -1,5 +1,4 @@
 import json
-from .model.schedule import Schedule
 
 
 def generateSchedulesLambdaHandler(event: dict, context: object) -> dict:
@@ -23,7 +22,6 @@ def generateSchedulesLambdaHandler(event: dict, context: object) -> dict:
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    s = Schedule([])
     return {
         "statusCode": 200,
         "body": json.dumps({

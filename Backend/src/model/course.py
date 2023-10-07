@@ -1,9 +1,12 @@
 from dataclasses import dataclass
-from typing import List
+from .section import Section
 
 @dataclass
 class Course:
     name: str
-    section: str
-    crn: str
-    times: List[str] #TODO: change to list of day-time objects
+    title: str
+    term: str
+    prerequisite: str
+    lectureSection: [Section]
+    labSection: [Section]
+
