@@ -19,7 +19,7 @@ jobs:
   
   # Run Unit tests- Specify unit tests here 
         - run: pip install -r Backend/tests/requirements.txt
-        - run: coverage -m pytest Backend/tests/unit -v 
+        - run: coverage run -m pytest Backend/tests/unit -v 
         - run: coverage report
   
   # sam deploy
