@@ -48,7 +48,8 @@ class Date:
         startTime1, endTime1 = Date._convertTimeToFloat(self.startTime), Date._convertTimeToFloat(self.endTime)
         startTime2, endTime2 = Date._convertTimeToFloat(otherDate.startTime), Date._convertTimeToFloat(otherDate.endTime)
         return (
-            startTime2 < startTime1 < endTime2 or 
-            startTime2 < endTime1 < endTime2 or 
-            startTime1 == startTime2
+            startTime2 <= startTime1 < endTime2 or 
+            startTime2 < endTime1 <= endTime2 or
+            startTime1 <= startTime2 < endTime1 or 
+            startTime1 < endTime2 <= endTime1
         )

@@ -3,8 +3,8 @@ from Backend.src.model.date import Date
 from Backend.src.model.dayOfWeek import DayOfWeek
 
 def testValidDate():
-    date = Date(DayOfWeek.Monday, "12:12", "14:31")
-    assert date.day == DayOfWeek.Monday
+    date = Date(DayOfWeek.MONDAY, "12:12", "14:31")
+    assert date.day == DayOfWeek.MONDAY
     assert date.startTime == "12:12"
     assert date.endTime == "14:31"
 
@@ -12,11 +12,11 @@ def testInvalidDate():
     with pytest.raises(TypeError):
         Date("Monday", "21:00", "22:00")
     with pytest.raises(ValueError):
-        Date(DayOfWeek.Friday, "25:00", "20:00")
+        Date(DayOfWeek.FRIDAY, "25:00", "20:00")
     with pytest.raises(ValueError):
-        Date(DayOfWeek.Monday, "21:00", "20:00:12")
+        Date(DayOfWeek.MONDAY, "21:00", "20:00:12")
     with pytest.raises(ValueError):
-        Date(DayOfWeek.Tuesday, "21:00", "20:00")
+        Date(DayOfWeek.TUESDAY, "21:00", "20:00")
 
 def testIsValidTime():
     assert Date._isValidTime("123456") == False
@@ -37,9 +37,18 @@ def testConvertTimeToFloat():
         Date._convertTimeToFloat("12345")
 
 def testDoesDateOverlap():
-    date = Date(DayOfWeek.Monday, "09:03", "12:54")
-    assert date.doesDateOverlap(Date(DayOfWeek.Tuesday, "01:34", "10:17")) == False
-    assert date.doesDateOverlap(Date(DayOfWeek.Monday, "07:33", "10:12")) == True
-    assert date.doesDateOverlap(Date(DayOfWeek.Monday, "11:54", "14:22")) == True
-    assert date.doesDateOverlap(Date(DayOfWeek.Monday, "09:03", "12:54")) == True
-    assert date.doesDateOverlap(Date(DayOfWeek.Monday, "12:55", "18:59")) == False
+    date = Date(DayOfWeek.MONDAY, "09:03", "12:54")
+    assert date.doesDateOverlap(Date(DayOfWeek.TUESDAY, "01:34", "10:17")) == False
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "07:33", "10:12")) == True
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "11:54", "14:22")) == True
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "09:03", "12:54")) == True
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "09:03", "12:00")) == True
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "09:03", "12:58")) == True
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "10:00", "12:54")) == True
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "08:00", "12:54")) == True
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "12:54", "18:59")) == False
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "07:00", "09:03")) == False
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "12:58", "18:59")) == False
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "07:00", "09:00")) == False
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "10:00", "11:00")) == True
+    assert date.doesDateOverlap(Date(DayOfWeek.MONDAY, "07:00", "14:00")) == True
