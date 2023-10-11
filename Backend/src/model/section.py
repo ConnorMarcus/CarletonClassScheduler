@@ -4,8 +4,9 @@ from .date import Date
 
 @dataclass
 class Section:
-    section: str 
+    courseCode: str
+    sectionId: str 
     crn: str
     instructor: str
-    times: List[str]
+    times: List[Date]
     status: str

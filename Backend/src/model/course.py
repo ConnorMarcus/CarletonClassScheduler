@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 from .section import Section
 
 @dataclass
@@ -7,6 +8,6 @@ class Course:
     title: str
     term: str
     prerequisite: str
-    lectureSection: [Section]
-    labSection: [Section]
+    lectureSections: List[Section]
+    labSections: List[Section]
 

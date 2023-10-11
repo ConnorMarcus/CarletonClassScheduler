@@ -6,7 +6,7 @@ class Date:
     def __init__(self, day: DayOfWeek, startTime: str, endTime: str) -> None:
         if not isinstance(day, DayOfWeek):
             raise TypeError("Parameter day must be of type DayOfWeek")
-        if not (self._areTimesValid(startTime, endTime)):
+        if not (Date._areTimesValid(startTime, endTime)):
             raise ValueError("Parameters start time and end time must be in the following format: xx:xx. Also start time must come before end time")
 
         self.day = day
