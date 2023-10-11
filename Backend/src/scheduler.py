@@ -1,8 +1,6 @@
 from typing import List
-from model.section import Section
-from model.course import Course
-from model.date import Date
-from model.dayOfWeek import DayOfWeek
+from .model.section import Section
+from .model.course import Course
 
 # Note: filter sections (based on times, etc.) before passing to this function
 # TODO: Add unit tests
@@ -54,23 +52,4 @@ def canTakeTogether(lectureSection: Section, labSection: Section) -> bool:
     and False otherwise
     '''
 
-    # TODO: implement whether a given lab and lecture section can be taken together
-    return True
-
-if __name__=="__main__":
-    d1 = Date(DayOfWeek.MONDAY, "11:00", "12:00")
-    d2 = Date(DayOfWeek.WEDNESDAY, "11:00", "12:00")
-    d3 = Date(DayOfWeek.WEDNESDAY, "12:00", "13:00")
-    section1A = Section("1A", "1234", "Prof. Jones", [d1, d2], "")
-    section1LA = Section("1LA", "321", "Prof. Jones", [d3], "")
-    course1 = Course("SYSC 4001", "", "Fall 2023", "", [section1A], [section1LA])
-
-    d4 = Date(DayOfWeek.TUESDAY, "11:00", "12:00")
-    d5 = Date(DayOfWeek.THURSDAY, "11:00", "12:00")
-    d6 = Date(DayOfWeek.MONDAY, "09:00", "10:00")
-    d7 = Date(DayOfWeek.WEDNESDAY, "09:00", "10:00")
-    section2A = Section("2A", "567", "Prof. Jones", [d4, d5], "")
-    section2B = Section("2B", "567", "Prof. Jones", [d6, d7], "")
-    course2 = Course("SYSC 4120", "", "Fall 2023", "", [section2A, section2B], [])
-
-    print(generateSchedules([course1, course2]))
+    return labSection.sectionId in lectureSection.compatibleSectionIds

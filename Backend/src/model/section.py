@@ -10,3 +10,4 @@ class Section:
     instructor: str
     times: List[Date]
     status: str
+    compatibleSectionIds: List[str]
