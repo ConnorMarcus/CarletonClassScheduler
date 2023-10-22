@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Docker image lambda function
+  
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  GetClassHrefsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      MemorySize: 1028
+      Timeout: 900
+    Metadata:
+      DockerTag: latest
+      DockerContext: ./WebScraping/docker-lambda-function
+      Dockerfile: Dockerfile
