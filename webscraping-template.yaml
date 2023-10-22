@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Other lambda functions used for the webscraping
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  ParseClassDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: Webscraping/lambda-functions/parse-class-data-function/
+      Handler: lambda_function.handler
+      Runtime: python3.11
+      Architectures:
+        - x86_64
