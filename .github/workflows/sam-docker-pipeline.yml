@@ -1,0 +1,30 @@
+on:
+    push:
+      branches:
+        - main
+      paths:
+        - WebScraping/docker-lambda-function/**
+jobs:
+    build-deploy:
+      runs-on: ubuntu-latest
+      env:
+        REPO_NAME: ${{ secrets.REPO_NAME }} 
+      steps:
+        - uses: actions/checkout@v2
+        - uses: aws-actions/setup-sam@v1
+        - uses: actions/setup-python@v2
+        - uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: us-east-1
+
+        # Run clean up script
+        - run: pip install boto3
+        - run: python WebScraping/scripts/image_clean_up.py
+            
+        # sam build 
+        - run: sam build --use-container --template-file docker-lambda-template.yaml
+  
+        # sam deploy
+        - run: sam deploy --image-repository ${{ secrets.IMAGE_REPO }} --no-confirm-changeset --no-fail-on-empty-changeset --stack-name DockerWebScraper --s3-bucket carletonschedulingtool --capabilities CAPABILITY_IAM --region us-east-1 
