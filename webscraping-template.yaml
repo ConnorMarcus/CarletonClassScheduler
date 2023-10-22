@@ -10,7 +10,7 @@ Resources:
   ParseClassDataFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: Webscraping/lambda-functions/parse-class-data-function/
+      CodeUri: WebScraping/lambda-functions/parse-class-data-function/
       Handler: lambda_function.handler
       Runtime: python3.11
       Architectures:
