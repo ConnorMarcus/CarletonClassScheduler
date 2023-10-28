@@ -1,7 +1,7 @@
 import json
 
 
-def generateSchedulesLambdaHandler(event: dict, context: object) -> dict:
+def generate_schedules_lambda_handler(event: dict, context: object) -> dict:
     """Pure Lambda function
 
     Parameters

@@ -60,8 +60,8 @@ def apigw_event():
     }
 
 
-def testGenerateSchedulesLambdaHandler(apigw_event):
-    ret = endpoints.generateSchedulesLambdaHandler(apigw_event, "")
+def test_generate_schedules_lambda_handler(apigw_event):
+    ret = endpoints.generate_schedules_lambda_handler(apigw_event, "")
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200

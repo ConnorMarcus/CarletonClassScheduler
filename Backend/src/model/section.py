@@ -4,10 +4,10 @@ from .date import Date
 
 @dataclass
 class Section:
-    courseCode: str
-    sectionId: str 
+    course_code: str
+    section_id: str 
     crn: str
     instructor: str
     times: List[Date]
     status: str
-    compatibleSectionIds: List[str]
+    compatible_section_ids: List[str]
