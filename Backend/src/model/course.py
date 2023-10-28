@@ -9,7 +9,7 @@ from .filter import Filter
 @dataclass
 class Course:
     code: str
-    name: str
+    title: str
     term: str
     prerequisite: str
     lecture_sections: List[Section]
