@@ -52,7 +52,7 @@ def handler(event=None, context=None):
 
     s3 = boto3.resource("s3")
     href_list_file = s3.Object(BUCKET_NAME, KEY_PATH)
-    href_list_file.put(href_list_file.put(Body=(bytes(json.dumps(class_info).encode("UTF-8")))))
+    href_list_file.put(Body=(bytes(json.dumps(class_info).encode("UTF-8"))))
     return "Href written to S3"
 
 def init():
