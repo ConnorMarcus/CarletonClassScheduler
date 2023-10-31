@@ -42,13 +42,14 @@ def handler(event=None, context=None):
             select_options(driver, option)
 
             # Grab course href and linked courses
-            class_info = parse(html_page=driver.page_source, lst=class_info)
+            parse(driver.page_source, class_info)
 
             # When done, click on "Return to Search"
             click_btn(driver, By.NAME, "search_selected")
 
         # Select change term 
         click_btn(driver, By.XPATH, CHANGE_TERM_BTN_XPATH)
+    print(class_info)
 
     s3 = boto3.resource("s3")
     href_list_file = s3.Object(BUCKET_NAME, KEY_PATH)
