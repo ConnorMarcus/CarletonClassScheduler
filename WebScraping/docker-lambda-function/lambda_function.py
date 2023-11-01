@@ -49,7 +49,6 @@ def handler(event=None, context=None):
 
         # Select change term 
         click_btn(driver, By.XPATH, CHANGE_TERM_BTN_XPATH)
-    print(class_info)
 
     s3 = boto3.resource("s3")
     href_list_file = s3.Object(BUCKET_NAME, KEY_PATH)
