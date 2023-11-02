@@ -52,4 +52,4 @@ def can_take_together(lecture_section: Section, lab_section: Section) -> bool:
     and False otherwise
     '''
 
-    return lab_section.section_id in lecture_section.compatible_section_ids
+    return lab_section.section_id in lecture_section.related_section_ids

@@ -10,4 +10,4 @@ class Section:
     instructor: str
     times: List[Date]
     status: str
-    compatible_section_ids: List[str]
+    related_section_ids: List[str] #Section IDs that must registered in with the given section 
