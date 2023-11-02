@@ -25,7 +25,7 @@ class Course:
             course.filter(filter)
 
     @staticmethod
-    def filter_sections(sections: List[Section], compare_function: Callable[[Date], bool]) -> None:
+    def time_filter(sections: List[Section], compare_function: Callable[[Date], bool]) -> None:
         i = 0
         while i < len(sections):
             removed_section = False
@@ -39,6 +39,9 @@ class Course:
                 i += 1
 
     def filter(self, filter: Filter) -> None:
+        if not isinstance(filter, Filter):
+            raise TypeError("Parameter 'filter' must be of type Filter")
+
         if filter.before_time:
             self.filter_before_time(filter.before_time)
         
@@ -55,12 +58,14 @@ class Course:
         '''
         Filter out all sections that take place before filter time
         '''
+        if not isinstance(time, str):
+            raise TypeError("Parameter 'time' must be of type str")
         
         def compare_function(date: Date):
             return date.get_start_time_as_float() < Date.convert_time_to_float(time)
 
-        Course.filter_sections(self.lecture_sections, compare_function)
-        Course.filter_sections(self.lab_sections, compare_function)       
+        Course.time_filter(self.lecture_sections, compare_function)
+        Course.time_filter(self.lab_sections, compare_function)       
 
 
 
@@ -68,21 +73,33 @@ class Course:
         '''
         Filter out all sections that take place after filter time
         '''
+        if not isinstance(time, str):
+            raise TypeError("Parameter 'time' must be of type str")
+        
         def compare_function(date: Date):
             return date.get_end_time_as_float() > Date.convert_time_to_float(time)
 
-        Course.filter_sections(self.lecture_sections, compare_function)
-        Course.filter_sections(self.lab_sections, compare_function) 
+        Course.time_filter(self.lecture_sections, compare_function)
+        Course.time_filter(self.lab_sections, compare_function) 
                 
 
     def filter_day_off(self, day_of_week: DayOfWeek) -> None:
+        '''
+        Filter out all courses that take place on day_of_week
+        '''
+        if not isinstance(day_of_week, DayOfWeek):
+            raise TypeError("Parameter 'day_of_week' must be of type DayOfWeek")
+
         def compare_function(date: Date):
             return date.get_day_of_the_week() == day_of_week
 
-        Course.filter_sections(self.lecture_sections, compare_function)
-        Course.filter_sections(self.lab_sections, compare_function)
+        Course.time_filter(self.lecture_sections, compare_function)
+        Course.time_filter(self.lab_sections, compare_function)
 
     def filter_by_section(self):
+        if not isinstance(self.section_id_filter, str):
+            raise TypeError("Attribute 'section_id_filter' must be of type str")
+
         sections = self.lecture_sections
         i = 0
         while i < len(sections):
@@ -90,4 +107,18 @@ class Course:
                 del sections[i]
             else:
                 i += 1
+
+    # def get_lecture_section(self, id: str) -> Section | None:
+    #     '''
+    #     Returns the lecture Section object with the given
+    #     ID, or None if the ID does not exist.
+    #     '''
+    #     pass
+
+    # def get_lab_section(self, id: str) -> Section | None:
+    #     '''
+    #     Returns the lab Section object with the given
+    #     ID, or None if the ID does not exist.
+    #     '''
+    #     pass
 

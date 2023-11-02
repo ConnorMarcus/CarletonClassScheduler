@@ -13,6 +13,10 @@ def test_filter_before_time():
     course.filter_before_time("13:00")
     assert course.lecture_sections == [section2]
 
+    #test error case
+    with pytest.raises(TypeError):
+        course.filter_before_time(12.00)
+
 def test_filter_after_time():
     section1 = Section("CODE1000", "A", "11111", "JON", [Date(DayOfWeek.MONDAY, "09:00", "12:00")], "OPEN", [])
     section2 = Section("CODE1000", "B", "22222", " JON", [Date(DayOfWeek.TUESDAY, "15:00", "18:00")], "OPEN", []) 
@@ -20,6 +24,10 @@ def test_filter_after_time():
 
     course.filter_after_time("13:00")
     assert course.lecture_sections == [section1]
+
+    #test error case
+    with pytest.raises(TypeError):
+        course.filter_after_time(10)
 
 def test_filter_day_off():
     section1 = Section("CODE1000", "A", "11111", "JON", [Date(DayOfWeek.MONDAY, "09:00", "12:00")], "OPEN", [])
@@ -29,6 +37,10 @@ def test_filter_day_off():
     course.filter_day_off(DayOfWeek.MONDAY)
     assert course.lecture_sections == [section2]
 
+    #test error case
+    with pytest.raises(TypeError):
+        course.filter_day_off("MONDAY")
+
 
 def test_filter_by_section():
     section1 = Section("CODE1000", "A", "11111", "JON", [Date(DayOfWeek.MONDAY, "09:00", "12:00")], "OPEN", [])
@@ -37,6 +49,11 @@ def test_filter_by_section():
 
     course.filter_by_section()
     assert course.lecture_sections == [section2]
+
+    #test error case
+    with pytest.raises(TypeError):
+        course.section_id_filter = None
+        course.filter_by_section()
 
 def test_filter_all_courses():
     section1 = Section("CODE1000", "A", "11111", "JON", [Date(DayOfWeek.MONDAY, "09:00", "12:00")], "OPEN", [])
@@ -51,14 +68,19 @@ def test_filter_all_courses():
     assert course2.lecture_sections == []
     assert course2.lab_sections == [section4]
 
-def test_filter_all_courses_error():
+    #test error case
     with pytest.raises(ValueError):
         Course.filter_all_courses([], None)
+    
 
-def test_filter_with_no_filters():
+def test_filter():
     section1 = Section("CODE1000", "A", "11111", "JON", [Date(DayOfWeek.MONDAY, "09:00", "12:00")], "OPEN", [])
     section2 = Section("CODE1000", "B", "22222", "JON", [Date(DayOfWeek.TUESDAY, "09:00", "12:00")], "OPEN", [])
     course = Course("CODE1000", "CLASS NAME", "FALL", "N/A", [section1, section2], [], None)
     course.filter(Filter())
     assert course.lecture_sections == [section1, section2]
+
+    #test error case
+    with pytest.raises(TypeError):
+        course.filter(None)
         

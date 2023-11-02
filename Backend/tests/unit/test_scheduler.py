@@ -30,7 +30,7 @@ def test_can_take_together():
     lecture_section = Section("CODE1234", LECTURE_SECTION_ID, "54321", "Jill", [], "", [LAB_SECTION_ID])
     lab_section = Section("CODE1234", LAB_SECTION_ID, "54321", "Jill", [], "", ["Z", "Q", LECTURE_SECTION_ID])
     assert scheduler.can_take_together(lecture_section, lab_section) == True
-    lecture_section.compatible_section_ids.pop()
+    lecture_section.related_section_ids.pop()
     assert scheduler.can_take_together(lecture_section, lab_section) == False
     assert scheduler.can_take_together(lab_section, lecture_section) == True
 
