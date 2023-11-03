@@ -6,6 +6,11 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  execution-role:
+    Type: String
+    Description: ARN of the IAM role for execution
+
 Resources:
   GetClassHrefsFunction:
     Type: AWS::Serverless::Function
@@ -13,6 +18,7 @@ Resources:
       PackageType: Image
       MemorySize: 1028
       Timeout: 900
+      Role: !Ref execution-role
     Metadata:
       DockerTag: latest
       DockerContext: ./WebScraping/docker-lambda-function
