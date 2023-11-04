@@ -83,4 +83,27 @@ def test_filter():
     #test error case
     with pytest.raises(TypeError):
         course.filter(None)
+
+def test_get_lecture_section():
+    section1 = Section("CODE1000", "A", "11111", "JON", [Date(DayOfWeek.MONDAY, "09:00", "12:00")], "OPEN", [])
+    section2 = Section("CODE1000", "B", "22222", "JON", [Date(DayOfWeek.TUESDAY, "09:00", "12:00")], "OPEN", [])
+    section3 = Section("CODE2000", "A", "11113", "JON", [Date(DayOfWeek.MONDAY, "09:00", "12:00")], "OPEN", [])
+
+    course = Course("CODE1000", "CLASS NAME", "FALL", "N/A", [section1, section3], [section2], None)
+    assert course.get_lecture_section("A") == section1
+    with pytest.raises(ValueError):
+        course.get_lecture_section("B")
+    with pytest.raises(ValueError):
+        course.get_lecture_section("C")
+
+def test_get_lab_section():
+    section1 = Section("CODE1000", "A", "11111", "JON", [Date(DayOfWeek.MONDAY, "09:00", "12:00")], "OPEN", [])
+    section2 = Section("CODE1000", "B", "22222", "JON", [Date(DayOfWeek.TUESDAY, "09:00", "12:00")], "OPEN", [])
+    section3 = Section("CODE3000", "B", "22225", "JON", [Date(DayOfWeek.TUESDAY, "09:00", "12:00")], "OPEN", [])
+    course = Course("CODE1000", "CLASS NAME", "FALL", "N/A", [section1], [section2, section3], None)
+    with pytest.raises(ValueError):
+        course.get_lab_section("A")
+    assert course.get_lab_section("B") == section2
+    with pytest.raises(ValueError):
+        course.get_lab_section("C")
         
