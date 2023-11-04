@@ -23,4 +23,4 @@ jobs:
         - run: |
             sam deploy \
               --no-confirm-changeset --no-fail-on-empty-changeset --stack-name WebScraper --s3-bucket carletonschedulingtool \
-              --capabilities CAPABILITY_IAM --region us-east-1 --parameter-overrides ParameterKey=execution-role,ParameterValue=${{ secrets.EXECUTION_ROLE }}
+              --capabilities CAPABILITY_IAM --region us-east-1 --parameter-overrides 'execution-role=${{ secrets.EXECUTION_ROLE }}'
