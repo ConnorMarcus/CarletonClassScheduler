@@ -30,4 +30,4 @@ jobs:
         - run: |
             sam deploy \
               --image-repository ${{ secrets.IMAGE_REPO }} --no-confirm-changeset --no-fail-on-empty-changeset --stack-name DockerWebScraper \
-              --s3-bucket carletonschedulingtool --capabilities CAPABILITY_IAM --region us-east-1 --parameter-overrides execution-role=${{ secrets.EXECUTION_REPO }}
+              --s3-bucket carletonschedulingtool --capabilities CAPABILITY_IAM --region us-east-1 --parameter-overrides 'execution-role=${{ secrets.EXECUTION_ROLE }}'
