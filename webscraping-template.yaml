@@ -7,7 +7,7 @@ Globals:
     Timeout: 3
 
 Parameters:
-  execution-role:
+  executionRole:
     Type: String
     Description: ARN of the IAM role for execution
 
@@ -16,11 +16,12 @@ Resources:
     Type: AWS::Lambda::LayerVersion
     Properties:
       LayerName: bs4_layer
-      ContentUri: LambdaLayers/bs4_layer.zip
       Description: python beautifulsoup4 layer
       CompatibleRuntimes:
         - python3.11
-      RetentionPolicy: Retain
+      Content:
+        S3Bucket: carletonschedulingtool
+        S3Key: lambda-layers/bs4_layer.zip
 
   ParseClassDataFunction:
     Type: AWS::Serverless::Function
@@ -30,9 +31,8 @@ Resources:
       Runtime: python3.11
       MemorySize: 1028
       Timeout: 900
-      Role: !Ref execution-role
+      Role: !Ref executionRole
       Layers:
         - !Ref Bs4Layer
       Architectures:
         - x86_64
-      
