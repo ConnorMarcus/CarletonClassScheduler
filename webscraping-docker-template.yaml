@@ -7,7 +7,7 @@ Globals:
     Timeout: 3
 
 Parameters:
-  execution-role:
+  executionRole:
     Type: String
     Description: ARN of the IAM role for execution
 
@@ -18,7 +18,7 @@ Resources:
       PackageType: Image
       MemorySize: 1028
       Timeout: 900
-      Role: !Ref execution-role
+      Role: !Ref executionRole
     Metadata:
       DockerTag: latest
       DockerContext: ./WebScraping/docker-lambda-function

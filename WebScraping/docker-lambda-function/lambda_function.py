@@ -9,7 +9,7 @@ import json
 import boto3
 import re
 
-
+# Constants
 PAGE_SOURCE = "https://central.carleton.ca/prod/bwysched.p_select_term?wsea_code=EXT"
 CHROME_SERVICE_EXE_PATH = "/opt/chromedriver"
 SEARCH_XPATH = r'//*[@id="ws_div"]/input'
