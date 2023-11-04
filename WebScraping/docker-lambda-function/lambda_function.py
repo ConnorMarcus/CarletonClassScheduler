@@ -54,7 +54,7 @@ def handler(event=None, context=None):
     href_list_file = s3.Object(BUCKET_NAME, KEY_PATH)
     href_list_file.put(Body=(bytes(json.dumps(class_info).encode("UTF-8"))))
     
-    return "Href written to S3"
+    return "Href list written to S3"
 
 def init():
     options = webdriver.ChromeOptions()
