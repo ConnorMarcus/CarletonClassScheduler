@@ -6,12 +6,33 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  execution-role:
+    Type: String
+    Description: ARN of the IAM role for execution
+
 Resources:
+  Bs4Layer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: bs4_layer
+      ContentUri: LambdaLayers/bs4_layer.zip
+      Description: python beautifulsoup4 layer
+      CompatibleRuntimes:
+        - python3.11
+      RetentionPolicy: Retain
+
   ParseClassDataFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: WebScraping/lambda-functions/parse-class-data-function/
       Handler: lambda_function.handler
       Runtime: python3.11
+      MemorySize: 1028
+      Timeout: 900
+      Role: !Ref execution-role
+      Layers:
+        - !Ref Bs4Layer
       Architectures:
         - x86_64
+      
