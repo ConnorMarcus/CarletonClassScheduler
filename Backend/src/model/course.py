@@ -108,17 +108,23 @@ class Course:
             else:
                 i += 1
 
-    # def get_lecture_section(self, id: str) -> Section | None:
-    #     '''
-    #     Returns the lecture Section object with the given
-    #     ID, or None if the ID does not exist.
-    #     '''
-    #     pass
+    def get_lecture_section(self, id: str) -> Section:
+        '''
+        Returns the first lecture Section object with the given ID.
+        '''
+        for section in self.lecture_sections:
+            if section.section_id == id:
+                return section
+            
+        raise ValueError(f"No Lecture Section with id {id} exists")
 
-    # def get_lab_section(self, id: str) -> Section | None:
-    #     '''
-    #     Returns the lab Section object with the given
-    #     ID, or None if the ID does not exist.
-    #     '''
-    #     pass
+    def get_lab_section(self, id: str) -> Section:
+        '''
+        Returns the first lab Section object with the given ID.
+        '''
+        for section in self.lab_sections:
+            if section.section_id == id:
+                return section
+            
+        raise ValueError(f"No Lab Section with id {id} exists")
 

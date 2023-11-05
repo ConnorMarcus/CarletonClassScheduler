@@ -1,9 +1,9 @@
-from typing import List
+from typing import Iterable, List
 from .model.section import Section
 from .model.course import Course
+import itertools
 
 # Note: filter sections (based on times, etc.) before passing to this function
-# TODO: Add unit tests
 def generate_schedules(courses: List[Course], current_schedule: List[Section] = []) -> List[List[Section]]:
     if len(courses) == 0:
         return [current_schedule[:]]
@@ -13,17 +13,18 @@ def generate_schedules(courses: List[Course], current_schedule: List[Section] = 
         if is_section_schedulable(lecture_section, current_schedule):
             current_schedule.append(lecture_section)
           
-            # Course has a lab/tutorial section
-            # TODO: Is it possible for one lecture section to have a lab section but another doesn't?
-            if courses[-1].lab_sections:
-                for lab_section in courses[-1].lab_sections:
-                    if can_take_together(lecture_section, lab_section) and is_section_schedulable(lab_section, current_schedule):
-                        current_schedule.append(lab_section)
+            # lecture section has related sections (e.g. labs) that must be taken 
+            if lecture_section.related_section_ids:
+                related_section_combinations = get_related_section_combinations(courses[-1], lecture_section)
+                for related_sections in related_section_combinations:
+                    if not do_section_times_overlap(related_sections) and are_sections_schedulable(related_sections, current_schedule):
+                        current_schedule.extend(related_sections)
                         schedules = generate_schedules(courses[:-1], current_schedule)
                         res.extend(schedules)
-                        current_schedule.pop()
+                        for _ in range(len(related_sections)):
+                            current_schedule.pop()
             
-            # Course has no lab/tutorial section
+            # There are no related sections
             else:
                 schedules = generate_schedules(courses[:-1], current_schedule)
                 res.extend(schedules)
@@ -46,10 +47,51 @@ def is_section_schedulable(section: Section, current_schedule: List[Section]) ->
         for time2 in scheduled_section.times
     )
 
+def are_sections_schedulable(sections: Iterable[Section], current_schedule: List[Section]) -> bool:
+    '''
+    Checks if a list of sections is schedulable given the current schedule.
+    '''
+    for section in sections:
+        if not is_section_schedulable(section, current_schedule):
+            return False
+        
+    return True
+
+def do_section_times_overlap(sections: List[Section]) -> bool:
+    '''
+    Checks if a list of Sections have overlapping times.
+    '''
+    for i in range(len(sections)):
+        for j in range(i+1, len(sections)):
+            is_schedulable = all(
+                not time1.does_date_overlap(time2) 
+                for time1 in sections[i].times 
+                for time2 in sections[j].times
+            )
+            if not is_schedulable:
+                return True
+            
+    return False
+
 def can_take_together(lecture_section: Section, lab_section: Section) -> bool:
     '''
     Returns True if a Lecture and Lab section can be taken together,
     and False otherwise
     '''
+    for related_sections in lecture_section.related_section_ids:
+        if lab_section.section_id in related_sections:
+            return True
+    
+    return False
 
-    return lab_section.section_id in lecture_section.related_section_ids
+
+def get_related_section_combinations(course: Course, lecture_section: Section) -> List[List[Section]]:
+    '''
+    Gets a list combinations of "related sections" for a given lecture section.
+    '''
+
+    if course is None or lecture_section is None or not lecture_section.related_section_ids:
+        raise ValueError("Parameters course and lecture_section cannot be None. Also lecture_section must not be empty.")
+
+    related_section_id_combinations = list(itertools.product(*lecture_section.related_section_ids))
+    return [[course.get_lab_section(section_id) for section_id in combination] for combination in related_section_id_combinations]
