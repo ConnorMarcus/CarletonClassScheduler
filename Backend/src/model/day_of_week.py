@@ -1,10 +1,10 @@
 from enum import Enum
 
 class DayOfWeek(Enum):
-    MONDAY = 0
-    TUESDAY = 1
-    WEDNESDAY = 2
-    THURSDAY = 3
-    FRIDAY = 4
-    SATURDAY = 5
-    SUNDAY = 6
+    MONDAY = "Mon"
+    TUESDAY = "Tue"
+    WEDNESDAY = "Wed"
+    THURSDAY = "Thu"
+    FRIDAY = "Fri"
+    SATURDAY = "Sat"
+    SUNDAY = "Sun"
