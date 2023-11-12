@@ -4,6 +4,8 @@ on:
         - main
       paths:
         - Backend/**
+        - .github/workflows/backend-pipeline.yml
+        - backend-template.yaml
 jobs:
     build-deploy:
       runs-on: ubuntu-latest
