@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, List
 from .section import Section
-from .date import Date
+from .date import ClassTime
 from .day_of_week import DayOfWeek
 from .filter import Filter
 
@@ -25,7 +25,7 @@ class Course:
             course.filter(filter)
 
     @staticmethod
-    def time_filter(sections: List[Section], compare_function: Callable[[Date], bool]) -> None:
+    def time_filter(sections: List[Section], compare_function: Callable[[ClassTime], bool]) -> None:
         i = 0
         while i < len(sections):
             removed_section = False
@@ -61,8 +61,8 @@ class Course:
         if not isinstance(time, str):
             raise TypeError("Parameter 'time' must be of type str")
         
-        def compare_function(date: Date):
-            return date.get_start_time_as_float() < Date.convert_time_to_float(time)
+        def compare_function(date: ClassTime):
+            return date.get_start_time_as_float() < ClassTime.convert_time_to_float(time)
 
         Course.time_filter(self.lecture_sections, compare_function)
         Course.time_filter(self.lab_sections, compare_function)       
@@ -76,8 +76,8 @@ class Course:
         if not isinstance(time, str):
             raise TypeError("Parameter 'time' must be of type str")
         
-        def compare_function(date: Date):
-            return date.get_end_time_as_float() > Date.convert_time_to_float(time)
+        def compare_function(date: ClassTime):
+            return date.get_end_time_as_float() > ClassTime.convert_time_to_float(time)
 
         Course.time_filter(self.lecture_sections, compare_function)
         Course.time_filter(self.lab_sections, compare_function) 
@@ -90,7 +90,7 @@ class Course:
         if not isinstance(day_of_week, DayOfWeek):
             raise TypeError("Parameter 'day_of_week' must be of type DayOfWeek")
 
-        def compare_function(date: Date):
+        def compare_function(date: ClassTime):
             return date.get_day_of_the_week() == day_of_week
 
         Course.time_filter(self.lecture_sections, compare_function)

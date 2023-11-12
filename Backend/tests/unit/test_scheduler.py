@@ -2,20 +2,21 @@ import pytest
 from Backend.src import scheduler
 from Backend.src.model.section import Section
 from Backend.src.model.course import Course
-from Backend.src.model.date import Date
+from Backend.src.model.date import ClassTime
 from Backend.src.model.day_of_week import DayOfWeek
+from Backend.src.model.term_duration import TermDuration
 
 def test_is_section_schedulable():
     '''
     Tests that isSectionShedulable can handle overlaping classes and schedulable classes
     '''
-    section1 = Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [])
-    section2 = Section("CODE2000", "B", "22222", "Bob", [Date(DayOfWeek.TUESDAY, "09:05", "10:35"), Date(DayOfWeek.THURSDAY, "09:05", "10:35") ], "", [])
-    section3 = Section("CODE3000", "C", "33333", "Charlie", [Date(DayOfWeek.FRIDAY, "09:05", "10:35")], "", [])
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section2 = Section("CODE2000", "B", "22222", "Bob", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section3 = Section("CODE3000", "C", "33333", "Charlie", [ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [])
     section4 = Section("CODE3000", "C", "33333", "Charlie", [], "", [])
     schedule = [
-        Section("CODE4000", "D", "44444", "Dom", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", []),
-        Section("CODE5000", "E", "55555", "Eric", [Date(DayOfWeek.MONDAY, "11:05", "12:35"), Date(DayOfWeek.THURSDAY,"10:05", "11:35") ], "", [])
+        Section("CODE4000", "D", "44444", "Dom", [ClassTime(DayOfWeek.MONDAY, TermDuration.EARLY_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.EARLY_TERM, "09:05", "10:35") ], "", []),
+        Section("CODE5000", "E", "55555", "Eric", [ClassTime(DayOfWeek.MONDAY, TermDuration.LATE_TERM, "11:05", "12:35"), ClassTime(DayOfWeek.THURSDAY, TermDuration.LATE_TERM, "10:05", "11:35") ], "", [])
     ]
     assert scheduler.is_section_schedulable(section1, schedule) == False
     assert scheduler.is_section_schedulable(section2, schedule) == False
@@ -24,13 +25,13 @@ def test_is_section_schedulable():
 
 
 def test_are_sections_schedulable():
-    section1 = Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [])
-    section2 = Section("CODE2000", "B", "22222", "Bob", [Date(DayOfWeek.TUESDAY, "09:05", "10:35"), Date(DayOfWeek.THURSDAY, "09:05", "10:35") ], "", [])
-    section3 = Section("CODE3000", "C", "33333", "Charlie", [Date(DayOfWeek.FRIDAY, "09:05", "10:35")], "", [])
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section2 = Section("CODE2000", "B", "22222", "Bob", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section3 = Section("CODE3000", "C", "33333", "Charlie", [ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [])
     section4 = Section("CODE3000", "C", "33333", "Charlie", [], "", [])
     schedule = [
-        Section("CODE4000", "D", "44444", "Dom", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", []),
-        Section("CODE5000", "E", "55555", "Eric", [Date(DayOfWeek.MONDAY, "11:05", "12:35"), Date(DayOfWeek.THURSDAY,"10:05", "11:35") ], "", [])
+        Section("CODE4000", "D", "44444", "Dom", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", []),
+        Section("CODE5000", "E", "55555", "Eric", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "11:05", "12:35"), ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "10:05", "11:35") ], "", [])
     ]
     assert scheduler.are_sections_schedulable([section1, section2, section3, section4], schedule) == False
     assert scheduler.are_sections_schedulable([section4, section1], schedule) == False
@@ -38,9 +39,9 @@ def test_are_sections_schedulable():
     assert scheduler.are_sections_schedulable([section3, section4], schedule) == True
 
 def test_do_section_times_overlap():
-    section1 = Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [])
-    section2 = Section("CODE2000", "B", "22222", "Bob", [Date(DayOfWeek.TUESDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [])
-    section3 = Section("CODE3000", "C", "33333", "Charlie", [Date(DayOfWeek.FRIDAY, "09:05", "10:35")], "", [])
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section2 = Section("CODE2000", "B", "22222", "Bob", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section3 = Section("CODE3000", "C", "33333", "Charlie", [ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [])
     section4 = Section("CODE3000", "C", "33333", "Charlie", [], "", [])
     assert scheduler.do_section_times_overlap([section1, section2]) == True
     assert scheduler.do_section_times_overlap([section1, section3, section4]) == False
@@ -95,7 +96,7 @@ def test_generate_schedules_with_no_courses():
     Tests that generateSchedules function can handle empty courses list
     '''
     schedule = [
-        Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [])
+        Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
     ]
     assert scheduler.generate_schedules([], schedule) == [schedule]
 
@@ -104,11 +105,11 @@ def test_generate_schedules_with_lab_sections():
     '''
     Tests that the generateSchedules function can schedule courses with lab sections
     '''
-    section1 = Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [["L1", "L2"]])
-    section2A = Section("CODE1000", "L1", "12345", "Alice", [Date(DayOfWeek.TUESDAY, "09:05", "10:35")], "", [["A"]])
-    section2B = Section("CODE1000", "L2", "12345", "Alice", [Date(DayOfWeek.FRIDAY, "19:05", "20:35")], "", [["A"]])
-    section3 = Section("CODE4000", "D", "44444", "Dom", [Date(DayOfWeek.THURSDAY, "09:05", "10:35"), Date(DayOfWeek.FRIDAY, "09:05", "10:35") ], "", [])
-    section4 = Section("CODE5000", "E", "55555", "Eric", [Date(DayOfWeek.MONDAY, "11:05", "12:35"), Date(DayOfWeek.THURSDAY,"12:05", "13:35") ], "", [])
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [["L1", "L2"]])
+    section2A = Section("CODE1000", "L1", "12345", "Alice", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [["A"]])
+    section2B = Section("CODE1000", "L2", "12345", "Alice", [ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "19:05", "20:35")], "", [["A"]])
+    section3 = Section("CODE4000", "D", "44444", "Dom", [ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section4 = Section("CODE5000", "E", "55555", "Eric", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "11:05", "12:35"), ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "12:05", "13:35") ], "", [])
     course1 = Course("CODE1000", "TESTCLASS", "Fall 2023", "NONE", [section1], [section2A, section2B], None)
     schedule1 = [
         section3, section4
@@ -126,9 +127,9 @@ def test_generate_schedules_without_lab_sections():
     '''
     Test that the generateSchedules function can schedule courses without lab section
     '''
-    section1 = Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [])
-    section2 = Section("CODE4000", "D", "44444", "Dom", [Date(DayOfWeek.THURSDAY, "09:05", "10:35"), Date(DayOfWeek.FRIDAY, "09:05", "10:35") ], "", [])
-    section3 = Section("CODE5000", "E", "55555", "Eric", [Date(DayOfWeek.MONDAY, "11:05", "12:35"), Date(DayOfWeek.THURSDAY,"12:05", "13:35") ], "", [])
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section2 = Section("CODE4000", "D", "44444", "Dom", [ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section3 = Section("CODE5000", "E", "55555", "Eric", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "11:05", "12:35"), ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "12:05", "13:35") ], "", [])
     course1 = Course("CODE1000", "TESTCLASS", "Fall 2023", "NONE", [section1], [], None)
     schedule1 = [
         section2, section3
@@ -144,9 +145,9 @@ def test_generate_schedules_with_incompatible_lab():
     '''
     Tests the generateSchedules function with incomptible lecture/lab sections
     '''
-    section1 = Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [["A1"]])
-    section2 = Section("CODE1000", "A1", "12345", "Alice", [Date(DayOfWeek.FRIDAY, "09:05", "10:35")], "", [["A"]])
-    section3 = Section("CODE1000", "B1", "44444", "Dom", [Date(DayOfWeek.THURSDAY, "09:05", "10:35")], "", [["B"]])
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [["A1"]])
+    section2 = Section("CODE1000", "A1", "12345", "Alice", [ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [["A"]])
+    section3 = Section("CODE1000", "B1", "44444", "Dom", [ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [["B"]])
     course1 = Course("CODE1000", "TESTCLASS", "Fall 2023", "NONE", [section1], [section2, section3], None)
     expected_schedule = [
        section1, section2
@@ -158,10 +159,10 @@ def test_generate_schedules_with_unschedulable_section():
     '''
     Tests the generateSchedules function unschedulable lecture AND lab section
     '''
-    section1 = Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35"), Date(DayOfWeek.WEDNESDAY, "09:05", "10:35") ], "", [["L1"]])
-    section2 = Section("CODE1000", "L1", "12345", "Alice", [Date(DayOfWeek.MONDAY, "11:05", "13:55")], "", [["A"]])
-    section3 = Section("CODE4000", "D", "44444", "Dom", [Date(DayOfWeek.THURSDAY, "12:05", "13:35"), Date(DayOfWeek.FRIDAY, "09:05", "10:35") ], "", [])
-    section4 = Section("CODE5000", "E", "55555", "Eric", [Date(DayOfWeek.MONDAY, "11:05", "12:35"), Date(DayOfWeek.THURSDAY,"12:05", "13:35") ], "", [])
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [["L1"]])
+    section2 = Section("CODE1000", "L1", "12345", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "11:05", "13:55")], "", [["A"]])
+    section3 = Section("CODE4000", "D", "44444", "Dom", [ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "12:05", "13:35"), ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section4 = Section("CODE5000", "E", "55555", "Eric", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "11:05", "12:35"), ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "12:05", "13:35") ], "", [])
     course1 = Course("CODE1000", "TESTCLASS", "Fall 2023", "NONE", [section1], [section2], None)
     course2 = Course("CODE4000", "TESTCLASS2", "Fall 2023", "NONE", [section3], [], None)
     schedule1 = [
@@ -174,13 +175,13 @@ def test_generate_schedules_with_lab_and_tutorials():
     '''
     Tests that the generateSchedules function can schedule courses with lab sections and tutorial sections
     '''
-    section1 = Section("CODE1000", "A", "11111", "Alice", [Date(DayOfWeek.MONDAY, "09:05", "10:35")], "", [["ETU"], ["L1", "L2"]])
-    section2A = Section("CODE1000", "L1", "12345", "Alice", [Date(DayOfWeek.TUESDAY, "09:05", "10:35")], "", [["A"]])
-    section2B = Section("CODE1000", "L2", "12345", "Alice", [Date(DayOfWeek.FRIDAY, "19:05", "20:35")], "", [["A"]])
-    section2C = Section("CODE1000", "ETU", "12345", "Alice", [Date(DayOfWeek.FRIDAY, "20:05", "21:35")], "", [["A"]])
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [["ETU"], ["L1", "L2"]])
+    section2A = Section("CODE1000", "L1", "12345", "Alice", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [["A"]])
+    section2B = Section("CODE1000", "L2", "12345", "Alice", [ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "19:05", "20:35")], "", [["A"]])
+    section2C = Section("CODE1000", "ETU", "12345", "Alice", [ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "20:05", "21:35")], "", [["A"]])
     
-    section3 = Section("CODE4000", "D", "44444", "Dom", [Date(DayOfWeek.THURSDAY, "09:05", "10:35"), Date(DayOfWeek.FRIDAY, "09:05", "10:35") ], "", [])
-    section4 = Section("CODE4000", "E", "55555", "Eric", [Date(DayOfWeek.THURSDAY,"12:05", "13:35") ], "", [])
+    section3 = Section("CODE4000", "D", "44444", "Dom", [ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", [])
+    section4 = Section("CODE4000", "E", "55555", "Eric", [ClassTime(DayOfWeek.THURSDAY, TermDuration.FULL_TERM, "12:05", "13:35") ], "", [])
     
     course1 = Course("CODE1000", "TESTCLASS", "Fall 2023", "NONE", [section1], [section2A, section2B, section2C], None)
     course2 = Course("CODE4000", "TESTCLASS", "Fall 2023", "NONE", [section3, section4], [], None)
