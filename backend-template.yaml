@@ -10,11 +10,6 @@ Globals:
   Function:
     Timeout: 3
 
-Parameters:
-  executionRole:
-    Type: String
-    Description: ARN of the IAM role for execution
-
 Resources:
   GenerateSchedulesFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -22,9 +17,11 @@ Resources:
       CodeUri: Backend/
       Handler: src.endpoints.generate_schedules_lambda_handler
       Runtime: python3.11
-      Role: !Ref executionRole
       Architectures:
       - x86_64
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: carleton-courses-test
       Events:
         GenerateSchedules:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
