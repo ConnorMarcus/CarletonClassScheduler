@@ -1,6 +1,7 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import FormComponent from './components/FormComponent';
 
+/*
 function App() {
   return (
     <div className="App">
@@ -21,5 +22,15 @@ function App() {
     </div>
   );
 }
+*/
+
+const App = () => {
+  return (
+    <div>
+      <h1>Carleton University Schedular</h1>
+      <FormComponent />
+    </div>
+  );
+};
 
 export default App;
