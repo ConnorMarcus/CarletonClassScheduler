@@ -8,6 +8,8 @@ import threading
 BUCKET_NAME = "carletonschedulingtool"
 KEY_PATH = "web-scraping-stepfunction/"
 BASE_URL = "https://central.carleton.ca/prod/"
+TERM_START_MONTHS = ["May", "Sep", "Jan"]
+EARLY_TERM_END_MONTHS = ["Jun", "Oct", "Feb"]
 HTTP = urllib3.PoolManager()
 LOCK = threading.Lock()
 classes = {}
@@ -53,10 +55,10 @@ def get_data(href_dict):
     url = href_dict["href"]
     req = HTTP.request("GET", BASE_URL + url)
     html = req.data.decode("utf-8")
-    parse_data(BeautifulSoup(html, "html.parser"))
+    parse_data(BeautifulSoup(html, "html.parser"), href_dict["also_register"])
 
   
-def parse_data(html):
+def parse_data(html, also_register_str):
     '''
     Handles parsing the data of the html course page.
 
@@ -80,9 +82,12 @@ def parse_data(html):
     meeting_date_rows = html.find_all("table")[1].find_all("tr")
     instructor = get_instructor(meeting_date_rows[1].find_all("td"), len(meeting_date_rows[0].find_all("td")) - 1)
     meeting_dates = get_meeting_date_list(meeting_date_rows[1:])
+    also_register_list = get_associated_sections(also_register_str)
+    term_duration = get_term_duration_str(meeting_date_rows[1].find_all("td")[0].text.strip())
 
-    add_class(term=term, crn=crn, subject_code=subject_code, section_id=section_id, title=title, 
-              preq=preq, status=status, section_type=section_type, instructor=instructor, meeting_dates=meeting_dates)
+    add_class(term=term, crn=crn, subject_code=subject_code, section_id=section_id, 
+              title=title, preq=preq, status=status, section_type=section_type, instructor=instructor, 
+              meeting_dates=meeting_dates, also_register_list=also_register_list, term_duration=term_duration)
 
 
 def add_class(**kwargs):
@@ -96,8 +101,10 @@ def add_class(**kwargs):
 
     # Create section dict
     section_json = {
-        "SectionID": kwargs["section_id"], "CRN": kwargs["crn"], "Status": kwargs["status"], 
-        "SectionType": kwargs["section_type"], "Instructor": kwargs["instructor"], "MeetingDates": kwargs["meeting_dates"]
+        "SectionID": kwargs["section_id"], "CRN": kwargs["crn"], 
+        "Status": kwargs["status"], "SectionType": kwargs["section_type"], 
+        "Instructor": kwargs["instructor"], "MeetingDates": kwargs["meeting_dates"],
+        "TermDuration": kwargs["term_duration"], "AlsoRegister": kwargs["also_register_list"]
     }
 
     # Aquire lock to write into shared classes dict
@@ -128,7 +135,7 @@ def add_section_to_class(key, section):
 
 def has_keyword_in_text(keyword, text):
     '''
-    Checks whether a keyword is in a text.
+    Checks whether a keyword (keyword can be string or list of keywords) is a text.
 
     Parameters:
     keyword (str): The string keyword to check for.
@@ -137,6 +144,13 @@ def has_keyword_in_text(keyword, text):
     Returns:
     bool: True if keyword present otherwise False.
     '''
+    if type(keyword) == list:
+        for word in keyword:
+            if word in text:
+                return True
+
+        return False
+
     return True if keyword in text else False
 
 
@@ -223,3 +237,47 @@ def get_meeting_date_list(rows):
                     meeting_list.append(meeting_dict)
 
     return meeting_list
+
+
+def get_associated_sections(also_register_str):
+    '''
+    Gets the list of associated sections based on the also_register_str.
+
+    Parameters:
+    also_register_str (str): the also register string of section.
+
+    Returns:
+    List[]: the list of associated sections.
+    '''
+    also_register_sections = []
+    
+    if not also_register_str:
+        return also_register_sections
+
+    for string in also_register_str.split("and"):
+        split_or_list = string.split("or")
+        sections_list = [split_or_list[i].strip().split(" ")[-1] for i in range(len(split_or_list))]
+        also_register_sections.append(sections_list)
+
+    return also_register_sections
+
+
+def get_term_duration_str(term_date):
+    '''
+    Gets the term duration_str based on the term_date.
+
+    Parameters:
+    term_date (str): the term date string of the section.
+
+    Returns:
+    str: term duration string of the section.
+    '''
+
+    if has_keyword_in_text(TERM_START_MONTHS, term_date):
+
+        if has_keyword_in_text(EARLY_TERM_END_MONTHS, term_date):
+            return "Early Term"
+        
+        return "Full Term"
+    
+    return "Late Term"
