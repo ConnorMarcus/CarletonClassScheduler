@@ -162,7 +162,7 @@ def get_prerequisite(description: str) -> str:
     Gets the prerequisite string.
 
     Parameters:
-    description (str): The string course description containing the prerequisite string.
+    description: The string course description containing the prerequisite string.
 
     Returns:
     str: The parsed prerequisite string or empty string (when no prerequisite(s)).
@@ -194,8 +194,8 @@ def get_instructor(td_list: List[BeautifulSoup], index: int):
     Gets the instructor of a Lecture or Lab section.
 
     Parameters:
-    td_list (List[<td>]): The list of <td> elements where the instructor string is.
-    index (int): The index of the instructor td.
+    td_list: The list of <td> elements where the instructor string is.
+    index: The index of the instructor td.
 
     Returns:
     str: The instructor of the section or empty string (when no instructor). 
