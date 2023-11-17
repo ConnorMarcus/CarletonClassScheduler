@@ -1,4 +1,6 @@
 import json
+from typing import List
+from typing import Union
 import boto3
 import urllib3
 from bs4 import BeautifulSoup
@@ -8,12 +10,14 @@ import threading
 BUCKET_NAME = "carletonschedulingtool"
 KEY_PATH = "web-scraping-stepfunction/"
 BASE_URL = "https://central.carleton.ca/prod/"
+TERM_START_MONTHS = ["May", "Sep", "Jan"]
+EARLY_TERM_END_MONTHS = ["Jun", "Oct", "Feb"]
 HTTP = urllib3.PoolManager()
 LOCK = threading.Lock()
 classes = {}
 
 
-def lambda_handler(event, context):
+def lambda_handler(event: dict, context: object) -> str:
     # Get the hrefs list file from s3
     href_list_file = get_s3_object("href_list.json")
     hrefs = json.load(href_list_file.get()["Body"])
@@ -25,15 +29,15 @@ def lambda_handler(event, context):
     classes_file = get_s3_object("classes.json")
     classes_file.put(Body=(bytes(json.dumps(classes).encode("UTF-8"))))
 
-    return classes
+    return "classes JSON written to s3"
 
 
-def get_s3_object(filename):
+def get_s3_object(filename: str) -> object:
     '''
     Gets the s3 file object where the href list and classes files are.
     
     Parameters:
-    filename (str): The filename of the object to get.
+    filename: The filename of the object to get.
     
     Returns
     S3 Object: The s3 file object.
@@ -42,26 +46,26 @@ def get_s3_object(filename):
     return s3.Object(BUCKET_NAME, KEY_PATH + filename)
 
 
-def get_data(href_dict):
+def get_data(href_dict: dict) -> object:
     '''
     Gets the data of the course page by making a GET request to Carleton Public classes website.
     
     Parameters:
-    href_dict (dict[str, str]): The href dict which contains the href and also register in string.
+    href_dict: The href dict which contains the href and also register in string.
     '''
     
     url = href_dict["href"]
     req = HTTP.request("GET", BASE_URL + url)
     html = req.data.decode("utf-8")
-    parse_data(BeautifulSoup(html, "html.parser"))
+    parse_data(BeautifulSoup(html, "html.parser"), href_dict["also_register"])
 
   
-def parse_data(html):
+def parse_data(html: BeautifulSoup, also_register_str: str) -> None:
     '''
     Handles parsing the data of the html course page.
 
     Parameters:
-    html (BeautifulSoup): The html parser of course page.
+    html: The html parser of course page.
     '''
     term = html.find("td", string="Registration Term:").find_next("td").text.strip().split(" ")[0]
     crn = html.find("td", string="CRN:").find_next("td").text.strip()
@@ -80,24 +84,29 @@ def parse_data(html):
     meeting_date_rows = html.find_all("table")[1].find_all("tr")
     instructor = get_instructor(meeting_date_rows[1].find_all("td"), len(meeting_date_rows[0].find_all("td")) - 1)
     meeting_dates = get_meeting_date_list(meeting_date_rows[1:])
+    also_register_list = get_associated_sections(also_register_str)
+    term_duration = get_term_duration_str(meeting_date_rows[1].find_all("td")[0].text.strip())
 
-    add_class(term=term, crn=crn, subject_code=subject_code, section_id=section_id, title=title, 
-              preq=preq, status=status, section_type=section_type, instructor=instructor, meeting_dates=meeting_dates)
+    add_class(term=term, crn=crn, subject_code=subject_code, section_id=section_id, 
+              title=title, preq=preq, status=status, section_type=section_type, instructor=instructor, 
+              meeting_dates=meeting_dates, also_register_list=also_register_list, term_duration=term_duration)
 
 
-def add_class(**kwargs):
+def add_class(**kwargs: dict) -> None:
     '''
     Adds a class to the shared classes dictionary.
 
     Parameters:
-    **kwargs (dict[str, str]): key value pairs of course data from parsing.
+    **kwargs: key value pairs of course data from parsing.
     '''
     key = f"{kwargs['subject_code']}-{kwargs['term']}"
 
     # Create section dict
     section_json = {
-        "SectionID": kwargs["section_id"], "CRN": kwargs["crn"], "Status": kwargs["status"], 
-        "SectionType": kwargs["section_type"], "Instructor": kwargs["instructor"], "MeetingDates": kwargs["meeting_dates"]
+        "SectionID": kwargs["section_id"], "CRN": kwargs["crn"], 
+        "Status": kwargs["status"], "SectionType": kwargs["section_type"], 
+        "Instructor": kwargs["instructor"], "MeetingDates": kwargs["meeting_dates"],
+        "TermDuration": kwargs["term_duration"], "AlsoRegister": kwargs["also_register_list"]
     }
 
     # Aquire lock to write into shared classes dict
@@ -106,46 +115,54 @@ def add_class(**kwargs):
         # Create new subject-term dict
         if key not in classes:
             classes[key] = {
-                    "Subject": kwargs["subject_code"], "Term": kwargs["term"], "Title": kwargs["title"], 
-                    "Prerequisite": kwargs["preq"], "LectureSections": [], "LabSections": []
+                    "Subject": kwargs["subject_code"], "Term": kwargs["term"], 
+                    "Title": kwargs["title"], "Prerequisite": kwargs["preq"], 
+                    "LectureSections": [], "LabSections": []
                 }
 
         # Add lecture/lab section to subject-term dict
         add_section_to_class(key, section_json)
 
 
-def add_section_to_class(key, section):
+def add_section_to_class(key: str, section: dict) -> None:
     '''
     Adds a Lecture/Lab section to a class with the key.
 
     Parameters:
-    key (str): The string key of the class which the section is added to.
-    section (dict[str, str]): The dict section to append to the Lecture or Lab sections. 
+    key: The string key of the class which the section is added to.
+    section: The dict section to append to the Lecture or Lab sections. 
     '''
     section_type = "LectureSections" if len(section["SectionID"]) == 1 else "LabSections"
     classes[key][section_type].append(section)
 
 
-def has_keyword_in_text(keyword, text):
+def has_keyword_in_text(keyword: Union[str, List[str]], text: str) -> bool:
     '''
-    Checks whether a keyword is in a text.
+    Checks whether a keyword is a text.
 
     Parameters:
-    keyword (str): The string keyword to check for.
-    text (str): The string text to look for the keyword in.
+    keyword: The string keyword to check for.
+    text: The string text to look for the keyword in.
 
     Returns:
     bool: True if keyword present otherwise False.
     '''
-    return True if keyword in text else False
+    if type(keyword) == list:
+        for word in keyword:
+            if word in text:
+                return True
+
+        return False
+
+    return keyword in text
 
 
-def get_prerequisite(description):
+def get_prerequisite(description: str) -> str:
     '''
     Gets the prerequisite string.
 
     Parameters:
-    description (str): The string course description containing the prerequisite string.
+    description: The string course description containing the prerequisite string.
 
     Returns:
     str: The parsed prerequisite string or empty string (when no prerequisite(s)).
@@ -159,12 +176,12 @@ def get_prerequisite(description):
     return ""
 
 
-def get_section_type(section_info):
+def get_section_type(section_info: str) -> str:
     '''
     Gets the section type of a Lecture or Lab section.
 
     Parameters:
-    section_info (str): The string section information containing type.
+    section_info: The string section information containing type.
 
     Returns:
     str: 'In person' or 'Online' (depending on type).
@@ -172,13 +189,13 @@ def get_section_type(section_info):
     return "In person" if has_keyword_in_text("IN-PERSON", section_info) else "Online"
 
 
-def get_instructor(td_list, index):
+def get_instructor(td_list: List[BeautifulSoup], index: int):
     '''
     Gets the instructor of a Lecture or Lab section.
 
     Parameters:
-    td_list (List[<td>]): The list of <td> elements where the instructor string is.
-    index (int): The index of the instructor td.
+    td_list: The list of <td> elements where the instructor string is.
+    index: The index of the instructor td.
 
     Returns:
     str: The instructor of the section or empty string (when no instructor). 
@@ -190,15 +207,15 @@ def get_instructor(td_list, index):
         return ""
 
 
-def get_meeting_date_list(rows):
+def get_meeting_date_list(rows: List[BeautifulSoup]) -> List[dict]:
     '''
     Gets the list of meeting dates of a Lecture or Lab section.
 
     Parameters:
-    rows (List[tr]): The list of <tr> elements of the meeting dates.
+    rows: The list of <tr> elements of the meeting dates.
 
     Returns:
-    List[dict[str, str]]: A list of dicts of the meeting dates.
+    List[dict]: A list of dicts of the meeting dates.
     '''
     meeting_list = []
 
@@ -223,3 +240,47 @@ def get_meeting_date_list(rows):
                     meeting_list.append(meeting_dict)
 
     return meeting_list
+
+
+def get_associated_sections(also_register_str: str) -> List[List[str]]:
+    '''
+    Gets the list of associated sections based on the also_register_str.
+
+    Parameters:
+    also_register_str: the also register string of section.
+
+    Returns:
+    List[List[str]]: the list of associated sections.
+    '''
+    also_register_sections = []
+    
+    if not also_register_str:
+        return also_register_sections
+
+    for string in also_register_str.split("and"):
+        split_or_list = string.split("or")
+        sections_list = [split_or_list[i].strip().split(" ")[-1] for i in range(len(split_or_list))]
+        also_register_sections.append(sections_list)
+
+    return also_register_sections
+
+
+def get_term_duration_str(term_date: str) -> str:
+    '''
+    Gets the term duration_str based on the term_date.
+
+    Parameters:
+    term_date: the term date string of the section.
+
+    Returns:
+    str: term duration string of the section.
+    '''
+
+    if has_keyword_in_text(TERM_START_MONTHS, term_date):
+
+        if has_keyword_in_text(EARLY_TERM_END_MONTHS, term_date):
+            return "Early Term"
+        
+        return "Full Term"
+    
+    return "Late Term"
