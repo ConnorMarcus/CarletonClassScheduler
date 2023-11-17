@@ -54,3 +54,14 @@
 .clear-button {
     background-color: #080B07;
 }
+
+.term {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 15px;
+}
+
+.term-label {
+    margin-bottom: px;
+}
