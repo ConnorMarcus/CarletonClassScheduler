@@ -183,6 +183,7 @@ const FormComponent = () => {
                             onChange={(selectedOption) => handleInputChange(inputName, selectedOption)}
                             options={selectOptionsCourses}
                             className="select-input"
+                            maxMenuHeight={115}
                         />
                     ))}
                 </div>
@@ -193,7 +194,6 @@ const FormComponent = () => {
                         onChange={(selectedOption) => handleInputChange('term', selectedOption)}
                         options={selectOptionsTerms}
                         className="select-input"
-                        placeholder="Select Term"
                     />
                 </div>
             </div>
@@ -205,7 +205,6 @@ const FormComponent = () => {
                     onChange={(selectedOption) => handleInputChange('preferredDayOff', selectedOption)}
                     options={selectOptionsDaysOff}
                     className="select-input"
-                    placeholder="Select Day"
                 />
                 <label className="label">No Class Before</label>
                 <input
