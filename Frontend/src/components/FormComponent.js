@@ -1,5 +1,5 @@
 // FormComponent.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/FormComponent.css';
 import Calendar from './CalendarComponent'
@@ -30,6 +30,15 @@ const FormComponent = () => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false)
     const [events, setEvents] = useState([])
+    const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
+
+    //This is to check that user didn't leave all courses blank
+    useEffect(() => {
+        const count = Object.entries(inputValues)
+            .filter(([key, value]) => /^course\d+$/.test(key) && value && value.trim() !== '')
+            .length;
+        setNoneEmptyCoursesCount(count);
+    }, [inputValues]);
 
     const handleInputChange = (inputName, selectedOption) => {
         setInputValues({
@@ -45,18 +54,49 @@ const FormComponent = () => {
         });
     };
 
+    // Make function async when I add logic for API call: '= async (event) => {...}
     const handleSubmit = (event) => {
         event.preventDefault();
 
         // Validate if all input values are part of the corresponding list before submission
         const isValidSubmission = Object.entries(inputValues).every(
-            ([key, value]) =>
-                key === "preferredDayOff" || key === "term" || key === "noClassBefore" || key === "noClassAfter" || coursesList.includes(value)
+            ([key, value]) => {
+                if (termsList.includes(value)) {
+                    return true;
+                } else if (key.includes("course") || key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter") {
+                    return true;
+                } else {
+                    console.log(key, value)
+                    return false;
+                }
+            }
         );
 
-        if (isValidSubmission) {
-            // Add your logic here for handling the form submission
-            console.log("Form submitted with values:", inputValues);
+        //As long as the term is included and at least one course is non-empty
+        if (isValidSubmission && nonEmptyCoursesCount > 0) {
+            /*
+            try {
+                const request = await fetch('URL TO API', {
+                    method = 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(inputValues), // likely have to manipulate the data first to fit the endpoints
+                });
+                if (!request.ok) {
+                    const error_msg = 'Request failed with status: ' + request.statusText;
+                    console.log(error_msg)
+                    throw new Error(error_msg);
+                }
+    
+                const response = await request.json();
+                //setEvents(request); //Likely have to parse it first to desired format
+                //setIfFormSubmitted(true); 
+            } catch (error) {
+                console.error(error);
+                alert("something went wrong")
+            }
+            */
 
             const classes = [
                 {
@@ -108,12 +148,11 @@ const FormComponent = () => {
             ]
 
             setEvents(classes);
-            console.log(events)
             setIsFormSubmitted(true);
 
-
         } else {
-            alert("Invalid submission. Please enter valid values.");
+            const error_msg = nonEmptyCoursesCount === 0 ? 'Please select a course' : "Please enter the Term";
+            alert(error_msg);
         }
     };
 
@@ -128,7 +167,7 @@ const FormComponent = () => {
     const selectOptionsTerms = termsList.map(day => ({ value: day, label: day }));
 
     return isFormSubmitted ? (
-        <div class="schedule-view">
+        <div className="schedule-view">
             <button id="back-to-form" type="button" onClick={() => setIsFormSubmitted(false)}>Back to Form</button>
             <Calendar title={"Fall 23"} events={events} />
         </div>
@@ -147,8 +186,8 @@ const FormComponent = () => {
                         />
                     ))}
                 </div>
-                <div class="term">
-                    <label className='term-label'>Term</label>
+                <div className="term">
+                    <label className='term-label'>Term<span className="required-input"> *</span></label>
                     <Select
                         value={{ value: inputValues.term, label: inputValues.term }}
                         onChange={(selectedOption) => handleInputChange('term', selectedOption)}
@@ -158,7 +197,7 @@ const FormComponent = () => {
                     />
                 </div>
             </div>
-            <h2 className="Header">Filters</h2>
+            <h2 className="Header">Filter<span className='optional-input'> (opt.)</span></h2>
             <div className="filters">
                 <label className="day-off-label">Preferred Day Off</label>
                 <Select

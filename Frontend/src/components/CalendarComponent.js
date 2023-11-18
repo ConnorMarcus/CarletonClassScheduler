@@ -11,7 +11,6 @@ const MyCalendar = ({ title, events }) => {
                 plugins={[timeGridPlugin]}
                 initialView="timeGridWeek"
                 weekends={false}
-                columnHeaderFormat={{ weekday: 'short' }}
                 slotDuration="00:30:00"
                 allDaySlot={false}
                 slotMinTime={"8:00:00"}

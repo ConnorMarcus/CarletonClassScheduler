@@ -63,5 +63,15 @@
 }
 
 .term-label {
-    margin-bottom: px;
+    margin-bottom: 10px;
+}
+
+span.required-input {
+    color: #BF122B;
+}
+
+span.optional-input {
+    font-size: small;
+    font-style: italic;
+    font-weight: normal;
 }
