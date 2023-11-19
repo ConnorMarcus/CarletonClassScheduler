@@ -71,6 +71,9 @@ class ClassTime:
     def get_day_of_the_week(self) -> DayOfWeek:
         return self.day
     
+    def to_dict(self) -> dict:
+        return {"DayOfWeek":self.day.value, "TermDuration":self.term_duration.value, "StartTime":self.start_time, "EndTime":self.end_time}
+
     def __str__(self) -> str:
         return f"DayOfWeek: {self.day}, term duration: {self.term_duration}, start time: {self.start_time}, end time: {self.end_time}"
     
