@@ -97,15 +97,29 @@ class Database:
         filter_expression = "#subject = :subject AND #term = :term"
         attribute_names = {"#subject": self.subject_column, "#term": self.term_column}
         attribute_values = {":subject": {"S": course_code}, ":term": {"S": term}}
-        
-        response = self.dynamodb.scan(
-            TableName=self.table_name,
-            FilterExpression=filter_expression,
-            ExpressionAttributeNames=attribute_names,
-            ExpressionAttributeValues=attribute_values
-        )
 
-        courses = self.deserialize_response(response)
+        last_evaluated_key = None
+        while True:
+            if last_evaluated_key is not None:
+                response = self.dynamodb.scan(
+                    TableName=self.table_name,
+                    FilterExpression=filter_expression,
+                    ExpressionAttributeNames=attribute_names,
+                    ExpressionAttributeValues=attribute_values,
+                    ExclusiveStartKey = last_evaluated_key
+                )
+            else:
+                response = self.dynamodb.scan(
+                    TableName=self.table_name,
+                    FilterExpression=filter_expression,
+                    ExpressionAttributeNames=attribute_names,
+                    ExpressionAttributeValues=attribute_values
+                )
+            courses = self.deserialize_response(response)
+            last_evaluated_key = response.get("LastEvaluatedKey")
+            if len(courses) != 0 or last_evaluated_key is None:
+                break
+
         if len(courses) == 0:
             return None
         if len(courses) > 1:
@@ -118,29 +132,25 @@ class Database:
         '''
         Gets the set of terms in the database.
         '''
-        response = self.dynamodb.scan(
-            TableName=self.table_name
-        )
-        courses = self.deserialize_response(response)
-        return {course.get(self.term_column) for course in courses}
-    
-    def get_course_code_list(self, term: str) -> List[str]:
-        '''
-        Gets a list of the course codes for a given term.
-        '''
-        filter_expression = "#term = :term"
-        attribute_names = {"#term": self.term_column}
-        attribute_values = {":term": {"S": term}}
+        last_evaluated_key = None
+        all_courses = []
+        while True:
+            if last_evaluated_key is not None:
+                response = self.dynamodb.scan(
+                    TableName=self.table_name,
+                    ExclusiveStartKey = last_evaluated_key
+                )
+            else:
+                response = self.dynamodb.scan(
+                    TableName=self.table_name
+                )
+            courses = self.deserialize_response(response)
+            all_courses.extend(courses)
+            last_evaluated_key = response.get("LastEvaluatedKey")
+            if last_evaluated_key is None:
+                break
         
-        response = self.dynamodb.scan(
-            TableName=self.table_name,
-            FilterExpression=filter_expression,
-            ExpressionAttributeNames=attribute_names,
-            ExpressionAttributeValues=attribute_values
-        )
-
-        courses = self.deserialize_response(response)
-        return [course.get(self.subject_column) for course in courses]
+        return {course.get(self.term_column) for course in all_courses}
     
     def get_course_code_and_section_list(self, term: str) -> List[str]:
         '''
@@ -150,14 +160,30 @@ class Database:
         attribute_names = {"#term": self.term_column}
         attribute_values = {":term": {"S": term}}
         
-        response = self.dynamodb.scan(
-            TableName=self.table_name,
-            FilterExpression=filter_expression,
-            ExpressionAttributeNames=attribute_names,
-            ExpressionAttributeValues=attribute_values
-        )
+        last_evaluated_key = None
+        all_courses = []
+        while True:
+            if last_evaluated_key is not None:
+                response = self.dynamodb.scan(
+                    TableName=self.table_name,
+                    FilterExpression=filter_expression,
+                    ExpressionAttributeNames=attribute_names,
+                    ExpressionAttributeValues=attribute_values,
+                    ExclusiveStartKey = last_evaluated_key
+                )
+            else:
+                response = self.dynamodb.scan(
+                    TableName=self.table_name,
+                    FilterExpression=filter_expression,
+                    ExpressionAttributeNames=attribute_names,
+                    ExpressionAttributeValues=attribute_values
+                )
 
-        courses = self.deserialize_response(response)
-        return list({combination for course in courses for section in course.get(self.lecture_sections_column) for combination in (course.get(self.subject_column), course.get(self.subject_column) + " " + section.get(self.section_id_column))})
+            courses = self.deserialize_response(response)
+            all_courses.extend(courses)
+            last_evaluated_key = response.get("LastEvaluatedKey")
+            if last_evaluated_key is None:
+                break
+        return list({combination for course in all_courses for section in course.get(self.lecture_sections_column) for combination in (course.get(self.subject_column), course.get(self.subject_column) + " " + section.get(self.section_id_column))})
 
 course_database = Database()
