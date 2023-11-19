@@ -67,7 +67,7 @@ def parse_data(html: BeautifulSoup, also_register_str: str) -> None:
     Parameters:
     html: The html parser of course page.
     '''
-    term = html.find("td", string="Registration Term:").find_next("td").text.strip().split(" ")[0]
+    term =  " ".join(html.find("td", string="Registration Term:").find_next("td").text.strip().split(" ")[:2])
     crn = html.find("td", string="CRN:").find_next("td").text.strip()
     title = html.find("td", string="Long Title:").find_next("td").text.strip()
     status = html.find("u", string="Status:").parent.parent.parent.find_next("td").text.strip()
