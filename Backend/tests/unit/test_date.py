@@ -78,3 +78,9 @@ def test_repr():
     duration = TermDuration.FULL_TERM
     start_time, end_time = "09:00", "12:00"
     assert ClassTime(day, duration, start_time, end_time).__repr__() == f"ClassTime<DayOfWeek: {day}, term duration: {duration}, start time: {start_time}, end time: {end_time}>"
+
+def test_to_dict():
+    day = DayOfWeek.MONDAY
+    duration = TermDuration.FULL_TERM
+    start_time, end_time = "09:00", "12:00"
+    assert ClassTime(day, duration, start_time, end_time).to_dict() == {"DayOfWeek":day.value, "TermDuration":duration.value, "StartTime":start_time, "EndTime":end_time}

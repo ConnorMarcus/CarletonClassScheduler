@@ -63,8 +63,7 @@ def test_get_related_section_combinations():
     assert scheduler.get_related_section_combinations(course, section1) == [[section2, section3, section4]]
 
     section1.related_section_ids = [["B", "C", "E"]]
-    with pytest.raises(ValueError):
-        scheduler.get_related_section_combinations(course, section1)
+    assert scheduler.get_related_section_combinations(course, section1) == [[section2], [section3], [None]]
 
     with pytest.raises(ValueError):    
         scheduler.get_related_section_combinations(None, section1)

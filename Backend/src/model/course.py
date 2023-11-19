@@ -5,6 +5,7 @@ from .section import Section
 from .date import ClassTime
 from .day_of_week import DayOfWeek
 from .filter import Filter
+from ..logger import logger
 
 @dataclass
 class Course:
@@ -116,7 +117,8 @@ class Course:
             if section.section_id == id:
                 return section
             
-        raise ValueError(f"No Lecture Section with id {id} exists")
+        logger.info(f"No Lecture Section with id {id} exists (Section may have been filtered out)")
+        return None
 
     def get_lab_section(self, id: str) -> Section:
         '''
@@ -126,5 +128,6 @@ class Course:
             if section.section_id == id:
                 return section
             
-        raise ValueError(f"No Lab Section with id {id} exists")
+        logger.info(f"No Lab Section with id {id} exists (Section may have been filtered out)")
+        return None
 
