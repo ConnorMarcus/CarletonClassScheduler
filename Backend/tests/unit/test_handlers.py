@@ -64,10 +64,8 @@ def test_generate_schedules_lambda_handler(apigw_event):
     ret = endpoints.generate_schedules_lambda_handler(apigw_event, "")
     data = json.loads(ret["body"])
 
-    assert ret["statusCode"] == 200
-    assert "error" in ret["body"]
-    assert "errorReason" in ret["body"]
-    assert "schedules" in ret["body"]
-    assert data["error"] == False
-    assert data["errorReason"] == ""
-    assert data["schedules"] == []
+    assert ret["statusCode"] == 400
+    assert "Error" in ret["body"]
+    assert "ErrorReason" in ret["body"]
+    assert data["Error"] == True
+    assert data["ErrorReason"] == "The JSON was missing the Term!"

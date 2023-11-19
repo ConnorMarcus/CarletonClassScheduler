@@ -12,7 +12,9 @@ from ..logger import logger
 class Database:
     aws_test_db_access_key_id = os.environ.get('aws_test_db_access_key_id', None)
     aws_test_db_secret_access_key = os.environ.get('aws_test_db_secret_access_key', None)
-    table_name = 'carleton-courses-test'
+    table_name = ''
+    test_table_name = "carleton-courses-test"
+    prod_table_name = "carleton-courses"
     region = 'us-east-1'
     resource = 'dynamodb'
     deserializer = TypeDeserializer()
@@ -41,11 +43,13 @@ class Database:
             self.aws_test_db_access_key_id is not None and 
             self.aws_test_db_secret_access_key is not None
             ):
+            self.table_name = self.test_table_name
             self.dynamodb = boto3.client(self.resource,
                                     aws_access_key_id=self.aws_test_db_access_key_id,
                                     aws_secret_access_key=self.aws_test_db_secret_access_key,
                                     region_name=self.region)
         else:
+           self.table_name = self.prod_table_name
            self.dynamodb = boto3.client(self.resource)
 
     def deserialize_response(self, response: List[dict]) -> List[dict]:
@@ -137,5 +141,23 @@ class Database:
 
         courses = self.deserialize_response(response)
         return [course.get(self.subject_column) for course in courses]
+    
+    def get_course_code_and_section_list(self, term: str) -> List[str]:
+        '''
+        Gets a list of the course codes and sections for a given term.
+        '''
+        filter_expression = "#term = :term"
+        attribute_names = {"#term": self.term_column}
+        attribute_values = {":term": {"S": term}}
+        
+        response = self.dynamodb.scan(
+            TableName=self.table_name,
+            FilterExpression=filter_expression,
+            ExpressionAttributeNames=attribute_names,
+            ExpressionAttributeValues=attribute_values
+        )
+
+        courses = self.deserialize_response(response)
+        return list({combination for course in courses for section in course.get(self.lecture_sections_column) for combination in (course.get(self.subject_column), course.get(self.subject_column) + " " + section.get(self.section_id_column))})
 
 course_database = Database()
