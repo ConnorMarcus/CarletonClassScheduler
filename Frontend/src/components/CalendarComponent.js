@@ -15,6 +15,7 @@ const MyCalendar = ({ title, events }) => {
                 allDaySlot={false}
                 slotMinTime={"8:00:00"}
                 slotMaxTime={"23:00:00"}
+                //initialDate={"2023-01-01"} //What date to intialize the calendar too
                 height="auto"
                 headerToolbar={false} //Hide the previous/next week buttons, MAY ENABLE THEM LATER
                 events={events}

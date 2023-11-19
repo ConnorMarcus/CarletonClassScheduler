@@ -28,8 +28,8 @@ const initialFormState = {
 const FormComponent = () => {
 
     const [inputValues, setInputValues] = useState(initialFormState);
-    const [isFormSubmitted, setIsFormSubmitted] = useState(false)
-    const [events, setEvents] = useState([])
+    const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+    const [events, setEvents] = useState([]);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
 
     //This is to check that user didn't leave all courses blank
@@ -144,8 +144,23 @@ const FormComponent = () => {
                     title: 'COMP 3005',
                     start: '2023-11-17T14:35:00',
                     end: '2023-11-17T16:25:00'
+                },
+                {
+                    title: 'ECOR 1041',
+                    start: '2023-11-20T14:35:00',
+                    end: '2023-11-20T16:25:00'
+                },
+                {
+                    title: 'ECOR 1042',
+                    start: '2023-11-20T14:35:00',
+                    end: '2023-11-20T16:25:00'
+                },
+                {
+                    title: 'TEST',
+                    start: 'MondayT14:35:00',
+                    end: 'MondayT16:25:00'
                 }
-            ]
+            ];
 
             setEvents(classes);
             setIsFormSubmitted(true);
@@ -159,6 +174,7 @@ const FormComponent = () => {
     const handleClear = () => {
         setInputValues(initialFormState);
         setIsFormSubmitted(false);
+        setEvents([]);
     };
 
 
@@ -173,8 +189,18 @@ const FormComponent = () => {
         </div>
     ) : (
         <div className="form-container">
-            <h2 className="header">Courses</h2>
+
             <div className="courses">
+                <div className="term">
+                    <label className='term-label'>Term<span className="required-input"> *</span></label>
+                    <Select
+                        value={{ value: inputValues.term, label: inputValues.term }}
+                        onChange={(selectedOption) => handleInputChange('term', selectedOption)}
+                        options={selectOptionsTerms}
+                        className="select-input"
+                    />
+                </div>
+                <h2 className="header">Courses</h2>
                 <div className="grid-container">
                     {Object.keys(inputValues).slice(0, 9).map((inputName, index) => (
                         <Select
@@ -186,15 +212,6 @@ const FormComponent = () => {
                             maxMenuHeight={115}
                         />
                     ))}
-                </div>
-                <div className="term">
-                    <label className='term-label'>Term<span className="required-input"> *</span></label>
-                    <Select
-                        value={{ value: inputValues.term, label: inputValues.term }}
-                        onChange={(selectedOption) => handleInputChange('term', selectedOption)}
-                        options={selectOptionsTerms}
-                        className="select-input"
-                    />
                 </div>
             </div>
             <h2 className="Header">Filter<span className='optional-input'> (opt.)</span></h2>
