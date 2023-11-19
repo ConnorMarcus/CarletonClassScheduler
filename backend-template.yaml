@@ -21,13 +21,49 @@ Resources:
       - x86_64
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: carleton-courses-test
+            TableName: carleton-courses
       Events:
         GenerateSchedules:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /generateSchedules
             Method: post
+  
+  GetTermsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: Backend/
+      Handler: src.endpoints.get_terms_lambda_handler
+      Runtime: python3.11
+      Architectures:
+      - x86_64
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: carleton-courses
+      Events:
+        GenerateSchedules:
+          Type: Api
+          Properties:
+            Path: /getTerms
+            Method: get
+
+  GetCoursesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: Backend/
+      Handler: src.endpoints.get_courses_lambda_handler
+      Runtime: python3.11
+      Architectures:
+      - x86_64
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: carleton-courses
+      Events:
+        GenerateSchedules:
+          Type: Api
+          Properties:
+            Path: /getCourses
+            Method: get
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -55,3 +91,21 @@ Outputs:
   GenerateSchedulesFunctionIamRole:
     Description: Implicit IAM Role created for Generate Schedules Function
     Value: !GetAtt GenerateSchedulesFunctionRole.Arn
+  GetTermsApi:
+    Description: API Gateway endpoint URL for generating a list of the current terms.
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getTerms/"
+  GetTermsFunction:
+    Description: Get Terms Lambda Function ARN
+    Value: !GetAtt GetTermsFunction.Arn
+  GetTermsFunctionIamRole:
+    Description: Implicit IAM Role created for Get Terms Function
+    Value: !GetAtt GetTermsFunctionRole.Arn
+  GetCoursesApi:
+    Description: API Gateway endpoint URL for generating a list of the courses for a given term.
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getCourses/"
+  GetCoursesFunction:
+    Description: Get Courses Lambda Function ARN
+    Value: !GetAtt GetCoursesFunction.Arn
+  GetCoursesFunctionIamRole:
+    Description: Implicit IAM Role created for Get Courses Function
+    Value: !GetAtt GetCoursesFunctionRole.Arn
