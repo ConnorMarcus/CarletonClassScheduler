@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/FormComponent.css';
 import Calendar from './CalendarComponent'
+import { fetchCourses, fetchTerms } from '../requests';
 
-const coursesList = ["SYSC 4001", "SYSC 3303B", "SYSC 4106", "COMP 3005", "ECOR 4995A", "SYSC 4120C", "SYSC 4907"];
+//const coursesList = ["SYSC 4001", "SYSC 3303B", "SYSC 4106", "COMP 3005", "ECOR 4995A", "SYSC 4120C", "SYSC 4907"];
 const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const termsList = ["Fall 2023", "Winter 2024", "Summer 2024"];
 
 
 const initialFormState = {
@@ -31,6 +31,46 @@ const FormComponent = () => {
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [events, setEvents] = useState([]);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
+    const [termsList, setTermsList] = useState([]);
+    const [coursesList, setCoursesList] = useState({});
+
+    useEffect(() => {
+        const getAllCourses = async (term) => {
+            try {
+                fetchCourses(term)
+                    .then((result) => {
+                        if (result.Error) {
+                            console.error("Error getting couress", result.ErrorReason);
+                        } else {
+                            setCoursesList(prev => ({
+                                ...prev,
+                                [term]: result.Courses || [],
+                            }));
+                        }
+                    });
+            } catch (error) {
+                console.error("Catch error getting courses", error);
+            }
+        };
+
+        termsList.forEach(term => {
+            getAllCourses(term);
+        });
+
+    }, [termsList]);
+
+    useEffect(() => {
+        fetchTerms()
+            .then((result) => {
+                if (result.Error) {
+                    console.error('Error:', result.ErrorReason);
+                } else {
+                    setTermsList(result.Terms);
+                }
+            }).catch((error) => {
+                console.error("Catching error", error);
+            })
+    }, []);
 
     //This is to check that user didn't leave all courses blank
     useEffect(() => {
@@ -41,10 +81,24 @@ const FormComponent = () => {
     }, [inputValues]);
 
     const handleInputChange = (inputName, selectedOption) => {
+        const selectedTerm = selectedOption ? selectedOption.value : '';
+
+        /*
         setInputValues({
             ...inputValues,
             [inputName]: selectedOption ? selectedOption.value : '', // handle null selectedOption for time inputs
         });
+        */
+
+        setInputValues({
+            ...inputValues,
+            [inputName]: selectedTerm,
+        });
+
+        setCoursesList(prev => ({
+            ...prev,
+            [selectedTerm]: prev[selectedTerm] || [],
+        }))
     };
 
     const handleTimeInputChange = (inputName, event) => {
@@ -178,9 +232,10 @@ const FormComponent = () => {
     };
 
 
-    const selectOptionsCourses = coursesList.map(course => ({ value: course, label: course }));
+    //const selectOptionsCourses = coursesList.map(course => ({ value: course, label: course }));
     const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
     const selectOptionsTerms = termsList.map(day => ({ value: day, label: day }));
+    const selectedTermCourses = coursesList[inputValues.term] || [];
 
     return isFormSubmitted ? (
         <div className="schedule-view">
@@ -207,7 +262,8 @@ const FormComponent = () => {
                             key={index}
                             value={{ value: inputValues[inputName], label: inputValues[inputName] }}
                             onChange={(selectedOption) => handleInputChange(inputName, selectedOption)}
-                            options={selectOptionsCourses}
+                            options={selectedTermCourses.map(course => ({ value: course, label: course }))}
+                            //options={selectOptionsCourses}
                             className="select-input"
                             maxMenuHeight={115}
                         />
