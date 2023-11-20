@@ -5,9 +5,7 @@ import '../styles/FormComponent.css';
 import Calendar from './CalendarComponent'
 import { fetchCourses, fetchSchedules, fetchTerms } from '../requests';
 
-//const coursesList = ["SYSC 4001", "SYSC 3303B", "SYSC 4106", "COMP 3005", "ECOR 4995A", "SYSC 4120C", "SYSC 4907"];
 const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-
 
 const initialFormState = {
     course1: '',
@@ -79,6 +77,23 @@ const FormComponent = () => {
             .length;
         setNoneEmptyCoursesCount(count);
     }, [inputValues]);
+
+    useEffect(() => {
+        const clearCourseValues = () => {
+            setInputValues((prevInputValues) => {
+                const newInputValues = { ...prevInputValues };
+                Object.keys(newInputValues)
+                    .filter((key) => /^course\d+$/.test(key))
+                    .forEach((courseKey) => {
+                        newInputValues[courseKey] = '';
+                    });
+                return newInputValues;
+            });
+        };
+        // Clear course values when the term changes
+        clearCourseValues();
+
+    }, [inputValues.term]);
 
     const handleInputChange = (inputName, selectedOption) => {
         const selectedTerm = selectedOption ? selectedOption.value : '';

@@ -4,7 +4,7 @@ import FormComponent from './components/FormComponent';
 const App = () => {
   return (
     <div>
-      <h1>Carleton University Schedular</h1>
+      <h1>Carleton University Scheduler</h1>
       <FormComponent />
     </div>
   );
