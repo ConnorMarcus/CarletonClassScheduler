@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict
+from typing import Any, Dict, List
 from .database.database import course_database
 from .model.course import Course
 from .model.date import ClassTime
@@ -14,17 +14,18 @@ QUERY_STRING_PARAMETERS = "queryStringParameters"
 
 def generate_schedules_lambda_handler(event: dict, context: object) -> dict:
     try:
-        body = json.loads(event['body'])
+        body: dict = json.loads(event['body'])
         term = body.get("Term")
         filters_object = body.get("Filters")
-        courses = body.get("Courses")
-        if term is None:
-            return lambda_response(BAD_REQUEST_CODE, True, "The JSON was missing the Term!")
+        courses: List[dict] = body.get("Courses")
+        if term is None or not isinstance(term, str):
+            return lambda_response(BAD_REQUEST_CODE, True, "The JSON was missing a Term (or the Term was not a String)!")
         
+        term = term.strip() # remove leading/trailing whitespace from term
         # Get inputted courses
         inputted_courses = []
         for course in courses:
-            course_code = course.get("Name", "")
+            course_code = course.get("Name", "").strip()
             inputted_course = course_database.get_course(course_code, term)
             if inputted_course is None:
                 return lambda_response(BAD_REQUEST_CODE, True, f"One or more courses do not exist for term {term}!")
