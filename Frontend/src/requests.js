@@ -113,7 +113,7 @@ const getCourseSection = (course) => {
 
 const trimCourseSection = (course) => {
     if (isNaN(course.slice(-1))) {
-        return course.slice(0, -1);
+        return course.slice(0, -1).trim();
     }
     return course;
 };
