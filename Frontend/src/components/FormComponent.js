@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/FormComponent.css';
 import Calendar from './CalendarComponent'
-import { fetchCourses, fetchTerms } from '../requests';
+import { fetchCourses, fetchSchedules, fetchTerms } from '../requests';
 
 //const coursesList = ["SYSC 4001", "SYSC 3303B", "SYSC 4106", "COMP 3005", "ECOR 4995A", "SYSC 4120C", "SYSC 4907"];
 const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -83,13 +83,6 @@ const FormComponent = () => {
     const handleInputChange = (inputName, selectedOption) => {
         const selectedTerm = selectedOption ? selectedOption.value : '';
 
-        /*
-        setInputValues({
-            ...inputValues,
-            [inputName]: selectedOption ? selectedOption.value : '', // handle null selectedOption for time inputs
-        });
-        */
-
         setInputValues({
             ...inputValues,
             [inputName]: selectedTerm,
@@ -108,11 +101,8 @@ const FormComponent = () => {
         });
     };
 
-    // Make function async when I add logic for API call: '= async (event) => {...}
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-
-        // Validate if all input values are part of the corresponding list before submission
         const isValidSubmission = Object.entries(inputValues).every(
             ([key, value]) => {
                 if (termsList.includes(value)) {
@@ -128,97 +118,14 @@ const FormComponent = () => {
 
         //As long as the term is included and at least one course is non-empty
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
-            /*
-            try {
-                const request = await fetch('URL TO API', {
-                    method = 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(inputValues), // likely have to manipulate the data first to fit the endpoints
-                });
-                if (!request.ok) {
-                    const error_msg = 'Request failed with status: ' + request.statusText;
-                    console.log(error_msg)
-                    throw new Error(error_msg);
-                }
-    
-                const response = await request.json();
-                //setEvents(request); //Likely have to parse it first to desired format
-                //setIfFormSubmitted(true); 
-            } catch (error) {
-                console.error(error);
-                alert("something went wrong")
+            const classes = await fetchSchedules(inputValues);
+            if (classes.error) {
+                alert(classes.error)
+            } else {
+                console.log("classes are: ", classes);
+                setEvents(classes);
+                setIsFormSubmitted(true);
             }
-            */
-
-            const classes = [
-                {
-                    title: 'SYSC 4001 A',
-                    start: '2023-11-15T10:05:00',
-                    end: '2023-11-15T11:35:00'
-                },
-                {
-                    title: 'SYSC 4001 A',
-                    start: '2023-11-17T10:05:00',
-                    end: '2023-11-17T11:35:00'
-                },
-                {
-                    title: 'SYSC 3303B',
-                    start: '2023-11-16T08:35:00',
-                    end: '2023-11-16T09:55:00'
-                },
-                {
-                    title: 'SYSC 3303B',
-                    start: '2023-11-14T08:35:00',
-                    end: '2023-11-14T09:55:00'
-                },
-                {
-                    title: 'SYSC 4120 C',
-                    start: '2023-11-14T011:35:00',
-                    end: '2023-11-14T12:55:00'
-                },
-                {
-                    title: 'SYSC 4120 C',
-                    start: '2023-11-16T11:35:00',
-                    end: '2023-11-16T12:55:00'
-                },
-
-                {
-                    title: 'ECOR 4995 A',
-                    start: '2023-11-17T18:05:00',
-                    end: '2023-11-17T20:55:00'
-                },
-                {
-                    title: 'COMP 3005',
-                    start: '2023-11-15T14:35:00',
-                    end: '2023-11-15T16:25:00'
-                },
-                {
-                    title: 'COMP 3005',
-                    start: '2023-11-17T14:35:00',
-                    end: '2023-11-17T16:25:00'
-                },
-                {
-                    title: 'ECOR 1041',
-                    start: '2023-11-20T14:35:00',
-                    end: '2023-11-20T16:25:00'
-                },
-                {
-                    title: 'ECOR 1042',
-                    start: '2023-11-20T14:35:00',
-                    end: '2023-11-20T16:25:00'
-                },
-                {
-                    title: 'TEST',
-                    start: 'MondayT14:35:00',
-                    end: 'MondayT16:25:00'
-                }
-            ];
-
-            setEvents(classes);
-            setIsFormSubmitted(true);
-
         } else {
             const error_msg = nonEmptyCoursesCount === 0 ? 'Please select a course' : "Please enter the Term";
             alert(error_msg);
@@ -231,8 +138,6 @@ const FormComponent = () => {
         setEvents([]);
     };
 
-
-    //const selectOptionsCourses = coursesList.map(course => ({ value: course, label: course }));
     const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
     const selectOptionsTerms = termsList.map(day => ({ value: day, label: day }));
     const selectedTermCourses = coursesList[inputValues.term] || [];
@@ -240,7 +145,7 @@ const FormComponent = () => {
     return isFormSubmitted ? (
         <div className="schedule-view">
             <button id="back-to-form" type="button" onClick={() => setIsFormSubmitted(false)}>Back to Form</button>
-            <Calendar title={"Fall 23"} events={events} />
+            <Calendar title={inputValues.term} events={events} />
         </div>
     ) : (
         <div className="form-container">
