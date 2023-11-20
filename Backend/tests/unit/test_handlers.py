@@ -68,4 +68,4 @@ def test_generate_schedules_lambda_handler(apigw_event):
     assert "Error" in ret["body"]
     assert "ErrorReason" in ret["body"]
     assert data["Error"] == True
-    assert data["ErrorReason"] == "The JSON was missing the Term!"
+    assert data["ErrorReason"] == "The JSON was missing a Term (or the Term was not a String)!"
