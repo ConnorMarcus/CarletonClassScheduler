@@ -1,0 +1,78 @@
+/* FormComponent.css */
+
+.form-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 5px solid #BF122B;
+    border-radius: 9px;
+}
+
+.courses,
+.filters {
+    margin-bottom: 20px;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 15px
+}
+
+.header {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 15px;
+}
+
+.select-input,
+.time-input {
+    width: 100%;
+    display: inline-block;
+}
+
+.button-container {
+    text-align: center;
+}
+
+.submit-button,
+.clear-button {
+    padding: 10px;
+    margin: 10px;
+    background-color: #BF122B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.clear-button {
+    background-color: #080B07;
+}
+
+.term {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 15px;
+}
+
+.term-label {
+    font-weight: bold;
+    font-size: x-large;
+}
+
+span.required-input {
+    color: #BF122B;
+}
+
+span.optional-input {
+    font-size: small;
+    font-style: italic;
+    font-weight: normal;
+}

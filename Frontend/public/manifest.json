@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Raven's Schedular",
+  "name": "Carleton University Schedular",
   "icons": [
     {
       "src": "favicon.ico",
