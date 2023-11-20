@@ -8,7 +8,12 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 10
+  Api:
+      Cors:
+          AllowMethods: "'GET,POST,OPTIONS'"
+          AllowHeaders: "'content-type'"
+          AllowOrigin: "'*'"
 
 Resources:
   GenerateSchedulesFunction:
@@ -18,7 +23,6 @@ Resources:
       Handler: src.endpoints.generate_schedules_lambda_handler
       Runtime: python3.11
       MemorySize: 1024
-      Timeout: 10
       Architectures:
       - x86_64
       Policies:
@@ -29,8 +33,6 @@ Resources:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /generateSchedules
-            Cors:
-              AllowMethods: "'OPTIONS'"
             Method: post
   
   GetTermsFunction:
@@ -40,7 +42,6 @@ Resources:
       Handler: src.endpoints.get_terms_lambda_handler
       Runtime: python3.11
       MemorySize: 2048
-      Timeout: 10
       Architectures:
       - x86_64
       Policies:
@@ -51,8 +52,6 @@ Resources:
           Type: Api
           Properties:
             Path: /getTerms
-            Cors:
-              AllowMethods: "'OPTIONS'"
             Method: get
 
   GetCoursesFunction:
@@ -62,7 +61,6 @@ Resources:
       Handler: src.endpoints.get_courses_lambda_handler
       Runtime: python3.11
       MemorySize: 1024
-      Timeout: 10
       Architectures:
       - x86_64
       Policies:
@@ -73,8 +71,6 @@ Resources:
           Type: Api
           Properties:
             Path: /getCourses
-            Cors:
-              AllowMethods: "'OPTIONS'"
             Method: get
 
   ApplicationResourceGroup:
