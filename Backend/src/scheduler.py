@@ -17,7 +17,8 @@ def generate_schedules(courses: List[Course], current_schedule: List[Section] = 
             if lecture_section.related_section_ids:
                 related_section_combinations = get_related_section_combinations(courses[-1], lecture_section)
                 for related_sections in related_section_combinations:
-                    if not do_section_times_overlap(related_sections) and are_sections_schedulable(related_sections, current_schedule):
+                    # Must check to make sure that all related sections exists (i.e. none were filtered out)
+                    if None not in related_sections and not do_section_times_overlap(related_sections) and are_sections_schedulable(related_sections, current_schedule):
                         current_schedule.extend(related_sections)
                         schedules = generate_schedules(courses[:-1], current_schedule)
                         res.extend(schedules)
