@@ -6,6 +6,7 @@ from .model.date import ClassTime
 from .model.day_of_week import DayOfWeek
 from .model.filter import Filter
 from .scheduler import generate_schedules
+from .logger import logger
 
 SUCCESS_CODE = 200
 BAD_REQUEST_CODE = 400
@@ -55,7 +56,8 @@ def generate_schedules_lambda_handler(event: dict, context: object) -> dict:
         schedules = generate_schedules(inputted_courses)
         return lambda_response(SUCCESS_CODE, False, "", {"Schedules": [[section.to_dict() for section in schedule] for schedule in schedules]})
 
-    except:
+    except Exception as error:
+        logger.error(error)
         return lambda_response(BAD_REQUEST_CODE, True, "The body of the request must contain JSON!")
 
 def get_terms_lambda_handler(event: dict, context: object) -> dict:
@@ -79,6 +81,10 @@ def lambda_response(status: int, error: bool, error_reason: str, body: Dict[str,
     response_body.update(body)
     response = {
         "statusCode": status,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True
+        },
         "body": json.dumps(response_body)
     }
     

@@ -92,19 +92,15 @@ def test_get_lecture_section():
 
     course = Course("CODE1000", "CLASS NAME", "FALL", "N/A", [section1, section3], [section2], None)
     assert course.get_lecture_section("A") == section1
-    with pytest.raises(ValueError):
-        course.get_lecture_section("B")
-    with pytest.raises(ValueError):
-        course.get_lecture_section("C")
+    assert course.get_lecture_section("B") == None
+    assert course.get_lecture_section("C") == None
 
 def test_get_lab_section():
     section1 = Section("CODE1000", "A", "11111", "JON", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:00", "12:00")], "OPEN", [])
     section2 = Section("CODE1000", "B", "22222", "JON", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "09:00", "12:00")], "OPEN", [])
     section3 = Section("CODE3000", "B", "22225", "JON", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "09:00", "12:00")], "OPEN", [])
     course = Course("CODE1000", "CLASS NAME", "FALL", "N/A", [section1], [section2, section3], None)
-    with pytest.raises(ValueError):
-        course.get_lab_section("A")
+    assert course.get_lab_section("A") == None
     assert course.get_lab_section("B") == section2
-    with pytest.raises(ValueError):
-        course.get_lab_section("C")
+    assert course.get_lab_section("C") == None
         
