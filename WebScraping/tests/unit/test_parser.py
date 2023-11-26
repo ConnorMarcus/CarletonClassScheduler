@@ -1,3 +1,4 @@
 from WebScraping.functions.parser.lambda_function import *
 
-# BLANK FOR NOW
+def test():
+    assert True == True
