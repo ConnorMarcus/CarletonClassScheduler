@@ -16,7 +16,6 @@ HTTP = urllib3.PoolManager()
 LOCK = threading.Lock()
 classes = {}
 
-
 def lambda_handler(event: dict, context: object) -> str:
     # Get the hrefs list file from s3
     href_list_file = get_s3_object("href_list.json")
