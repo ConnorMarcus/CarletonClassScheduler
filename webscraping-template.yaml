@@ -26,7 +26,7 @@ Resources:
   ParseClassDataFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: WebScraping/lambda-functions/parse-class-data-function/
+      CodeUri: WebScraping/functions/parser
       Handler: lambda_function.lambda_handler
       Runtime: python3.11
       MemorySize: 1028

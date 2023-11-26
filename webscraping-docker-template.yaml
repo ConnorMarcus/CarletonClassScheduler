@@ -21,5 +21,5 @@ Resources:
       Role: !Ref executionRole
     Metadata:
       DockerTag: latest
-      DockerContext: ./WebScraping/docker-lambda-function
+      DockerContext: ./WebScraping/functions/navigation
       Dockerfile: Dockerfile
