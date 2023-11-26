@@ -3,7 +3,7 @@ on:
       branches:
         - main
       paths:
-        - WebScraping/lambda-functions/**
+        - WebScraping/functions/parser/** # Add more paths for other functions below
 jobs:
     build-deploy:
       runs-on: ubuntu-latest
@@ -18,6 +18,11 @@ jobs:
             
         # sam build 
         - run: sam build --use-container --template-file webscraping-template.yaml
+
+        # Run Unit tests
+        - run: pip install -r WebScraping/tests/requirements.txt
+        - run: coverage run --branch -m pytest WebScraping/tests/unit -v
+        - run: coverage report -m
   
         # sam deploy
         - run: |

@@ -1,0 +1,5 @@
+pytest
+boto3
+requests
+coverage
+bs4
