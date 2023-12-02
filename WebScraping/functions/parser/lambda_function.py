@@ -58,7 +58,7 @@ def get_data(href_dict: dict) -> object:
     html = req.data.decode("utf-8")
     parse_data(BeautifulSoup(html, "html.parser"), href_dict["also_register"])
 
-  
+
 def parse_data(html: BeautifulSoup, also_register_str: str) -> None:
     '''
     Handles parsing the data of the html course page.
@@ -96,7 +96,7 @@ def add_class(**kwargs: dict) -> None:
     Adds a class to the shared classes dictionary.
 
     Parameters:
-    **kwargs: key value pairs of course data from parsing.
+    **kwargs: Key value pairs of course data from parsing.
     '''
     key = f"{kwargs['subject_code']}-{kwargs['term']}"
 
@@ -131,8 +131,30 @@ def add_section_to_class(key: str, section: dict) -> None:
     key: The string key of the class which the section is added to.
     section: The dict section to append to the Lecture or Lab sections. 
     '''
-    section_type = "LectureSections" if len(section["SectionID"]) == 1 else "LabSections"
+    section_id = section["SectionID"]
+
+    if is_lecture_section(section_id):
+        section_type = "LectureSections"
+
+    else:
+        section_type = "LabSections"
+        week_schedule = get_lab_week_schedule(section["SectionID"])
+        section["WeekSchedule"] = week_schedule
+
     classes[key][section_type].append(section)
+
+
+def is_lecture_section(section_id) -> bool:
+    '''
+    Checks if section is a lecture.
+
+    Parameters:
+    section_id: The string section id.
+
+    Returns:
+    bool: True if lecture section (otherwise lab section).
+    '''
+    return len(section_id) == 1
 
 
 def has_keyword_in_text(keyword: Union[str, List[str]], text: str) -> bool:
@@ -246,10 +268,10 @@ def get_associated_sections(also_register_str: str) -> List[List[str]]:
     Gets the list of associated sections based on the also_register_str.
 
     Parameters:
-    also_register_str: the also register string of section.
+    also_register_str: The also register string of section.
 
     Returns:
-    List[List[str]]: the list of associated sections.
+    List[List[str]]: The list of associated sections.
     '''
     also_register_sections = []
     
@@ -269,10 +291,10 @@ def get_term_duration_str(term_date: str) -> str:
     Gets the term duration_str based on the term_date.
 
     Parameters:
-    term_date: the term date string of the section.
+    term_date: The term date string of the section.
 
     Returns:
-    str: term duration string of the section.
+    str: Term duration string of the section.
     '''
 
     if has_keyword_in_text(TERM_START_MONTHS, term_date):
@@ -283,3 +305,23 @@ def get_term_duration_str(term_date: str) -> str:
         return "Full Term"
     
     return "Late Term"
+
+
+def get_lab_week_schedule(section_id: str) -> str:
+    '''
+    Gets the week schedule for a lab section.
+
+    Parameters:
+    section_id: The string lab section id.
+
+    Returns:
+    str: Week schedule string for the section.
+    '''
+    if section_id[-1] == "O":
+        return "Odd Week"
+
+    elif section_id[-1] == "E":
+        return "Even Week"
+
+    else:
+        return "Every Week"
