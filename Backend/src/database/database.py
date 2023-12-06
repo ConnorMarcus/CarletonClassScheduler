@@ -10,8 +10,6 @@ from ..model.date import ClassTime
 from ..logger import logger
 
 class Database:
-    aws_test_db_access_key_id = os.environ.get('aws_test_db_access_key_id', None)
-    aws_test_db_secret_access_key = os.environ.get('aws_test_db_secret_access_key', None)
     table_name = ''
     test_table_name = "carleton-courses-test"
     prod_table_name = "carleton-courses"
@@ -38,7 +36,10 @@ class Database:
 
     
     def __init__(self):
-       # If running locally
+        self.aws_test_db_access_key_id = os.environ.get('aws_test_db_access_key_id', None)
+        self.aws_test_db_secret_access_key = os.environ.get('aws_test_db_secret_access_key', None)
+
+        # If running locally
         if (
             self.aws_test_db_access_key_id is not None and 
             self.aws_test_db_secret_access_key is not None
@@ -123,7 +124,7 @@ class Database:
         if len(courses) == 0:
             return None
         if len(courses) > 1:
-            logger.warn(f"There are more than one courses with code: {course_code} and term {term}!")
+            logger.warning(f"There are more than one courses with code: {course_code} and term {term}!")
         
         course_map = courses[0]
         return self.convert_to_course(course_map)
@@ -178,7 +179,6 @@ class Database:
                     ExpressionAttributeNames=attribute_names,
                     ExpressionAttributeValues=attribute_values
                 )
-
             courses = self.deserialize_response(response)
             all_courses.extend(courses)
             last_evaluated_key = response.get("LastEvaluatedKey")
