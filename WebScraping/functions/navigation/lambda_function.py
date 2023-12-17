@@ -5,9 +5,10 @@ from selenium.webdriver.common.by import By
 from time import sleep
 from bs4 import BeautifulSoup
 from unicodedata import normalize
+from typing import List
 import json
 import boto3
-import re
+import re   
 
 PAGE_SOURCE = "https://central.carleton.ca/prod/bwysched.p_select_term?wsea_code=EXT"
 CHROME_SERVICE_EXE_PATH = "/opt/chromedriver"
@@ -20,7 +21,19 @@ LINKED_COURSE_STR = "https://carleton.ca/registrar/registration/terminology/"
 BUCKET_NAME = "carletonschedulingtool"
 KEY_PATH = "web-scraping-stepfunction/href_list.json"
 
-def handler(event=None, context=None):
+def handler(event=None, context=None) -> str:
+    '''
+    AWS Lambda handler function for navigating through the external Carleton course
+    registration page. This function creats a list of hrefs for each course for each
+    term.
+
+    Parameters: 
+    - event: event that triggers the Lambda function. By default it is None.
+    - context: the Lambda function execution context. By default it is None.
+
+    Returns: 
+    - str: A message indicating that handler has written the hrefs to the S3 bucket.
+    '''
     driver = init()
 
     class_info = []
@@ -55,7 +68,13 @@ def handler(event=None, context=None):
     
     return "Href list written to S3"
 
-def init():
+def init() -> webdriver:
+    '''
+    Initializes the chrome webdriver with multiple options.
+
+    Returns:
+    - Webdriver Object: The chrome webdriver object.
+    '''
     options = webdriver.ChromeOptions()
     service = webdriver.ChromeService(CHROME_SERVICE_EXE_PATH)
 
@@ -77,25 +96,61 @@ def init():
     
     return driver
 
-def scrape_terms(driver):
+def scrape_terms(driver: webdriver) -> List:
+    '''
+    Scrapes the available terms from the Carleton Webpage.
+
+    Parameters:
+    - driver: The Chrome WebDriver object.
+
+    Returns:
+    - List: A list of term values obtained from the term dropdown on the webpage.
+
+    '''
     # Find the term dropdown element and select it
     term_dropdown = (driver.find_element(By.NAME, "term_code"))
     return [term.get_attribute("value") for term in Select(term_dropdown).options]
 
-def scrape_course_options(driver):
+def scrape_course_options(driver: webdriver) -> List:
+    '''
+    Scrapes the available course options from the Carleton Webpage.
+
+    Parameters:
+    - driver: The Chrome WebDriver object.
+
+    Returns:
+    - List: A list of course options obtained from the subject dropdown on the webpage.
+
+    '''
     # Find the subject dropdown element and select it
     subject_dropdown = driver.find_element(By.ID, "subj_id")
     return [option.get_attribute("value") for option in Select(subject_dropdown).options]
 
 
-def select_undergrad(driver):
+def select_undergrad(driver: webdriver) -> None:
+    """
+    Selects the Undergraduate course level on a webpage using the Chrome WebDriver.
+
+    Parameters:
+    - driver: The Chrome WebDriver object.
+    """
     # Find Course Level field and select Undergraduate 
     course_level = driver.find_element(By.ID, "levl_id")
     Select(course_level).select_by_value("UG")
 
     sleep(0.25)
 
-def parse(html_page, lst: list):
+def parse(html_page: BeautifulSoup, lst: List) -> List:
+    '''
+    Parses the course pages list using Beautiful soup and extracts "Also Register in information.
+
+    Parameters:
+    - html_page : The HTML content of the page to be parsed.
+    - lst : The list to which the extracted information will be appended.
+
+    Returns:
+    - List: The updated list containing dictionaries with information about linked courses.
+    '''
     soup = BeautifulSoup(html_page, "html.parser")
     anchors = soup.find_all("a", attrs={"href": re.compile(HREF_STR)}, string={re.compile("^\d+$")})
 
@@ -119,11 +174,26 @@ def parse(html_page, lst: list):
 
     return lst
 
-def click_btn(driver, type, name):
+def click_btn(driver: webdriver, type: str, name: str) -> None:
+    '''
+    Cliks a button on the webpage. 
+
+    Parameters: 
+    - driver: The Chrome WebDriver object.
+    - type: the string type of element (eg. By.ID, By.NAME).
+    - name: the string value of the element.
+    '''
     search_button = driver.find_element(type, name)
     search_button.click()
 
-def select_terms(driver, term):
+def select_terms(driver: webdriver, term: str) -> None:
+    '''
+    Select a specific term on the webpage. 
+
+    Parameters: 
+    - driver: The Chrome WebDriver object.
+    - term: The string value of the term to be selected.
+    '''
     term_dropdown = (driver.find_element(By.NAME, "term_code"))
 
     Select(term_dropdown).select_by_value(term)
@@ -133,14 +203,21 @@ def select_terms(driver, term):
 
     select_undergrad(driver)
 
-def select_options(driver, option):
+def select_options(driver: webdriver, option: str) -> None:
+    '''
+    Selects a specific course option from subject dropdown. 
+
+    Parameters: 
+    - driver: The Chrome WebDriver object.
+    - option: The string course option
+    '''
     # Find the subject dropdown element 
-        subject_dropdown = driver.find_element(By.ID, "subj_id")
+    subject_dropdown = driver.find_element(By.ID, "subj_id")
 
-        select_undergrad(driver)
+    select_undergrad(driver)
 
-        Select(subject_dropdown).deselect_by_index(0)
-        Select(subject_dropdown).select_by_value(option)
+    Select(subject_dropdown).deselect_by_index(0)
+    Select(subject_dropdown).select_by_value(option)
 
-        # Click on "Search"
-        click_btn(driver, By.XPATH, SEARCH_BTN_XPATH)
+    # Click on "Search"
+    click_btn(driver, By.XPATH, SEARCH_BTN_XPATH)
