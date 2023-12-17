@@ -5,9 +5,10 @@ from selenium.webdriver.common.by import By
 from time import sleep
 from bs4 import BeautifulSoup
 from unicodedata import normalize
+from typing import List
 import json
 import boto3
-import re
+import re   
 
 PAGE_SOURCE = "https://central.carleton.ca/prod/bwysched.p_select_term?wsea_code=EXT"
 CHROME_SERVICE_EXE_PATH = "/opt/chromedriver"
@@ -95,7 +96,7 @@ def init() -> webdriver:
     
     return driver
 
-def scrape_terms(driver: webdriver) -> list:
+def scrape_terms(driver: webdriver) -> List:
     '''
     Scrapes the available terms from the Carleton Webpage.
 
@@ -103,14 +104,14 @@ def scrape_terms(driver: webdriver) -> list:
     - driver: The Chrome WebDriver object.
 
     Returns:
-    - list: A list of term values obtained from the term dropdown on the webpage.
+    - List: A list of term values obtained from the term dropdown on the webpage.
 
     '''
     # Find the term dropdown element and select it
     term_dropdown = (driver.find_element(By.NAME, "term_code"))
     return [term.get_attribute("value") for term in Select(term_dropdown).options]
 
-def scrape_course_options(driver: webdriver) -> list:
+def scrape_course_options(driver: webdriver) -> List:
     '''
     Scrapes the available course options from the Carleton Webpage.
 
@@ -118,7 +119,7 @@ def scrape_course_options(driver: webdriver) -> list:
     - driver: The Chrome WebDriver object.
 
     Returns:
-    - list: A list of course options obtained from the subject dropdown on the webpage.
+    - List: A list of course options obtained from the subject dropdown on the webpage.
 
     '''
     # Find the subject dropdown element and select it
@@ -139,7 +140,7 @@ def select_undergrad(driver: webdriver) -> None:
 
     sleep(0.25)
 
-def parse(html_page: BeautifulSoup, lst: list) -> list:
+def parse(html_page: BeautifulSoup, lst: List) -> List:
     '''
     Parses the course pages list using Beautiful soup and extracts "Also Register in information.
 
@@ -148,7 +149,7 @@ def parse(html_page: BeautifulSoup, lst: list) -> list:
     - lst : The list to which the extracted information will be appended.
 
     Returns:
-    - list: The updated list containing dictionaries with information about linked courses.
+    - List: The updated list containing dictionaries with information about linked courses.
     '''
     soup = BeautifulSoup(html_page, "html.parser")
     anchors = soup.find_all("a", attrs={"href": re.compile(HREF_STR)}, string={re.compile("^\d+$")})
