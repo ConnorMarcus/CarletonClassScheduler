@@ -10,4 +10,4 @@ def lambda_handler(event: dict, context: dict) -> str:
     table.delete()
     table.wait_until_not_exists()
     
-    return f"{TABLE_NAME} DB successfully deleted!"
+    return f"Table {TABLE_NAME} successfully deleted from DynamoDB!"

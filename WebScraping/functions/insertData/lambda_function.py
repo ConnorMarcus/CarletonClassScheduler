@@ -15,7 +15,7 @@ def lambda_handler(event: dict, context: dict) -> str:
     for course in classes_list:
         table.put_item(Item=course)
  
-    return f"Classes inserted into {TABLE_NAME} DB!"
+    return f"Classes inserted into {TABLE_NAME} DynamoDB table!"
 
 
 def get_classes_list() -> List[dict]:
