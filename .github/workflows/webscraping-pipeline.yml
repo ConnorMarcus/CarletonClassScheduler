@@ -3,7 +3,9 @@ on:
       branches:
         - main
       paths:
-        - WebScraping/functions/parser/** # Add more paths for other functions below
+        - WebScraping/functions/parser/**
+        - WebScraping/functions/deleteDB/**
+        - WebScraping/functions/insertData/**
 jobs:
     build-deploy:
       runs-on: ubuntu-latest

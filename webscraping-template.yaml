@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Other lambda functions used for the webscraping
+Description: Other lambda functions used for webscraping
 
 Globals:
   Function:
@@ -34,5 +34,29 @@ Resources:
       Role: !Ref executionRole
       Layers:
         - !Ref Bs4Layer
+      Architectures:
+        - x86_64
+
+  DeleteDBFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: WebScraping/functions/deleteDB
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.11
+      MemorySize: 128
+      Timeout: 600
+      Role: !Ref executionRole
+      Architectures:
+        - x86_64
+
+  InsertClassDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: WebScraping/functions/insertData
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.11
+      MemorySize: 128
+      Timeout: 600
+      Role: !Ref executionRole
       Architectures:
         - x86_64
