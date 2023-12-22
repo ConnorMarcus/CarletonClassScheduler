@@ -1,4 +1,4 @@
-from WebScraping.functions.deleteDB.lambda_function import *
+from WebScraping.functions.deleteTable.lambda_function import *
 from unittest.mock import patch
 
 def test_lambda_handler():

@@ -37,10 +37,10 @@ Resources:
       Architectures:
         - x86_64
 
-  DeleteDBFunction:
+  DeleteTableFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: WebScraping/functions/deleteDB
+      CodeUri: WebScraping/functions/deleteTable
       Handler: lambda_function.lambda_handler
       Runtime: python3.11
       MemorySize: 128
