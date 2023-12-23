@@ -16,7 +16,7 @@ def test_lambda_handler():
     s3_classes_object = MagicMock()
     s3_classes_object.bucket_name = BUCKET_NAME
     s3_classes_object.key = KEY_PATH + "classes.json"
-    s3_classes_object.get.return_value = {"Body": MagicMock(read=lambda: "")}
+    s3_classes_object.get.return_value = {"Body": MagicMock()}
 
     with patch(f"{FILE_PATH}.get_s3_object", side_effect=[s3_href_object, s3_classes_object]):
         result = lambda_handler(event={}, context={})
