@@ -1,14 +1,18 @@
 from __future__ import annotations
 from .day_of_week import DayOfWeek
 from .term_duration import TermDuration
+from .week_schedule import WeekSchedule
 
 class ClassTime:
 
-    def __init__(self, day: DayOfWeek, term_duration: TermDuration, start_time: str, end_time: str):
+    def __init__(self, day: DayOfWeek, term_duration: TermDuration, start_time: str, 
+                 end_time: str, week_schedule: WeekSchedule = WeekSchedule.EVERY_WEEK):
         if not isinstance(day, DayOfWeek):
             raise TypeError("Parameter day must be of type DayOfWeek")
         if not isinstance(term_duration, TermDuration):
             raise TypeError("Parameter term_duration must be of type TermDuration")
+        if not isinstance(week_schedule, WeekSchedule):
+            raise TypeError("Parameter week_schedule must be of type WeekSchedule")
         if not (ClassTime._are_times_valid(start_time, end_time)):
             raise ValueError("Parameters start time and end time must be in the following format: xx:xx. Also start time must come before end time")
 
@@ -16,6 +20,7 @@ class ClassTime:
         self.term_duration = term_duration
         self.start_time = start_time
         self.end_time = end_time
+        self.week_schedule = week_schedule # class is scheduled every week by default
 
     @staticmethod
     def _is_valid_time(time: str) -> bool:
@@ -50,7 +55,11 @@ class ClassTime:
             (self.term_duration == TermDuration.EARLY_TERM and 
              other_date.term_duration == TermDuration.LATE_TERM) or 
             (self.term_duration == TermDuration.LATE_TERM and 
-             other_date.term_duration == TermDuration.EARLY_TERM)):
+             other_date.term_duration == TermDuration.EARLY_TERM) or
+            (self.week_schedule == WeekSchedule.EVEN_WEEK and 
+             other_date.week_schedule == WeekSchedule.ODD_WEEK) or
+            (self.week_schedule == WeekSchedule.ODD_WEEK and 
+             other_date.week_schedule == WeekSchedule.EVEN_WEEK)):
             return False
 
         start_time_1, end_time_1 = ClassTime.convert_time_to_float(self.start_time), ClassTime.convert_time_to_float(self.end_time)
@@ -72,10 +81,10 @@ class ClassTime:
         return self.day
     
     def to_dict(self) -> dict:
-        return {"DayOfWeek":self.day.value, "TermDuration":self.term_duration.value, "StartTime":self.start_time, "EndTime":self.end_time}
+        return {"DayOfWeek":self.day.value, "TermDuration":self.term_duration.value, "WeekSchedule":self.week_schedule.value, "StartTime":self.start_time, "EndTime":self.end_time}
 
     def __str__(self) -> str:
-        return f"DayOfWeek: {self.day}, term duration: {self.term_duration}, start time: {self.start_time}, end time: {self.end_time}"
+        return f"DayOfWeek: {self.day}, term duration: {self.term_duration}, week schedule: {self.week_schedule}, start time: {self.start_time}, end time: {self.end_time}"
     
     def __repr__(self) -> str:
         return f"ClassTime<{self.__str__()}>"

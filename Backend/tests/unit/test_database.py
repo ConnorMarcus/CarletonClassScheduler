@@ -6,7 +6,7 @@ from Backend.src.database.database import course_database
 from Backend.src.database.database import Database
 
 
-test_term = "Fall  2023"
+test_term = "Fall 2023"
 
 test_scan_response1 = {
     "Items": [
