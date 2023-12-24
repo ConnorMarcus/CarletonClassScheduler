@@ -2,19 +2,23 @@ import pytest
 from Backend.src.model.date import ClassTime
 from Backend.src.model.day_of_week import DayOfWeek
 from Backend.src.model.term_duration import TermDuration
+from Backend.src.model.week_schedule import WeekSchedule
 
 def testValidDate():
-    date = ClassTime(DayOfWeek.MONDAY, TermDuration.EARLY_TERM, "12:12", "14:31")
+    date = ClassTime(DayOfWeek.MONDAY, TermDuration.EARLY_TERM, "12:12", "14:31", WeekSchedule.EVEN_WEEK)
     assert date.day == DayOfWeek.MONDAY
     assert date.term_duration == TermDuration.EARLY_TERM
     assert date.start_time == "12:12"
     assert date.end_time == "14:31"
+    assert date.week_schedule == WeekSchedule.EVEN_WEEK
 
 def testInvalidDate():
     with pytest.raises(TypeError):
-        ClassTime("Monday", TermDuration.FULL_TERM, "21:00", "22:00")
+        ClassTime("Monday", TermDuration.FULL_TERM, "21:00", "22:00", WeekSchedule.EVERY_WEEK)
     with pytest.raises(TypeError):
         ClassTime(DayOfWeek.FRIDAY, "Full term", "21:00", "22:00")
+    with pytest.raises(TypeError):
+        ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "21:00", "22:00", "EVEN")
     with pytest.raises(ValueError):
         ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "25:00", "20:00")
     with pytest.raises(ValueError):
@@ -43,8 +47,8 @@ def testConvertTimeToFloat():
 def testDoesDateOverlap():
     date = ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:03", "12:54")
     assert date.does_date_overlap(ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "01:34", "10:17")) == False
-    assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.EARLY_TERM, "07:33", "10:12")) == True
-    assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.LATE_TERM, "11:54", "14:22")) == True
+    assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.EARLY_TERM, "07:33", "10:12", WeekSchedule.ODD_WEEK)) == True
+    assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.LATE_TERM, "11:54", "14:22", WeekSchedule.EVEN_WEEK)) == True
     assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:03", "12:54")) == True
     assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:03", "12:00")) == True
     assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:03", "12:58")) == True
@@ -56,6 +60,10 @@ def testDoesDateOverlap():
     assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "07:00", "09:00")) == False
     assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "10:00", "11:00")) == True
     assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "07:00", "14:00")) == True
+    date.week_schedule = WeekSchedule.EVEN_WEEK
+    assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "07:00", "14:00", WeekSchedule.ODD_WEEK)) == False
+    date.week_schedule = WeekSchedule.ODD_WEEK
+    assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "07:00", "14:00", WeekSchedule.EVEN_WEEK)) == False
     date.term_duration = TermDuration.EARLY_TERM
     assert date.does_date_overlap(ClassTime(DayOfWeek.MONDAY, TermDuration.LATE_TERM, "09:03", "12:54")) == False
     date.term_duration = TermDuration.LATE_TERM
@@ -71,16 +79,16 @@ def test_str():
     day = DayOfWeek.MONDAY
     duration = TermDuration.FULL_TERM
     start_time, end_time = "09:00", "12:00"
-    assert ClassTime(day, duration, start_time, end_time).__str__() == f"DayOfWeek: {day}, term duration: {duration}, start time: {start_time}, end time: {end_time}"
+    assert ClassTime(day, duration, start_time, end_time).__str__() == f"DayOfWeek: {day}, term duration: {duration}, week schedule: {WeekSchedule.EVERY_WEEK}, start time: {start_time}, end time: {end_time}"
 
 def test_repr():
     day = DayOfWeek.MONDAY
     duration = TermDuration.FULL_TERM
     start_time, end_time = "09:00", "12:00"
-    assert ClassTime(day, duration, start_time, end_time).__repr__() == f"ClassTime<DayOfWeek: {day}, term duration: {duration}, start time: {start_time}, end time: {end_time}>"
+    assert ClassTime(day, duration, start_time, end_time).__repr__() == f"ClassTime<DayOfWeek: {day}, term duration: {duration}, week schedule: {WeekSchedule.EVERY_WEEK}, start time: {start_time}, end time: {end_time}>"
 
 def test_to_dict():
     day = DayOfWeek.MONDAY
     duration = TermDuration.FULL_TERM
     start_time, end_time = "09:00", "12:00"
-    assert ClassTime(day, duration, start_time, end_time).to_dict() == {"DayOfWeek":day.value, "TermDuration":duration.value, "StartTime":start_time, "EndTime":end_time}
+    assert ClassTime(day, duration, start_time, end_time).to_dict() == {"DayOfWeek":day.value, "TermDuration":duration.value, "WeekSchedule":WeekSchedule.EVERY_WEEK.value, "StartTime":start_time, "EndTime":end_time}

@@ -5,6 +5,7 @@ import os
 from ..model.course import Course
 from ..model.section import Section
 from ..model.term_duration import TermDuration
+from ..model.week_schedule import WeekSchedule
 from ..model.day_of_week import DayOfWeek
 from ..model.date import ClassTime
 from ..logger import logger
@@ -29,6 +30,7 @@ class Database:
     section_id_column = "SectionID"
     status_column = "Status"
     duration_column = "TermDuration"
+    week_schedule_column = "WeekSchedule"
     meeting_dates_column = "MeetingDates"
     day_of_week_column = "DayOfWeek"
     start_time_column = "StartTime"
@@ -80,15 +82,16 @@ class Database:
         instructor = section_map.get(self.instructor_column, "")
         related_sections = section_map.get(self.also_register_column, [])
         term_duration = TermDuration(section_map.get(self.duration_column))
+        week_schedule = WeekSchedule(section_map.get(self.week_schedule_column, WeekSchedule.EVERY_WEEK))
         meeting_dates_list = section_map.get(self.meeting_dates_column, [])
-        meeting_times = [self.convert_to_classtime(term_duration, meeting_date_map) for meeting_date_map in meeting_dates_list]
+        meeting_times = [self.convert_to_classtime(term_duration, meeting_date_map, week_schedule) for meeting_date_map in meeting_dates_list]
         return Section(course_code, section_id, crn, instructor, meeting_times, status, related_sections)
 
-    def convert_to_classtime(self, term_duration: TermDuration, meeting_date_map: dict) -> ClassTime:
+    def convert_to_classtime(self, term_duration: TermDuration, meeting_date_map: dict, week_schedule: WeekSchedule) -> ClassTime:
         day_of_week = DayOfWeek(meeting_date_map.get(self.day_of_week_column))
         start_time = meeting_date_map.get(self.start_time_column)
         end_time = meeting_date_map.get(self.end_time_column)
-        return ClassTime(day_of_week, term_duration, start_time, end_time)
+        return ClassTime(day_of_week, term_duration, start_time, end_time, week_schedule)
 
     def get_course(self, course_code: str, term: str) -> Course | None:
         '''
