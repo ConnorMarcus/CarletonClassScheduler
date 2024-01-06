@@ -19,10 +19,10 @@ const MyCalendar = ({ title, events }) => {
     return (
         <div id="calendar">
             <h2 id="calendar-title">{title}</h2>
-            <p>
-                <input type="button" disabled={scheduleCount === 0} onClick={handlePrevClick} value="prev"></input>
-                Schedule {scheduleCount+1}
-                <input type="button" disabled={scheduleCount === events.length-1} onClick={handleNextClick} value="next"></input>
+            <p id="schedule-carrousel">
+                <input class="prev-next-btn" type="button" disabled={scheduleCount === 0} onClick={handlePrevClick} value="prev"></input>
+                <span id="schedule-count-text">Schedule {scheduleCount+1}</span>
+                <input class="prev-next-btn" type="button" disabled={scheduleCount === events.length-1} onClick={handleNextClick} value="next"></input>
             </p>
             <FullCalendar
                 plugins={[timeGridPlugin]}
