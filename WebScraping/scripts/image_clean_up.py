@@ -1,9 +1,12 @@
 import os
 import boto3
 
-repository_name = os.environ.get("REPO_NAME")
-
-def delete_all_ecr_images(repository_name):
+def delete_all_ecr_images(repository_name: str) -> None:
+    # Make sure REPO_NAME env var is found
+    if repository_name == "":
+        print("Missing Repository Env Variable!")
+        return
+    
     ecr = boto3.client("ecr")
 
     # List the images in the repository
@@ -18,5 +21,6 @@ def delete_all_ecr_images(repository_name):
     
     print("Deleted all image(s)")
 
-if __name__ == "__main__":
-    delete_all_ecr_images(repository_name)
+# Run the script
+repository_name = os.environ.get("REPO_NAME", "")
+delete_all_ecr_images(repository_name)
