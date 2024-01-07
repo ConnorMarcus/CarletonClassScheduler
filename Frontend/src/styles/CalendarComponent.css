@@ -15,6 +15,34 @@
 
 }
 
+#schedule-carrousel {
+    text-align: center;
+    padding-top: 10px;
+}
+
+#schedule-count-text {
+    padding: 10px;
+}
+
+.prev-next-btn {
+    padding: 10px;
+    margin: 0 auto;
+    background-color: #BF122B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.prev-next-btn:disabled {
+    opacity: 60%;
+    cursor: default;
+}
+
 #calendar {
     padding: 10px;
 }
+
+.fc-day-today {
+    background: inherit !important; 
+} 

@@ -3,7 +3,6 @@ import axios from 'axios';
 const TERMS_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/getTerms';
 const COURSES_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/getCourses';
 const SCHEDULES_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/generateSchedules';
-const TEST_URL = 'http://localhost:5001/test'
 
 export const fetchTerms = async () => {
     try {
@@ -32,7 +31,7 @@ export const fetchSchedules = async (inputs) => {
         if (response.data.Schedules.length === 0) {
             return { error: 'No schedules found that matches your criteria' };
         } else {
-            return parseScheduleIntoEvents(inputs.term, response.data.Schedules[0]);
+            return parseScheduleIntoEvents(response.data.Schedules);
         }
     } catch (error) {
         throw error;
@@ -118,67 +117,40 @@ const trimCourseSection = (course) => {
     return course;
 };
 
-const winter24_week1 = {
-    'Mon': '2024-01-08',
-    'Tue': '2024-01-09',
-    'Wed': '2024-01-10',
-    'Thu': '2024-01-11',
-    'Fri': '2024-01-12'
-}
-
-const fall23_week1 = {
-    'Mon': '2023-09-11',
-    'Tue': '2023-09-12',
-    'Wed': '2023-09-13',
-    'Thu': '2023-09-14',
-    'Fri': '2023-09-15'
-}
-
-const summer23_week1 = {
-    'Mon': '2023-05-08',
-    'Tue': '2023-05-09',
-    'Wed': '2023-05-10',
-    'Thu': '2023-05-11',
-    'Fri': '2023-05-12'
-}
-export const convertToDate = (term, dayOfTheWeek) => {
-    if (term === "Fall 2023") {
-        return fall23_week1[dayOfTheWeek];
+const convertDayToInt = (dayOfTheWeek) => {
+    if (dayOfTheWeek === '') {
+        return -1;
     }
-
-    if (term === "Summer 2023") {
-        return summer23_week1[dayOfTheWeek];
+    const dayMappings = {
+        Sun: 0,
+        Mon: 1,
+        Tue: 2,
+        Wed: 3,
+        Thu: 4,
+        Fri: 5,
+        Sat: 6
     }
-
-    if (term === "Winter 2024") {
-        return winter24_week1[dayOfTheWeek];
-    }
+    return dayMappings[dayOfTheWeek];
 };
 
-export const parseScheduleIntoEvents = (term, schedules) => {
-    const events = []
-    const courseObjects = schedules.map(courseData => {
-        const courseCode = courseData.CourseCode;
-        const section = courseData.SectionID;
-        courseData.Times.forEach(time => {
-            const event = {
-                title: `${courseCode}${section}`,
-                start: `${convertToDate(term, time.DayOfWeek)}T${time.StartTime}:00`,
-                end: `${convertToDate(term, time.DayOfWeek)}T${time.EndTime}:00`,
-            }
-            events.push(event);
+export const parseScheduleIntoEvents = (schedules) => {
+    const events = [];
+    schedules.forEach(schedule => {
+        const eventsForCurrentSchedule = [];
+        schedule.forEach(courseData => {
+            const courseCode = courseData.CourseCode;
+            const section = courseData.SectionID;
+            courseData.Times.forEach(time => {
+                const event = {
+                    title: `${courseCode}${section}`,
+                    startTime: `${time.StartTime}:00`,
+                    endTime: `${time.EndTime}:00`,
+                    daysOfWeek: [convertDayToInt(time.DayOfWeek)],
+                }
+                eventsForCurrentSchedule.push(event);
+            });
         });
+        events.push(eventsForCurrentSchedule);
     });
     return events;
-    /*
-     return schedules.flatMap(courseData => {
-         const courseCode = courseData.CourseCode;
-         const section = courseData.SectionID;
-         return courseData.Times.map(time => ({
-             title: `${courseCode}${section}`,
-             start: `${convertToDate(term, time.DayOfWeek)}T${time.StartTime}:00`,
-             end: `${convertToDate(term, time.DayOfWeek)}T${time.EndTime}:00`,
-         }));
-     });
-     */
 };
