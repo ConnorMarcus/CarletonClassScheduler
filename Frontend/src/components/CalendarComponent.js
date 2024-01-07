@@ -2,27 +2,26 @@ import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import '../styles/CalendarComponent.css';
-import { convertToDate } from '../requests';
 
 
 const MyCalendar = ({ title, events }) => {
     const [scheduleCount, setScheduleCount] = useState(0);
-    
+
     const handlePrevClick = () => {
         setScheduleCount((prevCount) => prevCount - 1);
-      };
-    
-      const handleNextClick = () => {
+    };
+
+    const handleNextClick = () => {
         setScheduleCount((prevCount) => prevCount + 1);
-      };
+    };
 
     return (
         <div id="calendar">
             <h2 id="calendar-title">{title}</h2>
             <p id="schedule-carrousel">
                 <input class="prev-next-btn" type="button" disabled={scheduleCount === 0} onClick={handlePrevClick} value="prev"></input>
-                <span id="schedule-count-text">Schedule {scheduleCount+1}</span>
-                <input class="prev-next-btn" type="button" disabled={scheduleCount === events.length-1} onClick={handleNextClick} value="next"></input>
+                <span id="schedule-count-text">Schedule {scheduleCount + 1}</span>
+                <input class="prev-next-btn" type="button" disabled={scheduleCount === events.length - 1} onClick={handleNextClick} value="next"></input>
             </p>
             <FullCalendar
                 plugins={[timeGridPlugin]}

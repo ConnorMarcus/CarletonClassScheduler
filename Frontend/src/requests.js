@@ -3,7 +3,6 @@ import axios from 'axios';
 const TERMS_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/getTerms';
 const COURSES_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/getCourses';
 const SCHEDULES_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/generateSchedules';
-const TEST_URL = 'http://localhost:5001/test'
 
 export const fetchTerms = async () => {
     try {
@@ -116,44 +115,6 @@ const trimCourseSection = (course) => {
         return course.slice(0, -1).trim();
     }
     return course;
-};
-
-const winter24_week1 = {
-    'Mon': '2024-01-08',
-    'Tue': '2024-01-09',
-    'Wed': '2024-01-10',
-    'Thu': '2024-01-11',
-    'Fri': '2024-01-12'
-}
-
-const fall23_week1 = {
-    'Mon': '2023-09-11',
-    'Tue': '2023-09-12',
-    'Wed': '2023-09-13',
-    'Thu': '2023-09-14',
-    'Fri': '2023-09-15'
-}
-
-const summer23_week1 = {
-    'Mon': '2023-05-08',
-    'Tue': '2023-05-09',
-    'Wed': '2023-05-10',
-    'Thu': '2023-05-11',
-    'Fri': '2023-05-12'
-}
-
-export const convertToDate = (term, dayOfTheWeek) => {
-    if (term === "Fall 2023") {
-        return fall23_week1[dayOfTheWeek];
-    }
-
-    if (term === "Summer 2023") {
-        return summer23_week1[dayOfTheWeek];
-    }
-
-    if (term === "Winter 2024") {
-        return winter24_week1[dayOfTheWeek];
-    }
 };
 
 const convertDayToInt = (dayOfTheWeek) => {
