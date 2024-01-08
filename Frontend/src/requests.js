@@ -26,7 +26,6 @@ export const fetchCourses = async (term) => {
 export const fetchSchedules = async (inputs) => {
     try {
         const formattedRequest = parseInputs(inputs);
-        console.log("Request: ", formattedRequest);
         const response = await axios.post(SCHEDULES_URL, formattedRequest);
         if (response.data.Schedules.length === 0) {
             return { error: 'No schedules found that matches your criteria' };
@@ -133,6 +132,40 @@ const convertDayToInt = (dayOfTheWeek) => {
     return dayMappings[dayOfTheWeek];
 };
 
+const colours = [
+    "#003B49",
+    "#1D4289",
+    "#BF122B",
+    "#DC582A",
+    "#007A78",
+    "#1B365D",
+    "#5D3754",
+    "#41B6E6",
+    "#FFC845"
+];
+
+const assignColoursToEvents = (events, colours) => {
+    const colourMapping = {};
+
+    const getPrefix = title => {
+        const matches = title.match(/([a-zA-Z]+\s\d{4})/);
+        return matches ? matches[1] : title;
+    };
+
+    colours.forEach((colour, idx) => {
+        const title = events[idx % events.length].title;
+        const commonPrefix = getPrefix(title);
+        colourMapping[commonPrefix] = colour;
+    });
+
+    events.forEach(event => {
+        const commonPrefix = getPrefix(event.title);
+        if (colourMapping.hasOwnProperty(commonPrefix)) {
+            event.color = colourMapping[commonPrefix];
+        }
+    });
+}
+
 export const parseScheduleIntoEvents = (schedules) => {
     const events = [];
     schedules.forEach(schedule => {
@@ -150,6 +183,7 @@ export const parseScheduleIntoEvents = (schedules) => {
                 eventsForCurrentSchedule.push(event);
             });
         });
+        assignColoursToEvents(eventsForCurrentSchedule, colours);
         events.push(eventsForCurrentSchedule);
     });
     return events;

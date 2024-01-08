@@ -125,7 +125,6 @@ const FormComponent = () => {
                 } else if (key.includes("course") || key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter") {
                     return true;
                 } else {
-                    console.log(key, value)
                     return false;
                 }
             }
@@ -137,7 +136,6 @@ const FormComponent = () => {
             if (classes.error) {
                 alert(classes.error)
             } else {
-                console.log("classes are: ", classes);
                 setEvents(classes);
                 setIsFormSubmitted(true);
             }
