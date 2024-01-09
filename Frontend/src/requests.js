@@ -3,6 +3,7 @@ import axios from 'axios';
 const TERMS_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/getTerms';
 const COURSES_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/getCourses';
 const SCHEDULES_URL = 'https://kw6n873e4f.execute-api.us-east-1.amazonaws.com/Prod/generateSchedules';
+export const NO_SCHEDULES_ERROR = 'NoSchedulesError';
 
 export const fetchTerms = async () => {
     try {
@@ -28,7 +29,7 @@ export const fetchSchedules = async (inputs) => {
         const formattedRequest = parseInputs(inputs);
         const response = await axios.post(SCHEDULES_URL, formattedRequest);
         if (response.data.Schedules.length === 0) {
-            return { error: 'No schedules found that matches your criteria' };
+            throw { name: NO_SCHEDULES_ERROR, message: 'No schedules found that matches your criteria' };
         } else {
             return parseScheduleIntoEvents(response.data.Schedules);
         }
@@ -203,7 +204,9 @@ export const parseScheduleIntoEvents = (schedules) => {
                 asyncCoursesForCurrentSchedule.push(courseCode.concat(section))
             }
         });
-        assignColoursToEvents(eventsForCurrentSchedule, colours);
+        if (eventsForCurrentSchedule.length > 0) {
+            assignColoursToEvents(eventsForCurrentSchedule, colours);
+        }
         events.push(eventsForCurrentSchedule);
         asyncEvents.push(asyncCoursesForCurrentSchedule)
     });
