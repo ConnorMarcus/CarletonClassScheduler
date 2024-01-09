@@ -48,7 +48,7 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: carleton-courses
       Events:
-        GenerateSchedules:
+        GetTerms:
           Type: Api
           Properties:
             Path: /getTerms
@@ -67,7 +67,7 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: carleton-courses
       Events:
-        GenerateSchedules:
+        GetCourses:
           Type: Api
           Properties:
             Path: /getCourses
