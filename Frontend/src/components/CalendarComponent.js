@@ -4,7 +4,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import '../styles/CalendarComponent.css';
 
 
-const MyCalendar = ({ title, events }) => {
+const MyCalendar = ({ title, events, asyncCourses }) => {
     const [scheduleCount, setScheduleCount] = useState(0);
 
     const handlePrevClick = () => {
@@ -33,11 +33,17 @@ const MyCalendar = ({ title, events }) => {
                 slotMaxTime={"23:00:00"}
                 dayHeaderFormat={{ weekday: 'long' }}
                 height="auto"
-                headerToolbar={false} //Hide the previous/next week buttons, MAY ENABLE THEM LATER
+                headerToolbar={false} //Remove this to enable cycling between weeks
                 events={events[scheduleCount]}
             //eventColor="#BF122B"
             //eventBackgroundColor='#BF122B'
             />
+            <div className="async-courses">
+                {asyncCourses[scheduleCount].length !== 0 && (<p>Courses without assigned meeting times</p>)}
+                {asyncCourses[scheduleCount]?.map((course, index) => (
+                    <p key={index}><b>{course}</b></p>
+                ))}
+            </div>
         </div>
     );
 };
