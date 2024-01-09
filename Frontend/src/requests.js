@@ -166,10 +166,24 @@ const assignColoursToEvents = (events, colours) => {
     });
 }
 
+/* If date is in format 'Jan 8, 24' coverts it to 2024-01-08
+const convertDateStr = dateString => {
+
+    var dateObject = new Date(dateString);
+
+    var year = dateObject.getFullYear();
+    var month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+    var day = dateObject.getDate().toString().padStart(2, '0');
+    return year + "-" + month + "-" + day;
+};
+*/
+
 export const parseScheduleIntoEvents = (schedules) => {
     const events = [];
+    const asyncEvents = [];
     schedules.forEach(schedule => {
         const eventsForCurrentSchedule = [];
+        const asyncCoursesForCurrentSchedule = [];
         schedule.forEach(courseData => {
             const courseCode = courseData.CourseCode;
             const section = courseData.SectionID;
@@ -179,12 +193,19 @@ export const parseScheduleIntoEvents = (schedules) => {
                     startTime: `${time.StartTime}:00`,
                     endTime: `${time.EndTime}:00`,
                     daysOfWeek: [convertDayToInt(time.DayOfWeek)],
+                    //startRecur: convertDateStr('Jan 08, 2024'),
+                    //endRecur: convertDateStr('Apr 15, 2024'),
+                    // will eventually be like this --> startRecur: time.StartDate,
                 }
                 eventsForCurrentSchedule.push(event);
             });
+            if (courseData.Times.length === 0) {
+                asyncCoursesForCurrentSchedule.push(courseCode.concat(section))
+            }
         });
         assignColoursToEvents(eventsForCurrentSchedule, colours);
         events.push(eventsForCurrentSchedule);
+        asyncEvents.push(asyncCoursesForCurrentSchedule)
     });
-    return events;
+    return [events, asyncEvents];
 };

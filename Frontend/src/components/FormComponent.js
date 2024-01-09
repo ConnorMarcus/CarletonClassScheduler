@@ -28,27 +28,26 @@ const FormComponent = () => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [events, setEvents] = useState([]);
+    const [asycnEvents, setAsyncEvents] = useState([]);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [termsList, setTermsList] = useState([]);
     const [coursesList, setCoursesList] = useState({});
 
     useEffect(() => {
         const getAllCourses = async (term) => {
-            try {
-                fetchCourses(term)
-                    .then((result) => {
-                        if (result.Error) {
-                            console.error("Error getting couress", result.ErrorReason);
-                        } else {
-                            setCoursesList(prev => ({
-                                ...prev,
-                                [term]: result.Courses || [],
-                            }));
-                        }
-                    });
-            } catch (error) {
-                console.error("Catch error getting courses", error);
-            }
+            fetchCourses(term)
+                .then((result) => {
+                    if (result.Error) {
+                        console.error("Failed to get courses: ", result.ErrorReason);
+                    } else {
+                        setCoursesList(prev => ({
+                            ...prev,
+                            [term]: result.Courses || [],
+                        }));
+                    }
+                }).catch((error) => {
+                    console.error("Error getting courses: ", error.message)
+                });
         };
 
         termsList.forEach(term => {
@@ -61,12 +60,12 @@ const FormComponent = () => {
         fetchTerms()
             .then((result) => {
                 if (result.Error) {
-                    console.error('Error:', result.ErrorReason);
+                    console.error("Failed to get terms: ", result.ErrorReason);
                 } else {
                     setTermsList(result.Terms);
                 }
             }).catch((error) => {
-                console.error("Catching error", error);
+                console.error("Error getting terms: ", error.message);
             })
     }, []);
 
@@ -132,11 +131,14 @@ const FormComponent = () => {
 
         //As long as the term is included and at least one course is non-empty
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
-            const classes = await fetchSchedules(inputValues);
-            if (classes.error) {
+            const classes = await fetchSchedules(inputValues).catch((error) => {
+                console.log("Error generating schedules: ", error.message);
+            });
+            if (classes[0].error) {
                 alert(classes.error)
             } else {
-                setEvents(classes);
+                setEvents(classes[0]);
+                setAsyncEvents(classes[1])
                 setIsFormSubmitted(true);
             }
         } else {
@@ -149,6 +151,7 @@ const FormComponent = () => {
         setInputValues(initialFormState);
         setIsFormSubmitted(false);
         setEvents([]);
+        setAsyncEvents([]);
     };
 
     const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
@@ -158,7 +161,7 @@ const FormComponent = () => {
     return isFormSubmitted ? (
         <div className="schedule-view">
             <button id="back-to-form" type="button" onClick={() => setIsFormSubmitted(false)}>Back to Form</button>
-            <Calendar title={inputValues.term} events={events} />
+            <Calendar title={inputValues.term} events={events} asyncCourses={asycnEvents} />
         </div>
     ) : (
         <div className="form-container">
