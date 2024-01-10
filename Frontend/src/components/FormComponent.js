@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/FormComponent.css';
 import Calendar from './CalendarComponent'
-import { fetchCourses, fetchSchedules, fetchTerms } from '../requests';
+import { fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../requests';
 
 const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -131,16 +131,17 @@ const FormComponent = () => {
 
         //As long as the term is included and at least one course is non-empty
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
-            const classes = await fetchSchedules(inputValues).catch((error) => {
-                console.log("Error generating schedules: ", error.message);
-            });
-            if (classes[0].error) {
-                alert(classes.error)
-            } else {
+            fetchSchedules(inputValues).then((classes) => {
                 setEvents(classes[0]);
                 setAsyncEvents(classes[1])
                 setIsFormSubmitted(true);
-            }
+            }).catch((error) => {
+                if (error.name === NO_SCHEDULES_ERROR) {
+                    alert(error.message);
+                } else {
+                    console.log("Error generating schedules: ", error.message);
+                }
+            });
         } else {
             const error_msg = nonEmptyCoursesCount === 0 ? 'Please select a course' : "Please enter the Term";
             alert(error_msg);
