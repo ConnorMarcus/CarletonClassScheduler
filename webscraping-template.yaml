@@ -37,6 +37,18 @@ Resources:
       Architectures:
         - x86_64
 
+  CreateTableFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: WebScraping/functions/createTable
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.11
+      MemorySize: 128
+      Timeout: 600
+      Role: !Ref executionRole
+      Architectures:
+        - x86_64
+
   DeleteTableFunction:
     Type: AWS::Serverless::Function
     Properties:

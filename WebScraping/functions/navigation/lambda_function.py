@@ -2,6 +2,8 @@ from selenium import webdriver
 from tempfile import mkdtemp
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 from bs4 import BeautifulSoup
 from unicodedata import normalize
@@ -38,6 +40,8 @@ def handler(event=None, context=None) -> str:
 
     class_info = []
 
+    wait = WebDriverWait(driver, 10)
+
     terms = scrape_terms(driver)
     
     for term in terms:
@@ -52,6 +56,8 @@ def handler(event=None, context=None) -> str:
                 continue
 
             select_options(driver, option)
+
+            wait.until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
 
             # Grab course href and linked courses
             parse(driver.page_source, class_info)
