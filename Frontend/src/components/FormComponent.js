@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/FormComponent.css';
 import Calendar from './CalendarComponent'
-import { fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../requests';
+import { fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 
 const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -38,7 +38,7 @@ const FormComponent = () => {
             fetchCourses(term)
                 .then((result) => {
                     if (result.Error) {
-                        console.error("Failed to get courses: ", result.ErrorReason);
+                        console.log("Failed to get courses: ", result.ErrorReason);
                     } else {
                         setCoursesList(prev => ({
                             ...prev,
@@ -60,7 +60,7 @@ const FormComponent = () => {
         fetchTerms()
             .then((result) => {
                 if (result.Error) {
-                    console.error("Failed to get terms: ", result.ErrorReason);
+                    console.log("Failed to get terms: ", result.ErrorReason);
                 } else {
                     setTermsList(result.Terms);
                 }
@@ -129,7 +129,6 @@ const FormComponent = () => {
             }
         );
 
-        //As long as the term is included and at least one course is non-empty
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
             fetchSchedules(inputValues).then((classes) => {
                 setEvents(classes[0]);
@@ -139,7 +138,7 @@ const FormComponent = () => {
                 if (error.name === NO_SCHEDULES_ERROR) {
                     alert(error.message);
                 } else {
-                    console.log("Error generating schedules: ", error.message);
+                    console.error("Error generating schedules: ", error.message);
                 }
             });
         } else {
