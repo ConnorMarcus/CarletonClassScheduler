@@ -15,7 +15,7 @@ def lambda_handler(event: dict, context: dict) -> str:
     - str: A message indicating that the DynamoDB table has been successfully created. 
     '''
     dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.create_table(TABLE_NAME,
+    table = dynamodb.create_table(TableName=TABLE_NAME,
             KeySchema=[
                 {
                     'AttributeName': 'Subject', 
