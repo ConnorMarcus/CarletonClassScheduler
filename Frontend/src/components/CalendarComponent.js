@@ -1,29 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import '../styles/CalendarComponent.css';
-import { convertToDate } from '../requests';
 
 
-const MyCalendar = ({ title, events }) => {
+const MyCalendar = ({ title, events, asyncCourses }) => {
+    const [scheduleCount, setScheduleCount] = useState(0);
+
+    const handlePrevClick = () => {
+        setScheduleCount((prevCount) => prevCount - 1);
+    };
+
+    const handleNextClick = () => {
+        setScheduleCount((prevCount) => prevCount + 1);
+    };
+
     return (
         <div id="calendar">
             <h2 id="calendar-title">{title}</h2>
+            <p id="schedule-carrousel">
+                <input className="prev-next-btn" type="button" disabled={scheduleCount === 0} onClick={handlePrevClick} value="prev"></input>
+                <span id="schedule-count-text">Schedule {scheduleCount + 1}</span>
+                <input className="prev-next-btn" type="button" disabled={scheduleCount === events.length - 1} onClick={handleNextClick} value="next"></input>
+            </p>
             <FullCalendar
                 plugins={[timeGridPlugin]}
                 initialView="timeGridWeek"
-                initialDate={convertToDate(title, "Mon")}
                 weekends={false}
                 slotDuration="00:30:00"
                 allDaySlot={false}
                 slotMinTime={"8:00:00"}
                 slotMaxTime={"23:00:00"}
+                dayHeaderFormat={{ weekday: 'long' }}
                 height="auto"
-                headerToolbar={false} //Hide the previous/next week buttons, MAY ENABLE THEM LATER
-                events={events}
-                eventColor="#BF122B"
-                eventBackgroundColor='#BF122B'
+                headerToolbar={false} //Remove this to enable cycling between weeks
+                events={events[scheduleCount]}
+            //eventColor="#BF122B"
+            //eventBackgroundColor='#BF122B'
             />
+            <div className="async-courses">
+                {asyncCourses[scheduleCount].length !== 0 && (<p>Courses without assigned meeting times</p>)}
+                {asyncCourses[scheduleCount]?.map((course, index) => (
+                    <p key={index}><b>{course}</b></p>
+                ))}
+            </div>
         </div>
     );
 };

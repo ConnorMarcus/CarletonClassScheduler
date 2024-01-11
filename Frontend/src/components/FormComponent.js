@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/FormComponent.css';
 import Calendar from './CalendarComponent'
-import { fetchCourses, fetchSchedules, fetchTerms } from '../requests';
+import { fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 
 const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -28,27 +28,26 @@ const FormComponent = () => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [events, setEvents] = useState([]);
+    const [asycnEvents, setAsyncEvents] = useState([]);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [termsList, setTermsList] = useState([]);
     const [coursesList, setCoursesList] = useState({});
 
     useEffect(() => {
         const getAllCourses = async (term) => {
-            try {
-                fetchCourses(term)
-                    .then((result) => {
-                        if (result.Error) {
-                            console.error("Error getting couress", result.ErrorReason);
-                        } else {
-                            setCoursesList(prev => ({
-                                ...prev,
-                                [term]: result.Courses || [],
-                            }));
-                        }
-                    });
-            } catch (error) {
-                console.error("Catch error getting courses", error);
-            }
+            fetchCourses(term)
+                .then((result) => {
+                    if (result.Error) {
+                        console.log("Failed to get courses: ", result.ErrorReason);
+                    } else {
+                        setCoursesList(prev => ({
+                            ...prev,
+                            [term]: result.Courses || [],
+                        }));
+                    }
+                }).catch((error) => {
+                    console.error("Error getting courses: ", error.message)
+                });
         };
 
         termsList.forEach(term => {
@@ -61,12 +60,12 @@ const FormComponent = () => {
         fetchTerms()
             .then((result) => {
                 if (result.Error) {
-                    console.error('Error:', result.ErrorReason);
+                    console.log("Failed to get terms: ", result.ErrorReason);
                 } else {
                     setTermsList(result.Terms);
                 }
             }).catch((error) => {
-                console.error("Catching error", error);
+                console.error("Error getting terms: ", error.message);
             })
     }, []);
 
@@ -125,22 +124,23 @@ const FormComponent = () => {
                 } else if (key.includes("course") || key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter") {
                     return true;
                 } else {
-                    console.log(key, value)
                     return false;
                 }
             }
         );
 
-        //As long as the term is included and at least one course is non-empty
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
-            const classes = await fetchSchedules(inputValues);
-            if (classes.error) {
-                alert(classes.error)
-            } else {
-                console.log("classes are: ", classes);
-                setEvents(classes);
+            fetchSchedules(inputValues).then((classes) => {
+                setEvents(classes[0]);
+                setAsyncEvents(classes[1])
                 setIsFormSubmitted(true);
-            }
+            }).catch((error) => {
+                if (error.name === NO_SCHEDULES_ERROR) {
+                    alert(error.message);
+                } else {
+                    console.error("Error generating schedules: ", error.message);
+                }
+            });
         } else {
             const error_msg = nonEmptyCoursesCount === 0 ? 'Please select a course' : "Please enter the Term";
             alert(error_msg);
@@ -151,6 +151,7 @@ const FormComponent = () => {
         setInputValues(initialFormState);
         setIsFormSubmitted(false);
         setEvents([]);
+        setAsyncEvents([]);
     };
 
     const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
@@ -160,7 +161,7 @@ const FormComponent = () => {
     return isFormSubmitted ? (
         <div className="schedule-view">
             <button id="back-to-form" type="button" onClick={() => setIsFormSubmitted(false)}>Back to Form</button>
-            <Calendar title={inputValues.term} events={events} />
+            <Calendar title={inputValues.term} events={events} asyncCourses={asycnEvents} />
         </div>
     ) : (
         <div className="form-container">
