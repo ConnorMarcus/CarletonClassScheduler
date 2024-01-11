@@ -1,11 +1,12 @@
 import json
-from typing import List
+from typing import List, Tuple
 from typing import Union
 import boto3
 import urllib3
 from bs4 import BeautifulSoup
 import concurrent.futures
 import threading
+from datetime import datetime
 
 BUCKET_NAME = "carletonschedulingtool"
 KEY_PATH = "web-scraping-stepfunction/"
@@ -84,11 +85,16 @@ def parse_data(html: BeautifulSoup, also_register_str: str) -> None:
     instructor = get_instructor(meeting_date_rows[1].find_all("td"), len(meeting_date_rows[0].find_all("td")) - 1)
     meeting_dates = get_meeting_date_list(meeting_date_rows[1:])
     also_register_list = get_associated_sections(also_register_str)
-    term_duration = get_term_duration_str(meeting_date_rows[1].find_all("td")[0].text.strip())
+    term_date_str = meeting_date_rows[1].find_all("td")[0].text.strip()
+    term_duration = get_term_duration_str(term_date_str)
+    start_date, end_date = get_formatted_term_dates(term_date_str)
 
-    add_class(term=term, crn=crn, subject_code=subject_code, section_id=section_id, 
-              title=title, preq=preq, status=status, section_type=section_type, instructor=instructor, 
-              meeting_dates=meeting_dates, also_register_list=also_register_list, term_duration=term_duration)
+    add_class(
+        term=term, crn=crn, subject_code=subject_code, section_id=section_id, title=title, 
+        preq=preq, status=status, section_type=section_type, instructor=instructor, 
+        meeting_dates=meeting_dates, also_register_list=also_register_list, 
+        term_duration=term_duration, start_date=start_date, end_date=end_date
+    )
 
 
 def add_class(**kwargs: dict) -> None:
@@ -105,7 +111,8 @@ def add_class(**kwargs: dict) -> None:
         "SectionID": kwargs["section_id"], "CRN": kwargs["crn"], 
         "Status": kwargs["status"], "SectionType": kwargs["section_type"], 
         "Instructor": kwargs["instructor"], "MeetingDates": kwargs["meeting_dates"],
-        "TermDuration": kwargs["term_duration"], "AlsoRegister": kwargs["also_register_list"]
+        "TermDuration": kwargs["term_duration"], "AlsoRegister": kwargs["also_register_list"],
+        "StartDate": kwargs["start_date"], "EndDate": kwargs["end_date"]
     }
 
     # Aquire lock to write into shared classes dict
@@ -325,3 +332,30 @@ def get_lab_week_schedule(section_id: str) -> str:
 
     else:
         return "Every Week"
+
+    
+def get_formatted_term_dates(term_date: str) -> Tuple[str, str]:
+    '''
+    Gets the formatted start and end dates.
+
+    Parameters:
+    term_date: The term date string of the section.
+
+    Returns:
+    Tuple(str, str): A tuple of the start and end dates.
+    '''
+    # Check if the term date string is not empty
+    if term_date:
+        parsed_format = "%b %d, %Y"
+        formatted_format = "%Y-%m-%d"
+
+        date_list = term_date.split(" to ")
+        parsed_start_date = datetime.strptime(date_list[0], parsed_format)
+        parsed_end_date = datetime.strptime(date_list[-1], parsed_format)
+
+        formatted_start_date = parsed_start_date.strftime(formatted_format)
+        formatted_end_date = parsed_end_date.strftime(formatted_format)
+
+        return formatted_start_date, formatted_end_date
+
+    return "", ""

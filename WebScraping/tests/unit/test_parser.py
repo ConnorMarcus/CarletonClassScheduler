@@ -91,13 +91,15 @@ def test_parse_data(get_lecture_bs4_object, get_lab_bs4_object):
                 "CRN": "35659", 
                 "Status": "Registration Closed", 
                 "SectionType": "In person", 
-                "Instructor": "Test Professor", 
+                "Instructor": "Test Professor",
                 "MeetingDates": [
                     {"DayOfWeek": "Wed", "StartTime": "11:35", "EndTime": "12:55"}, 
                     {"DayOfWeek": "Fri", "StartTime": "11:35", "EndTime": "12:55"}
                 ], 
                 "TermDuration": "Full Term", 
-                "AlsoRegister": [["A1", "A2", "A3"]]
+                "AlsoRegister": [["A1", "A2", "A3"]],
+                "StartDate": "2023-09-06",
+                "EndDate": "2023-12-08"
             }],
             "LabSections": [{
                 "SectionID": "A1", 
@@ -110,6 +112,8 @@ def test_parse_data(get_lecture_bs4_object, get_lab_bs4_object):
                 ], 
                 "TermDuration": "Full Term",
                 "AlsoRegister": [["A"]],
+                "StartDate": "2023-09-06",
+                "EndDate": "2023-12-08",
                 "WeekSchedule": "Every Week"
             }]
         }
@@ -224,3 +228,17 @@ def test_get_meeting_date_list_edge_cases():
     expected_list = [{"DayOfWeek": "Wed", "StartTime": "11:35", "EndTime": "14:25"}, 
         {"DayOfWeek": "Fri", "StartTime": "11:35", "EndTime": "14:25"}]
     assert result2 == expected_list
+
+
+def test_get_formatted_term_dates():
+    test_term_date1 = "Sep 06, 2023 to Dec 08, 2023"
+    assert get_formatted_term_dates(test_term_date1) == ("2023-09-06", "2023-12-08")
+
+    test_term_date2 = "Jan 08, 2024 to Apr 10, 2024"
+    assert get_formatted_term_dates(test_term_date2) == ("2024-01-08", "2024-04-10")
+
+    test_term_date3 = "May 06, 2024 to Aug 14, 2024"
+    assert get_formatted_term_dates(test_term_date3) == ("2024-05-06", "2024-08-14")
+
+    assert get_formatted_term_dates("") == ("", "")
+    assert get_formatted_term_dates(None) == ("", "")
