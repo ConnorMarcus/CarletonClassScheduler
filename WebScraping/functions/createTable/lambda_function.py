@@ -12,7 +12,7 @@ def lambda_handler(event: dict, context: dict) -> str:
     context: the Lambda function execution context.
 
     Returns: 
-    - str: A message indicating that the DynamoDB table has been successfully created.
+    - str: A message indicating that the DynamoDB table has been successfully created. 
     '''
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.create_table(TABLE_NAME,

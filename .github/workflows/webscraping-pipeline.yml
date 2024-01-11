@@ -6,6 +6,7 @@ on:
         - WebScraping/functions/parser/**
         - WebScraping/functions/deleteTable/**
         - WebScraping/functions/insertData/**
+        - WebScraping/functions/createTable/**
 jobs:
     build-deploy:
       runs-on: ubuntu-latest
