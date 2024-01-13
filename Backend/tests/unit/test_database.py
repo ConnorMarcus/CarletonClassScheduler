@@ -45,7 +45,9 @@ test_scan_response2 = {
                 'TermDuration': {'S': 'Full Term'}, 
                 'AlsoRegister': {'L': []}, 
                 'SectionID': {'S': 'B'}, 
-                'CRN': {'S': '35905'}}}]}, 
+                'CRN': {'S': '35905'},
+                'StartDate': {'S': '2023-09-06'},
+                'EndDate': {'S': '2023-12-08'}}}]}, 
             'Subject': {'S': 'SYSC 4001'}
         } 
     ]
