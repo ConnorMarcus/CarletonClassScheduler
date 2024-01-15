@@ -14,7 +14,7 @@ def test_lambda_handler():
 
         mock_resource.assert_called_with("dynamodb")
         mock_dynamodb.create_table.assert_called_with(
-            expected_table_name,
+            TableName=expected_table_name,
             KeySchema=[
                 {'AttributeName': 'Subject', 'KeyType': 'HASH'},
                 {'AttributeName': 'Term', 'KeyType': 'RANGE'}

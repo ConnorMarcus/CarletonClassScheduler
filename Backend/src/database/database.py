@@ -35,6 +35,8 @@ class Database:
     day_of_week_column = "DayOfWeek"
     start_time_column = "StartTime"
     end_time_column = "EndTime"
+    start_date_column = "StartDate"
+    end_date_column = "EndDate"
 
     
     def __init__(self):
@@ -80,12 +82,14 @@ class Database:
         crn = section_map.get(self.crn_column, "")
         status = section_map.get(self.status_column, "")
         instructor = section_map.get(self.instructor_column, "")
+        start_date = section_map.get(self.start_date_column, "")
+        end_date = section_map.get(self.end_date_column, "")
         related_sections = section_map.get(self.also_register_column, [])
         term_duration = TermDuration(section_map.get(self.duration_column))
         week_schedule = WeekSchedule(section_map.get(self.week_schedule_column, WeekSchedule.EVERY_WEEK))
         meeting_dates_list = section_map.get(self.meeting_dates_column, [])
         meeting_times = [self.convert_to_classtime(term_duration, meeting_date_map, week_schedule) for meeting_date_map in meeting_dates_list]
-        return Section(course_code, section_id, crn, instructor, meeting_times, status, related_sections)
+        return Section(course_code, section_id, crn, instructor, meeting_times, status, related_sections, start_date, end_date)
 
     def convert_to_classtime(self, term_duration: TermDuration, meeting_date_map: dict, week_schedule: WeekSchedule) -> ClassTime:
         day_of_week = DayOfWeek(meeting_date_map.get(self.day_of_week_column))
