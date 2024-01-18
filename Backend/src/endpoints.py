@@ -1,6 +1,6 @@
 import json
 from typing import Any, Dict, List
-from .database.database import course_database
+from .database.database_type import course_database
 from .model.course import Course
 from .model.date import ClassTime
 from .model.day_of_week import DayOfWeek

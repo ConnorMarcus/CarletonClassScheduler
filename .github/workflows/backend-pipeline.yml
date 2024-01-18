@@ -23,6 +23,7 @@ jobs:
   
   # Run Unit tests- Specify unit tests here 
         - run: pip install -r Backend/tests/requirements.txt
+        - run: export database_type="dynamodb"
         - run: coverage run --branch -m pytest Backend/tests/unit -v 
         - run: coverage report -m
   
