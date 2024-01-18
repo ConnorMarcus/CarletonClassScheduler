@@ -31,6 +31,11 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: carleton-courses
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject 
+              Resource: "arn:aws:s3:::carletonschedulingtool"
       Events:
         GenerateSchedules:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -50,6 +55,11 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: carleton-courses
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject 
+              Resource: "arn:aws:s3:::carletonschedulingtool"
       Events:
         GetTerms:
           Type: Api
@@ -69,6 +79,11 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: carleton-courses
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject 
+              Resource: "arn:aws:s3:::carletonschedulingtool"
       Events:
         GetCourses:
           Type: Api
