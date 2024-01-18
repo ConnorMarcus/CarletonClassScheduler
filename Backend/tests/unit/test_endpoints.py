@@ -8,8 +8,8 @@ from Backend.src.model.date import ClassTime
 from Backend.src.model.day_of_week import DayOfWeek
 from Backend.src.model.term_duration import TermDuration
 from Backend.src import endpoints
-from Backend.src.database.database import course_database as database
-from Backend.tests.unit.test_database import test_scan_response1 as response1, test_scan_response2 as response2
+from Backend.src.database.database_type import course_database as database
+from Backend.tests.unit.test_dynamo_database import test_scan_response1 as response1, test_scan_response2 as response2
 
 TEST_TERM = "Fall 2023"
 SAMPLE_SCHEDULE = [[Section("SYSC 4001", "B", "35905", "Test Prof 2", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "08:35", "11:25")], "Registration Closed", [], "2023-09-06", "2023-12-08").to_dict()]]

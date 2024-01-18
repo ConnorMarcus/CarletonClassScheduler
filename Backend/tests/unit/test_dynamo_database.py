@@ -2,9 +2,8 @@ import pytest
 import boto3
 from botocore.stub import Stubber
 boto3.setup_default_session(region_name="us-east-1")
-from Backend.src.database.database import course_database
-from Backend.src.database.database import Database
-
+from Backend.src.database.dynamo_database import DynamoDatabase
+from Backend.src.database.database_type import course_database
 
 test_term = "Fall 2023"
 
@@ -59,12 +58,12 @@ def test_create_db(monkeypatch):
     '''
     monkeypatch.setenv("aws_test_db_access_key_id", "test_id") 
     monkeypatch.setenv("aws_test_db_secret_access_key", "test_secret")
-    db1 = Database()
+    db1 = DynamoDatabase()
     assert db1.table_name == db1.test_table_name
 
     monkeypatch.delenv("aws_test_db_access_key_id") 
     monkeypatch.delenv("aws_test_db_secret_access_key")
-    db2 = Database()
+    db2 = DynamoDatabase()
     assert db2.table_name == db2.prod_table_name
 
 def test_get_course_code_and_section_list():
