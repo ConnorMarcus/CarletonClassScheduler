@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import rrulePlugin from '@fullcalendar/rrule';
 import '../styles/CalendarComponent.css';
 
 
@@ -37,7 +38,7 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
                 <input className="prev-next-btn" type="button" disabled={scheduleCount === events.length - 1} onClick={handleNextClick} value="next"></input>
             </p>
             <FullCalendar
-                plugins={[timeGridPlugin]}
+                plugins={[timeGridPlugin, rrulePlugin]}
                 initialView="timeGridWeek"
                 weekends={false}
                 slotDuration="00:30:00"
@@ -49,8 +50,6 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
                 initialDate={earliestStartDate(events)}
                 //headerToolbar={false} //Remove this to enable cycling between weeks
                 events={events[scheduleCount]}
-            //eventColor="#BF122B"
-            //eventBackgroundColor='#BF122B'
             />
             <div className="async-courses">
                 {asyncCourses[scheduleCount].length !== 0 && (<p>Courses without assigned meeting times</p>)}
