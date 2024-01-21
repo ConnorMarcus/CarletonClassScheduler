@@ -58,6 +58,7 @@ export const parseScheduleIntoEvents = (schedules) => {
                             interval: 2,
                             dtstart: `${startDate}T${time.StartTime}:00`,
                             until: `${updatedEndDateStr}`,
+                            byweekday: [convertDayToInt(time.DayOfWeek) - 1],
                         },
                         duration: calculateTimeDifference(time.StartTime, time.EndTime),
                     };
