@@ -43,17 +43,36 @@ export const parseScheduleIntoEvents = (schedules) => {
         schedule.forEach(courseData => {
             const courseCode = courseData.CourseCode;
             const section = courseData.SectionID;
+            const startDate = courseData.StartDate;
+            const originalEndDate = new Date(courseData.EndDate);
+            // Logic to increment end date by 1
+            const updatedEndDate = new Date(originalEndDate);
+            updatedEndDate.setDate(originalEndDate.getDate() + 1);
+            const updatedEndDateStr = updatedEndDate.toISOString().split('T')[0];
             courseData.Times.forEach(time => {
-                const event = {
-                    title: `${courseCode}${section}`,
-                    startTime: `${time.StartTime}:00`,
-                    endTime: `${time.EndTime}:00`,
-                    daysOfWeek: [convertDayToInt(time.DayOfWeek)],
-                    //startRecur: convertDateStr('Jan 08, 2024'),
-                    //endRecur: convertDateStr('Apr 15, 2024'),
-                    // will eventually be like this --> startRecur: time.StartDate,
+                if (time.WeekSchedule === "Even Week" || time.WeekSchedule === "Odd Week") {
+                    const biWeeklyEvent = {
+                        title: `${courseCode}${section}`,
+                        rrule: {
+                            freq: "weekly",
+                            interval: 2,
+                            dtstart: `${startDate}T${time.StartTime}:00`,
+                            until: `${updatedEndDateStr}`,
+                        },
+                        duration: calculateTimeDifference(time.StartTime, time.EndTime),
+                    };
+                    eventsForCurrentSchedule.push(biWeeklyEvent);
+                } else {
+                    const event = {
+                        title: `${courseCode}${section}`,
+                        startTime: `${time.StartTime}:00`,
+                        endTime: `${time.EndTime}:00`,
+                        daysOfWeek: [convertDayToInt(time.DayOfWeek)],
+                        startRecur: startDate,
+                        endRecur: updatedEndDateStr, // exclusive so has to be +1
+                    }
+                    eventsForCurrentSchedule.push(event);
                 }
-                eventsForCurrentSchedule.push(event);
             });
             if (courseData.Times.length === 0) {
                 asyncCoursesForCurrentSchedule.push(courseCode.concat(section))
@@ -149,14 +168,14 @@ const assignColoursToEvents = (events, colours) => {
     });
 }
 
-/* If date is in format 'Jan 8, 24' coverts it to 2024-01-08
-const convertDateStr = dateString => {
-
-    var dateObject = new Date(dateString);
-
-    var year = dateObject.getFullYear();
-    var month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
-    var day = dateObject.getDate().toString().padStart(2, '0');
-    return year + "-" + month + "-" + day;
+const calculateTimeDifference = (start, end) => {
+    const [startHours, startMinutes] = start.split(':').map(Number);
+    const [endHours, endMinutes] = end.split(':').map(Number);
+    const startTimeInMinutes = startHours * 60 + startMinutes;
+    const endTimeInMinutes = endHours * 60 + endMinutes;
+    let timeDifferenceInMinutes = endTimeInMinutes - startTimeInMinutes;
+    const hours = Math.floor(timeDifferenceInMinutes / 60);
+    const minutes = timeDifferenceInMinutes % 60;
+    const result = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    return result;
 };
-*/
