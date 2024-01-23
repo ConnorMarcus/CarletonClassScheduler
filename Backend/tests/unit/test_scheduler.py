@@ -99,6 +99,23 @@ def test_generate_schedules_with_no_courses():
     ]
     assert scheduler.generate_schedules([], schedule) == [schedule]
 
+def test_generate_schedules_with_max_schedules():
+    '''
+    Tests that generateSchedules function terminates when it reaches the max amount of schedules
+    '''
+    max_schedules = scheduler.MAX_SCHEDULES
+    scheduler.MAX_SCHEDULES = 1
+    section1 = Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [["L"]], "2023-09-06", "2023-12-08")
+    section2 = Section("CODE1000", "B", "12345", "Alice", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "09:05", "10:35")], "", [["L"]], "2023-09-06", "2023-12-08")
+    sectionL = Section("CODE1000", "L", "12345", "Alice", [ClassTime(DayOfWeek.FRIDAY, TermDuration.FULL_TERM, "19:05", "20:35")], "", [["A", "B"]], "2023-09-06", "2023-12-08")
+    course1 = Course("CODE1000", "TESTCLASS", "Fall 2023", "NONE", [section1, section2], [sectionL], None)
+    schedule = [
+        section1,
+        sectionL
+    ]
+    assert scheduler.generate_schedules([course1], []) == [schedule]
+    scheduler.MAX_SCHEDULES = max_schedules # reset constant
+
 
 def test_generate_schedules_with_lab_sections():
     '''

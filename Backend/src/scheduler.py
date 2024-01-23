@@ -3,6 +3,8 @@ from .model.section import Section
 from .model.course import Course
 import itertools
 
+MAX_SCHEDULES = 25 # Maximum number of schedules to generate (to avoid overwhelming the user)
+
 # Note: filter sections (based on times, etc.) before passing to this function
 def generate_schedules(courses: List[Course], current_schedule: List[Section] = []) -> List[List[Section]]:
     if len(courses) == 0:
@@ -32,6 +34,9 @@ def generate_schedules(courses: List[Course], current_schedule: List[Section] = 
             
             # remove lecture section from current schedule
             current_schedule.pop()
+
+        if len(res) >= MAX_SCHEDULES: # Limit number of schedule results
+            break
 
     return res
 

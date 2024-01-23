@@ -25,7 +25,7 @@ Resources:
       CodeUri: Backend/
       Handler: src.endpoints.generate_schedules_lambda_handler
       Runtime: python3.11
-      MemorySize: 1024
+      MemorySize: 2048
       Architectures:
       - x86_64
       Policies:
