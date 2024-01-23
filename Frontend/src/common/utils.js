@@ -155,16 +155,16 @@ const assignColoursToEvents = (events, colours) => {
         return matches ? matches[1] : title;
     };
 
-    colours.forEach((colour, idx) => {
-        const title = events[idx % events.length].title;
-        const commonPrefix = getPrefix(title);
-        colourMapping[commonPrefix] = colour;
-    });
-
+    let colourIndex = 0;
     events.forEach(event => {
         const commonPrefix = getPrefix(event.title);
         if (colourMapping.hasOwnProperty(commonPrefix)) {
             event.color = colourMapping[commonPrefix];
+        }
+        else {
+            event.color = colours[colourIndex]
+            colourMapping[commonPrefix] = event.color;
+            colourIndex += 1;
         }
     });
 }
