@@ -72,3 +72,15 @@ Resources:
       Role: !Ref executionRole
       Architectures:
         - x86_64
+
+  CreateTermsCoursesJsonFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: WebScraping/functions/createTermsCoursesJson
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.11
+      MemorySize: 128
+      Timeout: 15
+      Role: !Ref executionRole
+      Architectures:
+        - x86_64
