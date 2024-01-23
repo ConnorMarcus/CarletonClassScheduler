@@ -5,7 +5,7 @@ from .model.course import Course
 from .model.date import ClassTime
 from .model.day_of_week import DayOfWeek
 from .model.filter import Filter
-from .scheduler import generate_schedules
+from .scheduler import generate_schedules, MAX_SCHEDULES
 from .logger import logger
 
 SUCCESS_CODE = 200
@@ -28,7 +28,7 @@ def generate_schedules_lambda_handler(event: dict, context: object) -> dict:
             return lambda_response(BAD_REQUEST_CODE, True, str(error))
             
         #Generate Schedules
-        schedules = generate_schedules(inputted_courses)
+        schedules = generate_schedules(inputted_courses)[:MAX_SCHEDULES]
         return lambda_response(SUCCESS_CODE, False, "", {"Schedules": [[section.to_dict() for section in schedule] for schedule in schedules]})
 
     except Exception as error:
