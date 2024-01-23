@@ -29,24 +29,14 @@ def generate_db(mock_json_file, mock_boto3_resource) -> S3Database:
     
     return S3Database()
 
-# @patch('boto3.resource')
-# @patch('json.load')
 def test_create_db(monkeypatch):
-    # mock_boto3_resource.return_value = Mock()
-    # mock_json_file.return_value = CLASSES_DICT
-    # mock_s3_object = Mock()
-    # mock_boto3_resource.return_value.Object.return_value = mock_s3_object
-    # mock_s3_object.get.return_value = {'Body': mock_json_file}
-    
     monkeypatch.setenv("aws_test_db_access_key_id", "test_id") 
     monkeypatch.setenv("aws_test_db_secret_access_key", "test_secret")
-    # db1 = S3Database()
     db1 = generate_db()
     assert db1.classes_dict == CLASSES_DICT
     
     monkeypatch.delenv("aws_test_db_access_key_id") 
     monkeypatch.delenv("aws_test_db_secret_access_key")
-    # db2 = S3Database()
     db2 = generate_db()
     assert db2.classes_dict == CLASSES_DICT
 
