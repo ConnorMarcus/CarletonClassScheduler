@@ -37,7 +37,7 @@ def generate_schedules_lambda_handler(event: dict, context: object) -> dict:
 
 def get_terms_lambda_handler(event: dict, context: object) -> dict:
     terms = course_database.get_terms()
-    return lambda_response(SUCCESS_CODE, False, "", {"Terms": list(terms)})
+    return lambda_response(SUCCESS_CODE, False, "", {"Terms": terms})
     
 def get_courses_lambda_handler(event: dict, context: object) -> dict:
     query_params: dict = event[QUERY_STRING_PARAMETERS]
@@ -46,7 +46,6 @@ def get_courses_lambda_handler(event: dict, context: object) -> dict:
         return lambda_response(BAD_REQUEST_CODE, True, "The Term must be included in the query string!")
     
     courses_with_sections = course_database.get_course_code_and_section_list(term)
-    courses_with_sections.sort()
     return lambda_response(SUCCESS_CODE, False, "", {"Courses": courses_with_sections})
 
 def lambda_response(status: int, error: bool, error_reason: str, body: Dict[str, Any] = {}) -> dict:

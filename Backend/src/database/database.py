@@ -43,7 +43,7 @@ class CourseDatabase(ABC):
         '''
 
     @abstractmethod
-    def get_terms(self) -> Set[str]:
+    def get_terms(self) -> List[str]:
         '''
         Gets the set of terms in the database.
         '''

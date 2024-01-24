@@ -16,12 +16,13 @@ CLASSES_DICT = {"AERO 2001-Fall 2023": {
                        "TermDuration": "Full Term", "AlsoRegister": [["A"]], "StartDate": "2023-09-06", "EndDate": "2023-12-08", "WeekSchedule": "Every Week"}]
   }, "ERRORCLASS": {}
 }
+TERMS_COURSES_DICT = {"Fall 2023": ["AERO 2001", "AERO 2001 A"]}
 
 @patch('boto3.resource')
 @patch('json.load')
 def generate_db(mock_json_file, mock_boto3_resource) -> S3Database:
     mock_boto3_resource.return_value = Mock()
-    mock_json_file.return_value = CLASSES_DICT
+    mock_json_file.side_effect = [CLASSES_DICT, TERMS_COURSES_DICT]
     mock_s3_object = Mock()
     mock_boto3_resource.return_value.Object.return_value = mock_s3_object
     mock_s3_object.get.return_value = {'Body': mock_json_file}
@@ -47,7 +48,7 @@ def test_get_course_code_and_section_list():
 
 def test_get_terms():
     db = generate_db()
-    assert db.get_terms() == {test_term}
+    assert db.get_terms() == [test_term]
     
     
 def test_get_course():
