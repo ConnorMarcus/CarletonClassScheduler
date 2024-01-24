@@ -48,7 +48,7 @@ class S3Database(CourseDatabase):
 
     def get_terms(self) -> List[str]:
         '''
-        Gets the set of terms in the database.
+        Gets the list of terms in the database.
         '''
         return list(self.terms_courses_dict.keys())
 

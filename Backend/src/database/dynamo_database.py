@@ -83,7 +83,7 @@ class DynamoDatabase(CourseDatabase):
 
     def get_terms(self) -> List[str]:
         '''
-        Gets the set of terms in the database.
+        Gets the list of terms in the database.
         '''
         last_evaluated_key = None
         all_courses = []
