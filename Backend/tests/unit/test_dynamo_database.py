@@ -84,7 +84,7 @@ def test_get_terms():
     with stubber:
         result = course_database.get_terms()
 
-    assert result == {test_term}
+    assert result == [test_term]
 
 def test_get_course():
     stubber = Stubber(course_database.dynamodb)

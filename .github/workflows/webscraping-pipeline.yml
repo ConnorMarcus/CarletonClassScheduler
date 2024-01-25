@@ -7,6 +7,7 @@ on:
         - WebScraping/functions/deleteTable/**
         - WebScraping/functions/insertData/**
         - WebScraping/functions/createTable/**
+        - WebScraping/functions/createTermsCoursesJson/**
 jobs:
     build-deploy:
       runs-on: ubuntu-latest

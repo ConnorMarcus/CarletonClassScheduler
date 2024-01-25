@@ -209,4 +209,4 @@ def test_get_courses(get_courses_event):
     assert "Courses" in ret["body"]
     assert data["Error"] == False
     assert data["ErrorReason"] == ""
-    assert data["Courses"] == ['ARCH 4505', 'ARCH 4505 A', 'SYSC 4001', 'SYSC 4001 B']
+    assert sorted(data["Courses"]) == ['ARCH 4505', 'ARCH 4505 A', 'SYSC 4001', 'SYSC 4001 B']
