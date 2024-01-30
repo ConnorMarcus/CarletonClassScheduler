@@ -17,6 +17,8 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
     };
 
     const earliestStartDate = (courses) => {
+        // This function threw an error for Summer 2024 BIOL 4907
+        // TODO LATER
         let earliestDate = courses[0][0].startRecur;
         for (const schedule of courses) {
             for (const course of schedule) {

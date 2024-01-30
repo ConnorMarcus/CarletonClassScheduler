@@ -34,6 +34,10 @@ export const parseInputs = (inputs) => {
     return JSON.stringify(requestFormat, null, 5);
 }
 
+const readingWeekStartDate = "2024-02-19";
+const readingWeekEndDate = "2024-02-23";
+
+
 export const parseScheduleIntoEvents = (schedules) => {
     const events = [];
     const asyncEvents = [];
@@ -64,15 +68,31 @@ export const parseScheduleIntoEvents = (schedules) => {
                     };
                     eventsForCurrentSchedule.push(biWeeklyEvent);
                 } else {
+                    /*
+                    For half term courses, the function calls to get the RW dates are 
+                    useless because the start/end dates account RW already.
+                    */
+                    const fridayBeforeRW = getFridayBeforeReadingWeek(readingWeekStartDate).toISOString().split('T')[0];
+                    // This event spans from start of term to before reading week
                     const event = {
                         title: `${courseCode}${section}`,
                         startTime: `${time.StartTime}:00`,
                         endTime: `${time.EndTime}:00`,
                         daysOfWeek: [convertDayToInt(time.DayOfWeek)],
                         startRecur: startDate,
-                        endRecur: updatedEndDateStr, // exclusive so has to be +1
+                        endRecur: fridayBeforeRW//updatedEndDateStr, // exclusive so has to be +1
                     }
                     eventsForCurrentSchedule.push(event);
+                    // This event spans from after reading week to end of term
+                    const event2 = {
+                        title: `${courseCode}${section}`,
+                        startTime: `${time.StartTime}:00`,
+                        endTime: `${time.EndTime}:00`,
+                        daysOfWeek: [convertDayToInt(time.DayOfWeek)],
+                        startRecur: getMondayAfterReadingWeek(readingWeekEndDate).toISOString().split('T')[0],
+                        endRecur: updatedEndDateStr // exclusive so has to be +1
+                    };
+                    eventsForCurrentSchedule.push(event2)
                 }
             });
             if (courseData.Times.length === 0) {
@@ -180,3 +200,28 @@ const calculateTimeDifference = (start, end) => {
     const result = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
     return result;
 };
+
+const getFridayBeforeReadingWeek = (beginning) => {
+    const specifiedDate = new Date(beginning);
+    const dayOfWeek = specifiedDate.getDay();
+    const daysToSubtract = (dayOfWeek + 7 - 5) % 7;
+    const fridayBeforeDate = new Date(specifiedDate);
+    fridayBeforeDate.setDate(specifiedDate.getDate() - daysToSubtract);
+    return fridayBeforeDate;
+};
+
+const getMondayAfterReadingWeek = (beginning) => {
+    const specifiedDate = new Date(beginning);
+    const dayOfWeek = specifiedDate.getDay();
+    const daysToAdd = (dayOfWeek === 0) ? 1 : 8 - dayOfWeek;
+    const mondayAfterDate = new Date(specifiedDate);
+    mondayAfterDate.setDate(specifiedDate.getDate() + daysToAdd - 1);
+    /* 
+    -1 because the GMT date is correct, but when you do .toISOString().split('T')[0]
+    I guese because of the time (hours) conversion it goes to the next day 
+    */
+    return mondayAfterDate;
+};
+
+//console.log(getFridayBeforeReadingWeek(readingWeekStartDate).toISOString().split('T')[0]);
+console.log(getMondayAfterReadingWeek(readingWeekEndDate).toISOString().split('T')[0]);
