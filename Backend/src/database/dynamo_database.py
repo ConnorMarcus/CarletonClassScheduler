@@ -1,4 +1,4 @@
-from typing import List, Set
+from typing import List
 import boto3
 from boto3.dynamodb.types import TypeDeserializer
 import os
@@ -81,9 +81,9 @@ class DynamoDatabase(CourseDatabase):
         course_map = courses[0]
         return self.convert_to_course(course_map)
 
-    def get_terms(self) -> Set[str]:
+    def get_terms(self) -> List[str]:
         '''
-        Gets the set of terms in the database.
+        Gets the list of terms in the database.
         '''
         last_evaluated_key = None
         all_courses = []
@@ -103,7 +103,7 @@ class DynamoDatabase(CourseDatabase):
             if last_evaluated_key is None:
                 break
         
-        return {course.get(self.term_column) for course in all_courses}
+        return list({course.get(self.term_column) for course in all_courses})
     
     def get_course_code_and_section_list(self, term: str) -> List[str]:
         '''

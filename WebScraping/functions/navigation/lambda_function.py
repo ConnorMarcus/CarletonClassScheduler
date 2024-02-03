@@ -142,7 +142,7 @@ def select_undergrad(driver: webdriver) -> None:
     """
     # Find Course Level field and select Undergraduate 
     course_level = driver.find_element(By.ID, "levl_id")
-    Select(course_level).select_by_value("UG")
+    select_dropdown_by_value(driver, course_level, "UG")
 
     sleep(0.25)
 
@@ -202,6 +202,8 @@ def select_terms(driver: webdriver, term: str) -> None:
     '''
     term_dropdown = (driver.find_element(By.NAME, "term_code"))
 
+    select_dropdown_by_value(driver, term_dropdown, term)
+
     Select(term_dropdown).select_by_value(term)
 
     # Click on "Proceed to search"
@@ -222,8 +224,23 @@ def select_options(driver: webdriver, option: str) -> None:
 
     select_undergrad(driver)
 
-    Select(subject_dropdown).deselect_by_index(0)
-    Select(subject_dropdown).select_by_value(option)
+    select_dropdown_by_value(subject_dropdown, option, True)
 
     # Click on "Search"
     click_btn(driver, By.XPATH, SEARCH_BTN_XPATH)
+
+def select_dropdown_by_value(element: object, value: str, is_subject=False) -> None:
+    '''
+    Creates a Select class object and selects a value given an element
+
+    Parameters:
+    - element: The WebElement object
+    - value: string value that is to be selected
+    - is_subject: is element a subject dropdown, set to False by default
+    '''
+    select_element = Select(element)
+
+    if is_subject:
+        select_element.deselect_by_visible_text("All Subjects")
+
+    select_element.select_by_value(value)

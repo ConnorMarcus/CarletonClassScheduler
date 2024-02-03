@@ -209,7 +209,7 @@ def test_get_courses(get_courses_event):
     assert "Courses" in ret["body"]
     assert data["Error"] == False
     assert data["ErrorReason"] == ""
-    assert data["Courses"] == ['ARCH 4505', 'ARCH 4505 A', 'SYSC 4001', 'SYSC 4001 B']
+    assert sorted(data["Courses"]) == ['ARCH 4505', 'ARCH 4505 A', 'SYSC 4001', 'SYSC 4001 B']
 
 def test_convert_to_classtime():
     classtime = endpoints.convert_to_classtime({"DayOfWeek":"Mon", "StartTime":"11:00", "EndTime":"15:00"})
