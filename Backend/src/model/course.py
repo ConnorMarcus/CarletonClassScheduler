@@ -51,6 +51,9 @@ class Course:
 
         if filter.day_of_week:
             self.filter_day_off(filter.day_of_week)
+
+        if filter.between_times:
+            self.filter_between_times(filter.between_times)
         
         if self.section_id_filter:
             self.filter_by_section()
@@ -96,6 +99,20 @@ class Course:
 
         Course.time_filter(self.lecture_sections, compare_function)
         Course.time_filter(self.lab_sections, compare_function)
+
+    def filter_between_times(self, between_times: List[ClassTime]) -> None:
+        '''
+        Filter out all sections that take place between a list of times
+        '''
+        if not isinstance(between_times, list):
+            raise TypeError("Parameter 'between_times' must be of type list")
+        
+        for between_time in between_times:
+            def compare_function(date: ClassTime):
+                return date.does_date_overlap(between_time)
+
+            Course.time_filter(self.lecture_sections, compare_function)
+            Course.time_filter(self.lab_sections, compare_function) 
 
     def filter_by_section(self):
         if not isinstance(self.section_id_filter, str):
