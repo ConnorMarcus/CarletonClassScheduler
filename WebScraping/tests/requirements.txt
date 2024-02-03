@@ -3,3 +3,4 @@ boto3
 requests
 coverage
 bs4
+selenium
