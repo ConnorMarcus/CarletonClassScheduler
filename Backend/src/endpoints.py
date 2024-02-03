@@ -4,6 +4,8 @@ from .database.database_type import course_database
 from .model.course import Course
 from .model.date import ClassTime
 from .model.day_of_week import DayOfWeek
+from .model.term_duration import TermDuration
+from .model.week_schedule import WeekSchedule
 from .model.filter import Filter
 from .scheduler import generate_schedules, MAX_SCHEDULES
 from .logger import logger
@@ -99,15 +101,19 @@ def filter_inputted_courses(request_body: dict, inputted_courses: List[Course]) 
         before_time_input = filters_object.get("BeforeTime")
         after_time_input = filters_object.get("AfterTime")
         day_input = filters_object.get("DayOfWeek")
+        between_times_input = filters_object.get("BetweenTimes")
         try:
             day_of_week = None
+            between_times = []
             if before_time_input is not None:
                 ClassTime.convert_time_to_float(before_time_input)
             if after_time_input is not None:
                 ClassTime.convert_time_to_float(after_time_input)
             if day_input is not None:
                 day_of_week = DayOfWeek(day_input)
-            class_filter = Filter(before_time=before_time_input, after_time=after_time_input, day_of_week=day_of_week)
+            if between_times_input is not None:
+                between_times = [convert_to_classtime(between_time) for between_time in between_times_input]
+            class_filter = Filter(before_time=before_time_input, after_time=after_time_input, day_of_week=day_of_week, between_times=between_times)
             Course.filter_all_courses(inputted_courses, class_filter)
         except:
             error_message = f"One or more of the filters are formatted incorrectly!"
@@ -115,3 +121,17 @@ def filter_inputted_courses(request_body: dict, inputted_courses: List[Course]) 
             raise Exception(error_message)
     else:
         Course.filter_all_courses(inputted_courses, Filter())
+
+def convert_to_classtime(between_time: dict) -> ClassTime:
+    '''
+    Helper function to convert a time sent in a request to a ClassTime object
+    '''
+    try:
+        day_of_week = DayOfWeek(between_time.get("DayOfWeek"))
+        start_time = between_time.get("StartTime")
+        end_time = between_time.get("EndTime")
+        return ClassTime(day_of_week, TermDuration.FULL_TERM, start_time, end_time, WeekSchedule.EVERY_WEEK)
+    except:
+        error_message = f"The BetweenTimes filters are formatted incorrectly!"
+        logger.error(error_message)
+        raise Exception(error_message)
