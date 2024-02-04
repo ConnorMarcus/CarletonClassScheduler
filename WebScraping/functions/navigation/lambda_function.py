@@ -132,12 +132,12 @@ def scrape_course_options(driver: webdriver) -> List:
 
 
 def select_undergrad(driver: webdriver) -> None:
-    """
+    '''
     Selects the Undergraduate course level on a webpage using the Chrome WebDriver.
 
     Parameters:
     - driver: The Chrome WebDriver object.
-    """
+    '''
     # Find Course Level field and select Undergraduate 
     course_level = driver.find_element(By.ID, "levl_id")
     select_dropdown_by_value(driver, course_level, "UG")
