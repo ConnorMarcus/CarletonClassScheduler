@@ -2,12 +2,17 @@ from unittest.mock import patch, MagicMock, call
 from WebScraping.functions.navigation.lambda_function import *
 import os
 
+FILE_PATH = "WebScraping.functions.navigation.lambda_function"
+
 def test_handler():
     with patch('selenium.webdriver.Chrome') as mock_webdriver, \
-         patch('WebScraping.functions.navigation.lambda_function.scrape_terms') as mock_scrape_terms, \
-         patch('WebScraping.functions.navigation.lambda_function.select_terms') as mock_select_terms, \
-         patch('WebScraping.functions.navigation.lambda_function.scrape_course_options') as mock_scrape_course_options, \
-         patch('WebScraping.functions.navigation.lambda_function.select_options') as mock_select_options:
+         patch('boto3.resource') as mock_boto3_resource, \
+         patch(f'{FILE_PATH}.scrape_terms') as mock_scrape_terms, \
+         patch(f'{FILE_PATH}.select_terms') as mock_select_terms, \
+         patch(f'{FILE_PATH}.scrape_course_options') as mock_scrape_course_options, \
+         patch(f'{FILE_PATH}.select_options') as mock_select_options, \
+         patch(f'{FILE_PATH}.parse') as mock_parse, \
+         patch(f'{FILE_PATH}.click_btn') as mock_click_btn: 
         
 
         mock_driver_instance = MagicMock()
@@ -76,7 +81,7 @@ def test_scrape_terms():
 
 def test_select_terms():
     with patch('selenium.webdriver.Chrome') as mock_driver, \
-        patch('WebScraping.functions.navigation.lambda_function.select_dropdown_by_value') as mock_select_dropdown:
+        patch(f'{FILE_PATH}.select_dropdown_by_value') as mock_select_dropdown:
 
         mock_driver_instance = MagicMock()
         mock_driver.return_value = mock_driver_instance
@@ -127,7 +132,7 @@ def test_srape_course_options():
 
 def test_select_options():
     with patch('selenium.webdriver.Chrome') as mock_driver, \
-        patch('WebScraping.functions.navigation.lambda_function.select_dropdown_by_value') as mock_select_dropdown:
+        patch(f'{FILE_PATH}.select_dropdown_by_value') as mock_select_dropdown:
 
         mock_driver_instance = MagicMock()
         mock_driver.return_value = mock_driver_instance
@@ -208,7 +213,7 @@ def test_click_btn():
 
 def test_select_undergrad():
     with patch('selenium.webdriver.Chrome') as mock_driver, \
-        patch('WebScraping.functions.navigation.lambda_function.select_dropdown_by_value') as mock_select_dropdown:
+        patch(f'{FILE_PATH}.select_dropdown_by_value') as mock_select_dropdown:
         mock_driver_instance = MagicMock()
         mock_driver.return_value = mock_driver_instance
 
@@ -230,7 +235,7 @@ def test_select_undergrad():
         mock_select_dropdown.assert_called_once_with(mock_driver_instance, mock_course_level_dropdown, "UG")
 
 def test_select():
-    with patch("WebScraping.functions.navigation.lambda_function.Select") as mock_select:
+    with patch(f"{FILE_PATH}.Select") as mock_select:
         mock_select_instance = MagicMock()
         mock_select.return_value = mock_select_instance
 
