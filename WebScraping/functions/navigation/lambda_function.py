@@ -111,7 +111,6 @@ def scrape_terms(driver: webdriver) -> List:
 
     Returns:
     - List: A list of term values obtained from the term dropdown on the webpage.
-
     '''
     # Find the term dropdown element and select it
     term_dropdown = (driver.find_element(By.NAME, "term_code"))
@@ -126,7 +125,6 @@ def scrape_course_options(driver: webdriver) -> List:
 
     Returns:
     - List: A list of course options obtained from the subject dropdown on the webpage.
-
     '''
     # Find the subject dropdown element and select it
     subject_dropdown = driver.find_element(By.ID, "subj_id")

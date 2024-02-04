@@ -35,7 +35,7 @@ def generate_schedules_event():
 @pytest.fixture()
 def generate_schedules_with_filters_event():
     return {
-        "body": f"{{\"Term\": \"{TEST_TERM}\", \"Filters\": {{\"BeforeTime\": \"08:00\", \"AfterTime\": \"19:00\", \"DayOfWeek\":\"Tue\"}}, \"Courses\": [{{\"SectionFilter\":\"B\", \"Name\":\"SYSC 4001\"}}]}}"
+        "body": f"{{\"Term\": \"{TEST_TERM}\", \"Filters\": {{\"BeforeTime\": \"08:00\", \"AfterTime\": \"19:00\", \"DayOfWeek\":\"Tue\", \"BetweenTimes\": [{{\"DayOfWeek\":\"Fri\", \"StartTime\":\"11:00\", \"EndTime\":\"15:00\"}}]}}, \"Courses\": [{{\"SectionFilter\":\"B\", \"Name\":\"SYSC 4001\"}}]}}"
     }
 
 @pytest.fixture()
@@ -210,3 +210,12 @@ def test_get_courses(get_courses_event):
     assert data["Error"] == False
     assert data["ErrorReason"] == ""
     assert sorted(data["Courses"]) == ['ARCH 4505', 'ARCH 4505 A', 'SYSC 4001', 'SYSC 4001 B']
+
+def test_convert_to_classtime():
+    classtime = endpoints.convert_to_classtime({"DayOfWeek":"Mon", "StartTime":"11:00", "EndTime":"15:00"})
+    assert classtime.day == DayOfWeek.MONDAY
+    assert classtime.start_time == "11:00"
+    assert classtime.end_time == "15:00"
+
+    with pytest.raises(Exception):
+        endpoints.convert_to_classtime({"DayOfWeek":[], "StartTime":"11:00", "EndTime":"15:00"})
