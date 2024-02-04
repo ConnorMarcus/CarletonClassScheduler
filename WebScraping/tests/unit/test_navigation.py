@@ -101,7 +101,7 @@ def test_select_terms():
         assert mock_driver_instance.find_element.call_count == 3
         assert mock_select_dropdown.call_count == 2
         find_mock_calls = mock_select_dropdown.mock_calls
-        expected_call = [call.find_element(mock_driver_instance, mock_term_dropdown, "202009")]
+        expected_call = [call.find_element(mock_term_dropdown, "202009")]
         assert expected_call in find_mock_calls
 
 
@@ -232,7 +232,7 @@ def test_select_undergrad():
         select_undergrad(mock_driver_instance)
 
         mock_driver_instance.find_element.assert_called_once_with(By.ID, "levl_id")
-        mock_select_dropdown.assert_called_once_with(mock_driver_instance, mock_course_level_dropdown, "UG")
+        mock_select_dropdown.assert_called_once_with(mock_course_level_dropdown, "UG")
 
 def test_select():
     with patch(f"{FILE_PATH}.Select") as mock_select:

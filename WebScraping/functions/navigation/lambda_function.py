@@ -140,7 +140,7 @@ def select_undergrad(driver: webdriver) -> None:
     '''
     # Find Course Level field and select Undergraduate 
     course_level = driver.find_element(By.ID, "levl_id")
-    select_dropdown_by_value(driver, course_level, "UG")
+    select_dropdown_by_value(course_level, "UG")
 
     sleep(0.25)
 
@@ -200,7 +200,7 @@ def select_terms(driver: webdriver, term: str) -> None:
     '''
     term_dropdown = (driver.find_element(By.NAME, "term_code"))
 
-    select_dropdown_by_value(driver, term_dropdown, term)
+    select_dropdown_by_value(term_dropdown, term)
 
     Select(term_dropdown).select_by_value(term)
 
