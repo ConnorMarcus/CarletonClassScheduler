@@ -22,7 +22,7 @@ def test_lambda_handler():
         result = lambda_handler(event={}, context={})
         s3_href_object.get.assert_called_once_with()
         s3_classes_object.put.assert_called_once_with(Body=b"{}")
-        assert result == "classes JSON written to s3"
+        assert result == {"Response": json.dumps("classes JSON written to s3")}
 
 
 def test_get_data():

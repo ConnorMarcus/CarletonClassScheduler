@@ -12,4 +12,4 @@ def test_lambda_handler():
 
             mock_delete.assert_called_once()
             mock_wait.assert_called_once()
-            assert result == "Table carleton-courses successfully deleted from DynamoDB!"
+            assert result == {"Response": json.dumps("Table carleton-courses successfully deleted from DynamoDB!")}

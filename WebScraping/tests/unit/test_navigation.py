@@ -30,7 +30,7 @@ def test_handler():
 
             response = handler(mock_event, mock_context)
 
-            assert response == "Href list written to S3", "Handler response did not match expected response."
+            assert response == {"Response": json.dumps("Href list written to S3")}, "Handler response did not match expected response."
             mock_webdriver.assert_called_once()
             mock_boto3_client.assert_called_once_with('s3')
             mock_scrape_terms.assert_called_once_with(mock_driver_instance)

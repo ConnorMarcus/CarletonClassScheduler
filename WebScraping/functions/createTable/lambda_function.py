@@ -1,4 +1,5 @@
 import boto3
+import json
 
 TABLE_NAME = "carleton-courses"
 
@@ -45,4 +46,7 @@ def lambda_handler(event: dict, context: dict) -> str:
     # Wait until Database is created before returning
     table.wait_until_exists()
     
-    return f"Table {TABLE_NAME} successfully created!"
+    return { 
+        "Response": json.dumps(f"Table {TABLE_NAME} successfully created!")
+    }
+

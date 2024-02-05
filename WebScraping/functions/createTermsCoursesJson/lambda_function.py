@@ -63,4 +63,6 @@ def write_terms_courses_to_s3(terms_courses: dict[str, str]) -> str:
     terms_courses_file = get_s3_object(TERMS_COURSES_FILENAME)
     terms_courses_file.put(Body=(bytes(json.dumps(terms_courses).encode("UTF-8"))))
     
-    return "Terms and Courses written to s3!"
+    return {
+        "Response": json.dumps("Terms and Courses written to s3!")
+    }

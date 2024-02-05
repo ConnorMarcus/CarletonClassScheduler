@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
 from WebScraping.functions.createTable.lambda_function import *
+import json
 
 def test_lambda_handler():
     with patch("boto3.resource") as mock_resource:
@@ -26,4 +27,4 @@ def test_lambda_handler():
             ProvisionedThroughput={'ReadCapacityUnits': 10, 'WriteCapacityUnits': 10}
         )
         mock_table.wait_until_exists.assert_called_once()
-        assert result == f"Table {expected_table_name} successfully created!"
+        assert result == {"Response": json.dumps(f"Table {expected_table_name} successfully created!")}

@@ -29,7 +29,9 @@ def lambda_handler(event: dict, context: object) -> str:
     classes_file = get_s3_object("classes.json")
     classes_file.put(Body=(bytes(json.dumps(classes).encode("UTF-8"))))
 
-    return "classes JSON written to s3"
+    return {
+        "Response": json.dumps("classes JSON written to s3")
+    }
 
 
 def get_s3_object(filename: str) -> object:
