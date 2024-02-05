@@ -34,11 +34,25 @@ export const parseInputs = (inputs) => {
     return JSON.stringify(requestFormat, null, 5);
 }
 
-const readingWeekStartDate = "2024-02-19";
-const readingWeekEndDate = "2024-02-23";
+const READING_WEEK = {
+    "Fall 2023": {
+        "start": "2023-10-20",  //Last Friday before classes start
+        "end": "2023-10-30",    //First day back from reading week when classes resume
+        "nextEnd": "2023-11-06" //2nd week back from reading week (for E/O labs)
+    },
+    "Winter 2024": {
+        "start": "2024-02-16",
+        "end": "2024-02-26",
+        "nextEnd": "2024-03-04"
+    },
+    "Summer 2024": {
+        "start": "2024-06-18",
+        "end": "2024-07-02",
+        "nextEnd": "2024-07-08" //Don't think summer has E/O labs
+    }
+}
 
-
-export const parseScheduleIntoEvents = (schedules) => {
+export const parseScheduleIntoEvents = (schedules, term) => {
     const events = [];
     const asyncEvents = [];
     schedules.forEach(schedule => {
@@ -61,18 +75,38 @@ export const parseScheduleIntoEvents = (schedules) => {
                             freq: "weekly",
                             interval: 2,
                             dtstart: `${startDate}T${time.StartTime}:00`,
-                            until: `${updatedEndDateStr}`,
+                            until: READING_WEEK[term]["start"],//`${updatedEndDateStr}`,
                             byweekday: [convertDayToInt(time.DayOfWeek) - 1],
                         },
                         duration: calculateTimeDifference(time.StartTime, time.EndTime),
                     };
                     eventsForCurrentSchedule.push(biWeeklyEvent);
+
+                    const parity = getParity(startDate, READING_WEEK[term]["start"], time.WeekSchedule);
+                    let updatedStartDate;
+                    if (parity === "Odd Week" && time.WeekSchedule === "Odd Week") {
+                        updatedStartDate = READING_WEEK[term]["end"]
+                    } else {
+                        updatedStartDate = READING_WEEK[term]["nextEnd"]
+                    }
+
+                    const biWeeklyEvent2 = {
+                        title: `${courseCode}${section}`,
+                        rrule: {
+                            freq: "weekly",
+                            interval: 2,
+                            dtstart: `${updatedStartDate}T${time.StartTime}:00`,
+                            until: `${updatedEndDateStr}`,
+                            byweekday: [convertDayToInt(time.DayOfWeek) - 1],
+                        },
+                        duration: calculateTimeDifference(time.StartTime, time.EndTime),
+                    };
+                    eventsForCurrentSchedule.push(biWeeklyEvent2);
                 } else {
                     /*
                     For half term courses, the function calls to get the RW dates are 
                     useless because the start/end dates account RW already.
                     */
-                    const fridayBeforeRW = getFridayBeforeReadingWeek(readingWeekStartDate).toISOString().split('T')[0];
                     // This event spans from start of term to before reading week
                     const event = {
                         title: `${courseCode}${section}`,
@@ -80,7 +114,7 @@ export const parseScheduleIntoEvents = (schedules) => {
                         endTime: `${time.EndTime}:00`,
                         daysOfWeek: [convertDayToInt(time.DayOfWeek)],
                         startRecur: startDate,
-                        endRecur: fridayBeforeRW//updatedEndDateStr, // exclusive so has to be +1
+                        endRecur: READING_WEEK[term]["start"]
                     }
                     eventsForCurrentSchedule.push(event);
                     // This event spans from after reading week to end of term
@@ -89,7 +123,7 @@ export const parseScheduleIntoEvents = (schedules) => {
                         startTime: `${time.StartTime}:00`,
                         endTime: `${time.EndTime}:00`,
                         daysOfWeek: [convertDayToInt(time.DayOfWeek)],
-                        startRecur: getMondayAfterReadingWeek(readingWeekEndDate).toISOString().split('T')[0],
+                        startRecur: READING_WEEK[term]["end"],
                         endRecur: updatedEndDateStr // exclusive so has to be +1
                     };
                     eventsForCurrentSchedule.push(event2)
@@ -201,27 +235,22 @@ const calculateTimeDifference = (start, end) => {
     return result;
 };
 
-const getFridayBeforeReadingWeek = (beginning) => {
-    const specifiedDate = new Date(beginning);
-    const dayOfWeek = specifiedDate.getDay();
-    const daysToSubtract = (dayOfWeek + 7 - 5) % 7;
-    const fridayBeforeDate = new Date(specifiedDate);
-    fridayBeforeDate.setDate(specifiedDate.getDate() - daysToSubtract);
-    return fridayBeforeDate;
-};
+const getParity = (termStartDate, lastDayBeforeReadingWeek, labParity) => {
+    const startDate = new Date(termStartDate);
+    const endDate = new Date(lastDayBeforeReadingWeek);
+    const oneWeek = 7 * 24 * 60 * 60 * 1000;
+    let currentWeek = startDate;
 
-const getMondayAfterReadingWeek = (beginning) => {
-    const specifiedDate = new Date(beginning);
-    const dayOfWeek = specifiedDate.getDay();
-    const daysToAdd = (dayOfWeek === 0) ? 1 : 8 - dayOfWeek;
-    const mondayAfterDate = new Date(specifiedDate);
-    mondayAfterDate.setDate(specifiedDate.getDate() + daysToAdd - 1);
-    /* 
-    -1 because the GMT date is correct, but when you do .toISOString().split('T')[0]
-    I guese because of the time (hours) conversion it goes to the next day 
-    */
-    return mondayAfterDate;
-};
+    const toggleParity = (currentParity) => {
+        return currentParity === 'Even Week' ? 'Odd Week' : 'Even Week';
+    }
 
-//console.log(getFridayBeforeReadingWeek(readingWeekStartDate).toISOString().split('T')[0]);
-console.log(getMondayAfterReadingWeek(readingWeekEndDate).toISOString().split('T')[0]);
+    let currentParity = labParity;
+    while (currentWeek < endDate) {
+        if (currentWeek.getDay() === 1) { // If it's Monday
+            currentParity = toggleParity(currentParity);
+        }
+        currentWeek = new Date(+currentWeek + oneWeek); // Move to next week
+    }
+    return currentParity;
+}

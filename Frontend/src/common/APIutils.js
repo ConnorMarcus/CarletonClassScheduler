@@ -34,7 +34,7 @@ export const fetchSchedules = async (inputs) => {
             noScheduleError.name = NO_SCHEDULES_ERROR;
             throw noScheduleError;
         } else {
-            return parseScheduleIntoEvents(response.data.Schedules);
+            return parseScheduleIntoEvents(response.data.Schedules, inputs.term);
         }
     } catch (error) {
         throw error;
