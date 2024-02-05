@@ -35,7 +35,7 @@ def test_lambda_handler():
 
             mock_get_classes_list.assert_called_once()
             mock_table.put_item.assert_called_once_with(Item=CLASS_DICT)
-            assert result == "Classes inserted into carleton-courses DynamoDB table!"
+            assert result == {"Response": json.dumps("Classes inserted into carleton-courses DynamoDB table!")}
 
 
 def test_get_classes_list():

@@ -1,4 +1,5 @@
 import boto3
+import json
 
 TABLE_NAME = "carleton-courses"
 
@@ -10,4 +11,6 @@ def lambda_handler(event: dict, context: dict) -> str:
     table.delete()
     table.wait_until_not_exists()
     
-    return f"Table {TABLE_NAME} successfully deleted from DynamoDB!"
+    return {
+        "Response": json.dumps(f"Table {TABLE_NAME} successfully deleted from DynamoDB!")
+    }

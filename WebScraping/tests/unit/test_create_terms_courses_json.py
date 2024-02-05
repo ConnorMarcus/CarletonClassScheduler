@@ -76,6 +76,6 @@ def test_write_terms_courses_to_s3():
         expected_result = bytes(json.dumps(TEST_TERM_COURSE).encode("UTF-8"))
         s3_object.put.assert_called_once_with(Body=expected_result)
 
-        assert result == "Terms and Courses written to s3!"
+        assert result == {"Response": json.dumps("Terms and Courses written to s3!")}
 
     
