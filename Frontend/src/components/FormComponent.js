@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/FormComponent.css';
 import Calendar from './CalendarComponent'
-import { fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
+import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 
 const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -135,7 +135,7 @@ const FormComponent = () => {
                 setAsyncEvents(classes[1])
                 setIsFormSubmitted(true);
             }).catch((error) => {
-                if (error.name === NO_SCHEDULES_ERROR) {
+                if (error.name === NO_SCHEDULES_ERROR || error.name === ALL_ASYNC_COURSES_ERROR) {
                     alert(error.message);
                 } else {
                     console.error("Error generating schedules: ", error.message);
