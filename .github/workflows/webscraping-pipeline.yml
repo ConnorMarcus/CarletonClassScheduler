@@ -8,6 +8,7 @@ on:
         - WebScraping/functions/insertData/**
         - WebScraping/functions/createTable/**
         - WebScraping/functions/createTermsCoursesJson/**
+        - WebScraping/functions/getReadingWeekDates/**
 jobs:
     build-deploy:
       runs-on: ubuntu-latest
