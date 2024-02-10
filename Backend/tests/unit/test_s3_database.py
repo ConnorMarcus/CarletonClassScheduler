@@ -16,7 +16,14 @@ CLASSES_DICT = {"AERO 2001-Fall 2023": {
                        "TermDuration": "Full Term", "AlsoRegister": [["A"]], "StartDate": "2023-09-06", "EndDate": "2023-12-08", "WeekSchedule": "Every Week"}]
   }, "ERRORCLASS": {}
 }
-TERMS_COURSES_DICT = {"Fall 2023": ["AERO 2001", "AERO 2001 A"]}
+TERMS_COURSES_DICT = {
+    "Fall 2023": {
+        "Classes": ["AERO 2001", "AERO 2001 A"],
+        "ReadingWeekStart": "2023-10-20", 
+        "ReadingWeekEnd": "2023-10-30", 
+        "ReadingWeekNext": "2023-11-06"
+    }
+}
 
 @patch('boto3.resource')
 @patch('json.load')
@@ -48,7 +55,14 @@ def test_get_course_code_and_section_list():
 
 def test_get_terms():
     db = generate_db()
-    assert db.get_terms() == [test_term]
+    expected_dict = {
+    "Fall 2023": {
+        "ReadingWeekStart": "2023-10-20", 
+        "ReadingWeekEnd": "2023-10-30", 
+        "ReadingWeekNext": "2023-11-06"
+        }
+    }
+    assert db.get_terms() == expected_dict
     
     
 def test_get_course():

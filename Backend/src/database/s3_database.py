@@ -46,15 +46,19 @@ class S3Database(CourseDatabase):
         
         return self.convert_to_course(course_map)
 
-    def get_terms(self) -> List[str]:
+    def get_terms(self) -> dict:
         '''
-        Gets the list of terms in the database.
+        Gets the terms dict in the database.
         '''
-        return list(self.terms_courses_dict.keys())
+        terms_course_copy = self.terms_courses_dict.copy()
+        for term_dict in terms_course_copy:
+            terms_course_copy.get(term_dict, {}).pop("Classes", None)
+
+        return terms_course_copy
 
 
     def get_course_code_and_section_list(self, term: str) -> List[str]:
         '''
         Gets a list of the course codes and sections for a given term.
         '''
-        return self.terms_courses_dict.get(term, [])
+        return self.terms_courses_dict.get(term, {}).get("Classes", [])
