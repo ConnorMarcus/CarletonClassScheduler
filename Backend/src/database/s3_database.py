@@ -51,8 +51,8 @@ class S3Database(CourseDatabase):
         Gets the terms dict in the database.
         '''
         terms_course_copy = self.terms_courses_dict.copy()
-        for term in terms_course_copy:
-            terms_course_copy.get(term, {}).pop("Classes", None)
+        for term_dict in terms_course_copy.values():
+            term_dict.pop("Classes", None)
 
         return terms_course_copy
 
