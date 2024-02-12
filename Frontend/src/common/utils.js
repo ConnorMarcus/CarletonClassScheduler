@@ -52,63 +52,23 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
             const updatedEndDateStr = updatedEndDate.toISOString().split('T')[0];
             courseData.Times.forEach(time => {
                 if (time.WeekSchedule === "Even Week" || time.WeekSchedule === "Odd Week") {
-                    const biWeeklyEvent = {
-                        title: `${courseCode}${section}`,
-                        rrule: {
-                            freq: "weekly",
-                            interval: 2,
-                            dtstart: `${startDate}T${time.StartTime}:00`,
-                            until: readingWeekDates[term]["start"],//`${updatedEndDateStr}`,
-                            byweekday: [convertDayToInt(time.DayOfWeek) - 1],
-                        },
-                        duration: calculateTimeDifference(time.StartTime, time.EndTime),
-                    };
+                    const biWeeklyEvent = createBiWeeklyEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"]);
                     eventsForCurrentSchedule.push(biWeeklyEvent);
 
-                    const parity = getParity(startDate, readingWeekDates[term]["start"], time.WeekSchedule);
+                    const parity = getParity(startDate, readingWeekDates[term]["ReadingWeekStart"], time.WeekSchedule);
                     let updatedStartDate;
                     if (parity === "Odd Week" && time.WeekSchedule === "Odd Week") {
-                        updatedStartDate = readingWeekDates[term]["end"]
+                        updatedStartDate = readingWeekDates[term]["ReadingWeekEnd"]
                     } else {
-                        updatedStartDate = readingWeekDates[term]["nextEnd"]
+                        updatedStartDate = readingWeekDates[term]["ReadingWeekNext"]
                     }
 
-                    const biWeeklyEvent2 = {
-                        title: `${courseCode}${section}`,
-                        rrule: {
-                            freq: "weekly",
-                            interval: 2,
-                            dtstart: `${updatedStartDate}T${time.StartTime}:00`,
-                            until: `${updatedEndDateStr}`,
-                            byweekday: [convertDayToInt(time.DayOfWeek) - 1],
-                        },
-                        duration: calculateTimeDifference(time.StartTime, time.EndTime),
-                    };
+                    const biWeeklyEvent2 = createBiWeeklyEvent(courseCode, section, time, updatedStartDate, updatedEndDateStr)
                     eventsForCurrentSchedule.push(biWeeklyEvent2);
                 } else {
-                    /*
-                    For half term courses, the function calls to get the RW dates are 
-                    useless because the start/end dates account RW already.
-                    */
-                    // This event spans from start of term to before reading week
-                    const event = {
-                        title: `${courseCode}${section}`,
-                        startTime: `${time.StartTime}:00`,
-                        endTime: `${time.EndTime}:00`,
-                        daysOfWeek: [convertDayToInt(time.DayOfWeek)],
-                        startRecur: startDate,
-                        endRecur: readingWeekDates[term]["start"]
-                    }
+                    const event = createEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"]);
                     eventsForCurrentSchedule.push(event);
-                    // This event spans from after reading week to end of term
-                    const event2 = {
-                        title: `${courseCode}${section}`,
-                        startTime: `${time.StartTime}:00`,
-                        endTime: `${time.EndTime}:00`,
-                        daysOfWeek: [convertDayToInt(time.DayOfWeek)],
-                        startRecur: readingWeekDates[term]["end"],
-                        endRecur: updatedEndDateStr // exclusive so has to be +1
-                    };
+                    const event2 = createEvent(courseCode, section, time, readingWeekDates[term]["ReadingWeekEnd"], updatedEndDateStr);
                     eventsForCurrentSchedule.push(event2)
                 }
             });
@@ -237,3 +197,28 @@ const getParity = (termStartDate, lastDayBeforeReadingWeek, labParity) => {
     }
     return currentParity;
 }
+
+const createEvent = (courseCode, section, time, startDate, endDate) => {
+    return {
+        title: `${courseCode}${section}`,
+        startTime: `${time.StartTime}:00`,
+        endTime: `${time.EndTime}:00`,
+        daysOfWeek: [convertDayToInt(time.DayOfWeek)],
+        startRecur: startDate,
+        endRecur: endDate
+    };
+};
+
+const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate) => {
+    return {
+        title: `${courseCode}${section}`,
+        rrule: {
+            freq: "weekly",
+            interval: 2,
+            dtstart: `${startDate}T${time.StartTime}:00`,
+            until: endDate,
+            byweekday: [convertDayToInt(time.DayOfWeek) - 1],
+        },
+        duration: calculateTimeDifference(time.StartTime, time.EndTime),
+    };
+};
