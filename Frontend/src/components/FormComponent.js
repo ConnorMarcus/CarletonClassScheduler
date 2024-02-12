@@ -45,7 +45,6 @@ const FormComponent = () => {
                             ...prev,
                             [term]: result.Courses || [],
                         }));
-                        console.log(readingWeekList)
                     }
                 }).catch((error) => {
                     console.error("Error getting courses: ", error.message)
@@ -56,7 +55,7 @@ const FormComponent = () => {
             getAllCourses(term);
         });
 
-    }, [termsList]);
+    }, [termsList, readingWeekList]);
 
     useEffect(() => {
         fetchTerms()
@@ -66,12 +65,11 @@ const FormComponent = () => {
                 } else {
                     setTermsList(Object.keys(result.Terms));
                     setReadingWeekList(result.Terms);
-                    console.log(readingWeekList);
                 }
             }).catch((error) => {
                 console.error("Error getting terms: ", error.message);
             })
-    }, []);
+    }, [readingWeekList]);
 
     //This is to check that user didn't leave all courses blank
     useEffect(() => {
