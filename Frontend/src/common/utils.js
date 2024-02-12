@@ -74,7 +74,11 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
                 }
             });
             if (courseData.Times.length === 0) {
-                asyncCoursesForCurrentSchedule.push(courseCode.concat(section))
+                const asyncData = {
+                    title: `${courseCode}${section}`,
+                    crn: courseData.CRN
+                }
+                asyncCoursesForCurrentSchedule.push(asyncData);
             }
         });
         if (eventsForCurrentSchedule.length > 0) {
