@@ -32,6 +32,7 @@ const FormComponent = () => {
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [termsList, setTermsList] = useState([]);
     const [coursesList, setCoursesList] = useState({});
+    const [readingWeekList, setReadingWeekList] = useState({});
 
     useEffect(() => {
         const getAllCourses = async (term) => {
@@ -54,7 +55,7 @@ const FormComponent = () => {
             getAllCourses(term);
         });
 
-    }, [termsList]);
+    }, [termsList, readingWeekList]);
 
     useEffect(() => {
         fetchTerms()
@@ -62,12 +63,13 @@ const FormComponent = () => {
                 if (result.Error) {
                     console.log("Failed to get terms: ", result.ErrorReason);
                 } else {
-                    setTermsList(result.Terms);
+                    setTermsList(Object.keys(result.Terms));
+                    setReadingWeekList(result.Terms);
                 }
             }).catch((error) => {
                 console.error("Error getting terms: ", error.message);
             })
-    }, []);
+    }, [readingWeekList]);
 
     //This is to check that user didn't leave all courses blank
     useEffect(() => {
@@ -130,7 +132,7 @@ const FormComponent = () => {
         );
 
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
-            fetchSchedules(inputValues).then((classes) => {
+            fetchSchedules(inputValues, readingWeekList).then((classes) => {
                 setEvents(classes[0]);
                 setAsyncEvents(classes[1])
                 setIsFormSubmitted(true);

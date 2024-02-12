@@ -34,25 +34,8 @@ export const parseInputs = (inputs) => {
     return JSON.stringify(requestFormat, null, 5);
 }
 
-const READING_WEEK = {
-    "Fall 2023": {
-        "start": "2023-10-20",  //Last Friday before classes start
-        "end": "2023-10-30",    //First day back from reading week when classes resume
-        "nextEnd": "2023-11-06" //2nd week back from reading week (for E/O labs)
-    },
-    "Winter 2024": {
-        "start": "2024-02-16",
-        "end": "2024-02-26",
-        "nextEnd": "2024-03-04"
-    },
-    "Summer 2024": {
-        "start": "2024-06-18",
-        "end": "2024-07-02",
-        "nextEnd": "2024-07-08" //Don't think summer has E/O labs
-    }
-}
 
-export const parseScheduleIntoEvents = (schedules, term) => {
+export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
     const events = [];
     const asyncEvents = [];
     schedules.forEach(schedule => {
@@ -75,19 +58,19 @@ export const parseScheduleIntoEvents = (schedules, term) => {
                             freq: "weekly",
                             interval: 2,
                             dtstart: `${startDate}T${time.StartTime}:00`,
-                            until: READING_WEEK[term]["start"],//`${updatedEndDateStr}`,
+                            until: readingWeekDates[term]["start"],//`${updatedEndDateStr}`,
                             byweekday: [convertDayToInt(time.DayOfWeek) - 1],
                         },
                         duration: calculateTimeDifference(time.StartTime, time.EndTime),
                     };
                     eventsForCurrentSchedule.push(biWeeklyEvent);
 
-                    const parity = getParity(startDate, READING_WEEK[term]["start"], time.WeekSchedule);
+                    const parity = getParity(startDate, readingWeekDates[term]["start"], time.WeekSchedule);
                     let updatedStartDate;
                     if (parity === "Odd Week" && time.WeekSchedule === "Odd Week") {
-                        updatedStartDate = READING_WEEK[term]["end"]
+                        updatedStartDate = readingWeekDates[term]["end"]
                     } else {
-                        updatedStartDate = READING_WEEK[term]["nextEnd"]
+                        updatedStartDate = readingWeekDates[term]["nextEnd"]
                     }
 
                     const biWeeklyEvent2 = {
@@ -114,7 +97,7 @@ export const parseScheduleIntoEvents = (schedules, term) => {
                         endTime: `${time.EndTime}:00`,
                         daysOfWeek: [convertDayToInt(time.DayOfWeek)],
                         startRecur: startDate,
-                        endRecur: READING_WEEK[term]["start"]
+                        endRecur: readingWeekDates[term]["start"]
                     }
                     eventsForCurrentSchedule.push(event);
                     // This event spans from after reading week to end of term
@@ -123,7 +106,7 @@ export const parseScheduleIntoEvents = (schedules, term) => {
                         startTime: `${time.StartTime}:00`,
                         endTime: `${time.EndTime}:00`,
                         daysOfWeek: [convertDayToInt(time.DayOfWeek)],
-                        startRecur: READING_WEEK[term]["end"],
+                        startRecur: readingWeekDates[term]["end"],
                         endRecur: updatedEndDateStr // exclusive so has to be +1
                     };
                     eventsForCurrentSchedule.push(event2)
