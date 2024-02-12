@@ -159,7 +159,7 @@ const FormComponent = () => {
     }
 
     const handleClearOther = (filters = false) => {
-        const inputValuesCopy = inputValues
+        const inputValuesCopy = inputValues;
         for (const key in inputValuesCopy) {
             if (filters) {
                 if (key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter") {
@@ -171,6 +171,7 @@ const FormComponent = () => {
                 }
             }
         }
+        setInputValues(inputValuesCopy);
         handleClear();
     };
 
