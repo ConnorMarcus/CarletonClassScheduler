@@ -44,5 +44,16 @@
 }
 
 .fc-day-today {
-    background: inherit !important; 
-} 
+    background: inherit !important;
+}
+
+.crn-btn {
+    display: block;
+    padding: 10px;
+    margin: 0 auto;
+    background-color: #BF122B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

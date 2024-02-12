@@ -17,8 +17,6 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
     };
 
     const earliestStartDate = (courses) => {
-        // This function threw an error for Summer 2024 BIOL 4907
-        // TODO LATER
         let earliestDate = courses[0][0].startRecur;
         for (const schedule of courses) {
             for (const course of schedule) {
@@ -31,9 +29,22 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
         return earliestDate;
     };
 
+    const copyCRNsToClipboard = () => {
+        const uniqueCRNs = Array.from(new Set(events[scheduleCount].map(event => event.crn)));
+        const crnString = uniqueCRNs.join(', ');
+        navigator.clipboard.writeText(crnString)
+            .then(() => {
+                alert(`CRNs copied to clipboard: ${crnString}`);
+            })
+            .catch((error) => {
+                console.error('Error copying to clipboard:', error);
+            });
+    };
+
     return (
         <div id="calendar">
             <h2 id="calendar-title">{title}</h2>
+            <button className="crn-btn" type="button" onClick={copyCRNsToClipboard}>Export CRNs</button>
             <p id="schedule-carrousel">
                 <input className="prev-next-btn" type="button" disabled={scheduleCount === 0} onClick={handlePrevClick} value="prev"></input>
                 <span id="schedule-count-text">Schedule {scheduleCount + 1}</span>
@@ -50,7 +61,6 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
                 dayHeaderFormat={{ weekday: 'long' }}
                 height="auto"
                 initialDate={earliestStartDate(events)}
-                //headerToolbar={false} //Remove this to enable cycling between weeks
                 events={events[scheduleCount]}
             />
             <div className="async-courses">
@@ -59,7 +69,7 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
                     <p key={index}><b>{course}</b></p>
                 ))}
             </div>
-        </div>
+        </div >
     );
 };
 
