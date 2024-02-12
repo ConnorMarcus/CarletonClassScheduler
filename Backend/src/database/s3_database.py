@@ -1,3 +1,4 @@
+import copy
 from typing import List, Set, Dict
 import boto3
 import os
@@ -29,7 +30,12 @@ class S3Database(CourseDatabase):
         classes_file = s3.Object(bucket_name, classes_json_file)
         terms_courses_file = s3.Object(bucket_name, terms_courses_json_file)
         self.classes_dict: Dict[str, dict] = json.load(classes_file.get()["Body"])
-        self.terms_courses_dict: Dict[str, List[str]] = json.load(terms_courses_file.get()["Body"])
+        self.terms_courses_dict: Dict[str, dict] = json.load(terms_courses_file.get()["Body"])
+        self.terms_dict = copy.deepcopy(self.terms_courses_dict)
+        
+        # Remove courses from terms dictionary
+        for term_dict in self.terms_dict.values():
+            term_dict.pop("Classes", None)
 
     def get_resource(self):
         return 's3'
@@ -50,11 +56,7 @@ class S3Database(CourseDatabase):
         '''
         Gets the terms dict in the database.
         '''
-        terms_course_copy = self.terms_courses_dict.copy()
-        for term_dict in terms_course_copy.values():
-            term_dict.pop("Classes", None)
-
-        return terms_course_copy
+        return self.terms_dict
 
 
     def get_course_code_and_section_list(self, term: str) -> List[str]:
