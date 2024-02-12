@@ -28,11 +28,10 @@ const FormComponent = () => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [events, setEvents] = useState([]);
-    const [asycnEvents, setAsyncEvents] = useState([]);
+    const [asyncEvents, setAsyncEvents] = useState([]);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
-    const [termsList, setTermsList] = useState([]);
     const [coursesList, setCoursesList] = useState({});
-    const [readingWeekList, setReadingWeekList] = useState({});
+    const [termsAndReadingWeek, setTermsAndReadingWeek] = useState({});
 
     useEffect(() => {
         const getAllCourses = async (term) => {
@@ -51,11 +50,11 @@ const FormComponent = () => {
                 });
         };
 
-        termsList.forEach(term => {
+        Object.keys(termsAndReadingWeek).forEach(term => {
             getAllCourses(term);
         });
 
-    }, [termsList, readingWeekList]);
+    }, [termsAndReadingWeek]);
 
     useEffect(() => {
         fetchTerms()
@@ -63,13 +62,12 @@ const FormComponent = () => {
                 if (result.Error) {
                     console.log("Failed to get terms: ", result.ErrorReason);
                 } else {
-                    setTermsList(Object.keys(result.Terms));
-                    setReadingWeekList(result.Terms);
+                    setTermsAndReadingWeek(result.Terms);
                 }
             }).catch((error) => {
                 console.error("Error getting terms: ", error.message);
             })
-    }, [readingWeekList]);
+    }, []);
 
     //This is to check that user didn't leave all courses blank
     useEffect(() => {
@@ -121,7 +119,7 @@ const FormComponent = () => {
         event.preventDefault();
         const isValidSubmission = Object.entries(inputValues).every(
             ([key, value]) => {
-                if (termsList.includes(value)) {
+                if (Object.keys(termsAndReadingWeek).includes(value)) {
                     return true;
                 } else if (key.includes("course") || key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter") {
                     return true;
@@ -132,7 +130,7 @@ const FormComponent = () => {
         );
 
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
-            fetchSchedules(inputValues, readingWeekList).then((classes) => {
+            fetchSchedules(inputValues, termsAndReadingWeek).then((classes) => {
                 setEvents(classes[0]);
                 setAsyncEvents(classes[1])
                 setIsFormSubmitted(true);
@@ -157,13 +155,13 @@ const FormComponent = () => {
     };
 
     const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
-    const selectOptionsTerms = termsList.map(day => ({ value: day, label: day }));
+    const selectOptionsTerms = Object.keys(termsAndReadingWeek).map(day => ({ value: day, label: day }));
     const selectedTermCourses = coursesList[inputValues.term] || [];
 
     return isFormSubmitted ? (
         <div className="schedule-view">
             <button id="back-to-form" type="button" onClick={() => setIsFormSubmitted(false)}>Back to Form</button>
-            <Calendar title={inputValues.term} events={events} asyncCourses={asycnEvents} />
+            <Calendar title={inputValues.term} events={events} asyncCourses={asyncEvents} />
         </div>
     ) : (
         <div className="form-container">
