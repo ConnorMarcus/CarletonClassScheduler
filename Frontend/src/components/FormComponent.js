@@ -148,10 +148,30 @@ const FormComponent = () => {
     };
 
     const handleClear = () => {
-        setInputValues(initialFormState);
         setIsFormSubmitted(false);
         setEvents([]);
         setAsyncEvents([]);
+    };
+
+    const handleClearAll = () => {
+        setInputValues(initialFormState);
+        handleClear();
+    }
+
+    const handleClearOther = (filters = false) => {
+        const inputValuesCopy = inputValues
+        for (const key in inputValuesCopy) {
+            if (filters) {
+                if (key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter") {
+                    inputValuesCopy[key] = '';
+                }
+            } else {
+                if (key.startsWith("course")) {
+                    inputValuesCopy[key] = '';
+                }
+            }
+        }
+        handleClear();
     };
 
     const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
@@ -219,11 +239,17 @@ const FormComponent = () => {
                 <button type="submit" onClick={handleSubmit} className="submit-button">
                     Submit
                 </button>
-                <button type="button" onClick={handleClear} className="clear-button">
-                    Clear
+                <button type="button" onClick={handleClearAll} className="clear-all-button">
+                    Clear All
+                </button>
+                <button type="button" onClick={() => handleClearOther()} className="clear-courses-button">
+                    Clear Courses
+                </button>
+                <button type="button" onClick={() => handleClearOther(true)} className="clear-filters-button">
+                    Clear Filters
                 </button>
             </div>
-        </div>
+        </div >
     );
 };
 
