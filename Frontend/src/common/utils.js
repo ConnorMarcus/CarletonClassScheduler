@@ -45,6 +45,7 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
             const courseCode = courseData.CourseCode;
             const section = courseData.SectionID;
             const startDate = courseData.StartDate;
+            const crn = courseData.CRN;
             const originalEndDate = new Date(courseData.EndDate);
             // Logic to increment end date by 1
             const updatedEndDate = new Date(originalEndDate);
@@ -52,7 +53,7 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
             const updatedEndDateStr = updatedEndDate.toISOString().split('T')[0];
             courseData.Times.forEach(time => {
                 if (time.WeekSchedule === "Even Week" || time.WeekSchedule === "Odd Week") {
-                    const biWeeklyEvent = createBiWeeklyEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"]);
+                    const biWeeklyEvent = createBiWeeklyEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"], crn);
                     eventsForCurrentSchedule.push(biWeeklyEvent);
 
                     const parity = getParity(startDate, readingWeekDates[term]["ReadingWeekStart"], time.WeekSchedule);
@@ -63,12 +64,12 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
                         updatedStartDate = readingWeekDates[term]["ReadingWeekNext"]
                     }
 
-                    const biWeeklyEvent2 = createBiWeeklyEvent(courseCode, section, time, updatedStartDate, updatedEndDateStr)
+                    const biWeeklyEvent2 = createBiWeeklyEvent(courseCode, section, time, updatedStartDate, updatedEndDateStr, crn)
                     eventsForCurrentSchedule.push(biWeeklyEvent2);
                 } else {
-                    const event = createEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"]);
+                    const event = createEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"], crn);
                     eventsForCurrentSchedule.push(event);
-                    const event2 = createEvent(courseCode, section, time, readingWeekDates[term]["ReadingWeekEnd"], updatedEndDateStr);
+                    const event2 = createEvent(courseCode, section, time, readingWeekDates[term]["ReadingWeekEnd"], updatedEndDateStr, crn);
                     eventsForCurrentSchedule.push(event2)
                 }
             });
@@ -198,18 +199,19 @@ const getParity = (termStartDate, lastDayBeforeReadingWeek, labParity) => {
     return currentParity;
 }
 
-const createEvent = (courseCode, section, time, startDate, endDate) => {
+const createEvent = (courseCode, section, time, startDate, endDate, crn) => {
     return {
         title: `${courseCode}${section}`,
         startTime: `${time.StartTime}:00`,
         endTime: `${time.EndTime}:00`,
         daysOfWeek: [convertDayToInt(time.DayOfWeek)],
         startRecur: startDate,
-        endRecur: endDate
+        endRecur: endDate,
+        crn: crn,
     };
 };
 
-const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate) => {
+const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate, crn) => {
     return {
         title: `${courseCode}${section}`,
         rrule: {
@@ -220,5 +222,6 @@ const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate) => {
             byweekday: [convertDayToInt(time.DayOfWeek) - 1],
         },
         duration: calculateTimeDifference(time.StartTime, time.EndTime),
+        crn: crn
     };
 };
