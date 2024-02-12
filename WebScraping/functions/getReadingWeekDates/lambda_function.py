@@ -92,7 +92,7 @@ def get_formatted_fall_or_winter_dates(date_str: str) -> Tuple[str, str, str]:
     end_day = int(start_end_str.split('-')[1][:-1])
     year = int(year_str)
 
-    start_date = (datetime(year, month, start_day) + timedelta(days=-3)).date().isoformat() 
+    start_date = (datetime(year, month, start_day) + timedelta(days=-2)).date().isoformat() 
     end_date =(datetime(year, month, end_day) + timedelta(days=3)).date().isoformat() 
     next_date = (datetime(year, month, end_day) + timedelta(days=10)).date().isoformat() 
 

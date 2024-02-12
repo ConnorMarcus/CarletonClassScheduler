@@ -19,7 +19,7 @@ TERMS_COURSES_DICT = {
 UPDATED_TERMS_COURSES_DICT = {
     "Fall 2023": {
         "Classes": ["SYSC 4001", "SYSC 4001 A"],
-        "ReadingWeekStart": "2023-10-20", 
+        "ReadingWeekStart": "2023-10-21", 
         "ReadingWeekEnd": "2023-10-30", 
         "ReadingWeekNext": "2023-11-06"
     }
@@ -119,11 +119,11 @@ def test_get_terms_courses_dict():
 
 def test_get_formatted_fall_or_winter_dates():
     results = get_formatted_fall_or_winter_dates("October 23-27, 2023")
-    expected_dates = ("2023-10-20", "2023-10-30", "2023-11-06")
+    expected_dates = ("2023-10-21", "2023-10-30", "2023-11-06")
     assert results == expected_dates
 
     results = get_formatted_fall_or_winter_dates("February 19-23, 2024")
-    expected_dates = ("2024-02-16", "2024-02-26", "2024-03-04")
+    expected_dates = ("2024-02-17", "2024-02-26", "2024-03-04")
     assert results == expected_dates
 
 
