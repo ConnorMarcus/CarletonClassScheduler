@@ -62,7 +62,7 @@ const FormComponent = () => {
                 if (result.Error) {
                     console.log("Failed to get terms: ", result.ErrorReason);
                 } else {
-                    setTermsList(result.Terms);
+                    setTermsList(Object.keys(result.Terms));
                 }
             }).catch((error) => {
                 console.error("Error getting terms: ", error.message);
