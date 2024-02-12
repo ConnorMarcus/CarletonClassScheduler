@@ -1,5 +1,4 @@
 // Formatting functions 
-import { fetchTerms } from './APIutils';
 
 export const parseInputs = (inputs) => {
     const courses = [
@@ -36,11 +35,9 @@ export const parseInputs = (inputs) => {
 }
 
 
-export const parseScheduleIntoEvents = async (schedules, term) => {
+export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
     const events = [];
     const asyncEvents = [];
-    const termsResults = await fetchTerms();
-    const readingWeekDates = termsResults.Terms;
     schedules.forEach(schedule => {
         const eventsForCurrentSchedule = [];
         const asyncCoursesForCurrentSchedule = [];

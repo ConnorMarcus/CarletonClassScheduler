@@ -26,7 +26,7 @@ export const fetchCourses = async (term) => {
     }
 }
 
-export const fetchSchedules = async (inputs) => {
+export const fetchSchedules = async (inputs, readingWeekDates) => {
     try {
         const formattedRequest = parseInputs(inputs);
         const response = await axios.post(SCHEDULES_URL, formattedRequest);
@@ -42,7 +42,7 @@ export const fetchSchedules = async (inputs) => {
             allAsyncCoursesError.name = ALL_ASYNC_COURSES_ERROR;
             throw allAsyncCoursesError;
         } else {
-            return parseScheduleIntoEvents(response.data.Schedules, inputs.term);
+            return parseScheduleIntoEvents(response.data.Schedules, inputs.term, readingWeekDates);
         }
     } catch (error) {
         throw error;
