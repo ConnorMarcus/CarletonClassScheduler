@@ -87,7 +87,9 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
         events.push(eventsForCurrentSchedule);
         asyncEvents.push(asyncCoursesForCurrentSchedule)
     });
-    return [events, asyncEvents];
+    const uniqueEvents = removeDuplicateEvents(events);
+    const uniqueAsyncEvents = removeDuplicateAsyncEvents(asyncEvents);
+    return [uniqueEvents, uniqueAsyncEvents];
 };
 
 const convertToDayShortForm = (day) => {
@@ -228,4 +230,28 @@ const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate, crn)
         duration: calculateTimeDifference(time.StartTime, time.EndTime),
         crn: crn
     };
+};
+
+
+const removeDuplicateEvents = (events) => {
+    const uniqueLists = [];
+    const seenLists = new Set();
+
+    for (const sublist of events) {
+        const sublistString = JSON.stringify(sublist);
+        if (!seenLists.has(sublistString)) {
+            uniqueLists.push(sublist);
+            seenLists.add(sublistString);
+        }
+    };
+    return uniqueLists;
+};
+
+const removeDuplicateAsyncEvents = (events) => {
+    const flatArray = events.flat();
+    const uniqueEvents = new Set();
+    flatArray.forEach(obj => {
+        uniqueEvents.add(JSON.stringify(obj));
+    });
+    return Array.from(uniqueEvents).map(obj => JSON.parse(obj));
 };

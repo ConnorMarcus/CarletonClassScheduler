@@ -57,3 +57,7 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
+.async-course-name {
+    color: #BF122B;
+}

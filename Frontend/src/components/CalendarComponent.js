@@ -30,13 +30,16 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
     };
 
     const copyCRNsToClipboard = () => {
-        const courseCRNs = Array.from(new Set(events[scheduleCount].map(event => event.crn)));
-        const asyncCourseCRNs = Array.from(new Set(asyncCourses[scheduleCount].map(event => event.crn)));
-        const allCRNs = courseCRNs.concat(asyncCourseCRNs);
-        const crnString = allCRNs.join(', ');
-        navigator.clipboard.writeText(crnString)
+        const syncCourseCRNs = Array.from(new Set(events[scheduleCount].map(event => event.crn)));
+        const syncStr = syncCourseCRNs.join(', ');
+        const asyncCourseCRNs = Array.from(new Set(asyncCourses.map(event => event.crn)));
+        let asyncStr;
+        navigator.clipboard.writeText(syncStr)
             .then(() => {
-                alert(`CRNs copied to clipboard: ${crnString}`);
+                if (asyncCourseCRNs.length !== 0) {
+                    asyncStr = `\nAsynchronous course CRNs: ${asyncCourseCRNs.join(', ')}`
+                }
+                alert(`CRNs copied to clipboard (${syncStr})` + (asyncStr ? asyncStr : ""));
             })
             .catch((error) => {
                 console.error('Error copying to clipboard:', error);
@@ -66,10 +69,9 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
                 events={events[scheduleCount]}
             />
             <div className="async-courses">
-                {asyncCourses[scheduleCount].length !== 0 && (<p>Courses without assigned meeting times</p>)}
-                {asyncCourses[scheduleCount]?.map((course, index) => (
-                    <p key={index}><b>{course.title}</b></p>
-                ))}
+                {asyncCourses.length > 0 && (<p><b>Courses without assigned meeting times</b></p>)}
+                {asyncCourses.length > 0 && (asyncCourses.map(course => (
+                    <span key={course.crn}><b className="async-course-name">{course.title}</b> - {course.crn}</span>)).reduce((prev, curr) => [prev, ', ', curr]))}
             </div>
         </div >
     );
