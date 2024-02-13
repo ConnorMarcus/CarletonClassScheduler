@@ -3,7 +3,8 @@ from unittest.mock import patch, Mock
 import boto3
 boto3.setup_default_session(region_name="us-east-1")
 from Backend.src.database.s3_database import S3Database
-from Backend.tests.unit.test_dynamo_database import test_term
+
+test_term = "Fall 2023"
 
 CLASSES_DICT = {"AERO 2001-Fall 2023": {
     "Subject": "AERO 2001", "Term": "Fall 2023", "Title": "Aerospace Engineering Graphical Design", 
@@ -34,7 +35,6 @@ def generate_db(mock_json_file, mock_boto3_resource) -> S3Database:
     mock_boto3_resource.return_value.Object.return_value = mock_s3_object
     mock_s3_object.get.return_value = {'Body': mock_json_file}
     
-    
     return S3Database()
 
 def test_create_db(monkeypatch):
@@ -56,11 +56,11 @@ def test_get_course_code_and_section_list():
 def test_get_terms():
     db = generate_db()
     expected_dict = {
-    "Fall 2023": {
-        "ReadingWeekStart": "2023-10-20", 
-        "ReadingWeekEnd": "2023-10-30", 
-        "ReadingWeekNext": "2023-11-06"
-        }
+        "Fall 2023": {
+            "ReadingWeekStart": "2023-10-20", 
+            "ReadingWeekEnd": "2023-10-30", 
+            "ReadingWeekNext": "2023-11-06"
+            }
     }
     assert db.get_terms() == expected_dict
     

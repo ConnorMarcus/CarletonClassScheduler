@@ -1,4 +1,6 @@
 import json
+from unittest import mock
+from unittest.mock import patch
 import pytest
 import boto3
 from botocore.stub import Stubber
@@ -10,6 +12,7 @@ from Backend.src.model.term_duration import TermDuration
 from Backend.src import endpoints
 from Backend.src.database.database_type import course_database as database
 from Backend.tests.unit.test_dynamo_database import test_scan_response1 as response1, test_scan_response2 as response2
+from Backend.tests.unit.test_s3_database import generate_db
 
 TEST_TERM = "Fall 2023"
 SAMPLE_SCHEDULE = [[Section("SYSC 4001", "B", "35905", "Test Prof 2", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "08:35", "11:25")], "Registration Closed", [], "2023-09-06", "2023-12-08").to_dict()]]
@@ -168,21 +171,27 @@ def test_generate_schedules_with_invalid_filters(generate_schedules_with_invalid
     assert data["Error"] == True
     assert data["ErrorReason"] == "One or more of the filters are formatted incorrectly!"
 
-def test_get_terms():
-    stubber = Stubber(database.dynamodb)
-    stubber.add_response('scan', response2)
-    
-    with stubber:
-        ret = endpoints.get_terms_lambda_handler({}, "")
+@mock.patch('Backend.src.database.dynamo_database.S3Database')
+def test_get_terms(mock_db_class):
+    mock_db_class.return_value = generate_db() 
+    ret = endpoints.get_terms_lambda_handler({}, "")
     
     data = json.loads(ret["body"])
+    expected_dict = {
+        "Fall 2023": {
+            "ReadingWeekStart": "2023-10-20", 
+            "ReadingWeekEnd": "2023-10-30", 
+            "ReadingWeekNext": "2023-11-06"
+        }
+    }
+
     assert ret["statusCode"] == 200
     assert "Error" in ret["body"]
     assert "ErrorReason" in ret["body"]
     assert "Terms" in ret["body"]
     assert data["Error"] == False
     assert data["ErrorReason"] == ""
-    assert data["Terms"] == [TEST_TERM]
+    assert data["Terms"] == expected_dict
 
 def test_get_courses_without_term(get_courses_without_term_event):
     ret = endpoints.get_courses_lambda_handler(get_courses_without_term_event, "")

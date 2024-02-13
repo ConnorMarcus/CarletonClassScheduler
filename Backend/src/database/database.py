@@ -43,9 +43,9 @@ class CourseDatabase(ABC):
         '''
 
     @abstractmethod
-    def get_terms(self) -> List[str] | dict:
+    def get_terms(self) -> dict:
         '''
-        Gets the dict or list of terms from the database.
+        Gets the dict of terms from the database.
         '''
     
     @abstractmethod

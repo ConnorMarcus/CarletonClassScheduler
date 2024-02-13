@@ -5,6 +5,7 @@ import os
 from ..model.course import Course
 from ..logger import logger
 from .database import CourseDatabase
+from .s3_database import S3Database
 
 class DynamoDatabase(CourseDatabase):
     table_name = ''
@@ -81,29 +82,12 @@ class DynamoDatabase(CourseDatabase):
         course_map = courses[0]
         return self.convert_to_course(course_map)
 
-    def get_terms(self) -> List[str]:
+    def get_terms(self) -> dict:
         '''
-        Gets the list of terms in the database.
+        Gets the current terms in the database.
         '''
-        last_evaluated_key = None
-        all_courses = []
-        while True:
-            if last_evaluated_key is not None:
-                response = self.dynamodb.scan(
-                    TableName=self.table_name,
-                    ExclusiveStartKey = last_evaluated_key
-                )
-            else:
-                response = self.dynamodb.scan(
-                    TableName=self.table_name
-                )
-            courses = self.deserialize_response(response)
-            all_courses.extend(courses)
-            last_evaluated_key = response.get("LastEvaluatedKey")
-            if last_evaluated_key is None:
-                break
-        
-        return list({course.get(self.term_column) for course in all_courses})
+        # just read from JSON file to get terms since we also need to get reading week info (which is not currently in a DynamoDB table)
+        return S3Database().get_terms()  
     
     def get_course_code_and_section_list(self, term: str) -> List[str]:
         '''

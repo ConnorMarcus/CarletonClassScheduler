@@ -4,6 +4,7 @@ from botocore.stub import Stubber
 boto3.setup_default_session(region_name="us-east-1")
 from Backend.src.database.dynamo_database import DynamoDatabase
 from Backend.src.database.database_type import course_database
+from Backend.tests.unit.test_s3_database import generate_db
 
 test_term = "Fall 2023"
 
@@ -77,14 +78,15 @@ def test_get_course_code_and_section_list():
     assert sorted(result) == ['ARCH 4505', 'ARCH 4505 A', 'SYSC 4001', 'SYSC 4001 B']
 
 def test_get_terms():
-    stubber = Stubber(course_database.dynamodb)
-    stubber.add_response('scan', test_scan_response1)
-    stubber.add_response('scan', test_scan_response2)
-
-    with stubber:
-        result = course_database.get_terms()
-
-    assert result == [test_term]
+    db = generate_db()
+    expected_dict = {
+    "Fall 2023": {
+        "ReadingWeekStart": "2023-10-20", 
+        "ReadingWeekEnd": "2023-10-30", 
+        "ReadingWeekNext": "2023-11-06"
+        }
+    }
+    assert db.get_terms() == expected_dict
 
 def test_get_course():
     stubber = Stubber(course_database.dynamodb)
