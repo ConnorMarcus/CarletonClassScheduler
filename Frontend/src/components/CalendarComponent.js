@@ -30,8 +30,10 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
     };
 
     const copyCRNsToClipboard = () => {
-        const uniqueCRNs = Array.from(new Set(events[scheduleCount].map(event => event.crn)));
-        const crnString = uniqueCRNs.join(', ');
+        const courseCRNs = Array.from(new Set(events[scheduleCount].map(event => event.crn)));
+        const asyncCourseCRNs = Array.from(new Set(asyncCourses[scheduleCount].map(event => event.crn)));
+        const allCRNs = courseCRNs.concat(asyncCourseCRNs);
+        const crnString = allCRNs.join(', ');
         navigator.clipboard.writeText(crnString)
             .then(() => {
                 alert(`CRNs copied to clipboard: ${crnString}`);
@@ -66,7 +68,7 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
             <div className="async-courses">
                 {asyncCourses[scheduleCount].length !== 0 && (<p>Courses without assigned meeting times</p>)}
                 {asyncCourses[scheduleCount]?.map((course, index) => (
-                    <p key={index}><b>{course}</b></p>
+                    <p key={index}><b>{course.title}</b></p>
                 ))}
             </div>
         </div >

@@ -41,7 +41,9 @@
 }
 
 .submit-button,
-.clear-button {
+.clear-all-button,
+.clear-courses-button,
+.clear-filters-button {
     padding: 10px;
     margin: 10px;
     background-color: #BF122B;
@@ -51,7 +53,9 @@
     cursor: pointer;
 }
 
-.clear-button {
+.clear-all-button,
+.clear-courses-button,
+.clear-filters-button {
     background-color: #080B07;
 }
 
