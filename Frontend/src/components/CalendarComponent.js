@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import rrulePlugin from '@fullcalendar/rrule';
 import '../styles/CalendarComponent.css';
-
+import { getCourseTime } from '../common/utils';
 
 const MyCalendar = ({ title, events, asyncCourses }) => {
     const [scheduleCount, setScheduleCount] = useState(0);
@@ -46,6 +46,34 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
             });
     };
 
+    const handleEventClick = (event) => {
+        console.log("wtf")
+        const title = event["event"]["_def"]["title"];
+        const crn = event["event"]["_def"]["extendedProps"]["crn"];
+        const instructor = event["event"]["_def"]["extendedProps"]["instructor"];
+        const status = event["event"]["_def"]["extendedProps"]["status"];
+
+        let startTimeStr, endTimeStr;
+
+        // Biweekly labs have rrule and dates are stored differently
+        if (event["event"]["_def"]["recurringDef"]["typeData"].hasOwnProperty("rruleSet")) {
+            const duration = event["event"]["_def"]["recurringDef"]["duration"]["milliseconds"];
+            const startTimeDateStr = event["event"]["_def"]["recurringDef"]["typeData"]["rruleSet"]["_rrule"][0]["options"]["dtstart"];
+            let date = new Date(startTimeDateStr);
+            startTimeStr = `${date.getUTCHours()}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
+            date = new Date(date.getTime() + duration);
+            endTimeStr = `${date.getUTCHours()}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
+        } else {
+            const startTimeMsec = event["event"]["_def"]["recurringDef"]["typeData"]["startTime"]["milliseconds"];
+            const endTimeMsec = event["event"]["_def"]["recurringDef"]["typeData"]["endTime"]["milliseconds"];
+            startTimeStr = getCourseTime(startTimeMsec);
+            endTimeStr = getCourseTime(endTimeMsec);
+        }
+
+        const alertMsg = `Title: ${title}\nTime: ${startTimeStr} - ${endTimeStr}\nInstructor: ${instructor}\nCRN: ${crn}\nStatus: ${status}`;
+        alert(alertMsg);
+    };
+
     return (
         <div id="calendar">
             <h2 id="calendar-title">{title}</h2>
@@ -67,6 +95,7 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
                 height="auto"
                 initialDate={earliestStartDate(events)}
                 events={events[scheduleCount]}
+                eventClick={handleEventClick}
             />
             <div className="async-courses">
                 {asyncCourses.length > 0 && (<p><b>Courses without assigned meeting times</b></p>)}
