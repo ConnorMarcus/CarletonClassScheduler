@@ -32,7 +32,7 @@ def test_lambda_handler():
         with patch(f"{FILE_PATH}.write_terms_courses_to_s3") as mock_write_terms:
             lambda_handler(event=None, context=None)
 
-            expected_result = {"Fall 2023": {"Classes": ["AERO 2001", "AERO 2001 A"]}}
+            expected_result = {"Fall 2023": ["AERO 2001", "AERO 2001 A"]}
             mock_write_terms.assert_called_once_with(expected_result)
 
 

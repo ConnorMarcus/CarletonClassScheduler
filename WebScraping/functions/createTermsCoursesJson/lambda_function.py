@@ -6,7 +6,6 @@ BUCKET_NAME = "carletonschedulingtool"
 KEY_PATH = "web-scraping-stepfunction/"
 CLASSES_FILENAME = "classes.json"
 TERMS_COURSES_FILENAME = "terms_courses.json"
-CLASSES_KEY = "Classes"
 
 def lambda_handler(event: dict, context: dict) -> str:
     terms_courses_dict = {}
@@ -15,10 +14,10 @@ def lambda_handler(event: dict, context: dict) -> str:
     for course in classes_list:
         subject = course["Subject"]
         term_key = course["Term"]
-        terms_courses_dict.setdefault(term_key, {}).setdefault(CLASSES_KEY, []).append(subject)
+        terms_courses_dict.setdefault(term_key, []).append(subject)
         
         for lecture in course["LectureSections"]:
-            terms_courses_dict.get(term_key).get(CLASSES_KEY).append(f"{subject} {lecture['SectionID']}")
+            terms_courses_dict.get(term_key).append(f"{subject} {lecture['SectionID']}")
 
     return write_terms_courses_to_s3(terms_courses_dict)
             
