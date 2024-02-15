@@ -1,5 +1,5 @@
 import copy
-from typing import List, Set, Dict
+from typing import List, Dict
 import boto3
 import os
 from ..model.course import Course
@@ -13,6 +13,7 @@ class S3Database(CourseDatabase):
         aws_test_db_secret_access_key = os.environ.get('aws_test_db_secret_access_key', None)
         bucket_name = "carletonschedulingtool"
         classes_json_file = "web-scraping-stepfunction/classes.json"
+        terms_json_file = "web-scraping-stepfunction/terms.json"
         terms_courses_json_file = "web-scraping-stepfunction/terms_courses.json"
 
         # If running locally
@@ -28,14 +29,11 @@ class S3Database(CourseDatabase):
             s3 = boto3.resource(self.get_resource())
 
         classes_file = s3.Object(bucket_name, classes_json_file)
+        terms_file = s3.Object(bucket_name, terms_json_file)
         terms_courses_file = s3.Object(bucket_name, terms_courses_json_file)
         self.classes_dict: Dict[str, dict] = json.load(classes_file.get()["Body"])
-        self.terms_courses_dict: Dict[str, dict] = json.load(terms_courses_file.get()["Body"])
-        self.terms_dict = copy.deepcopy(self.terms_courses_dict)
-        
-        # Remove courses from terms dictionary
-        for term_dict in self.terms_dict.values():
-            term_dict.pop("Classes", None)
+        self.terms_dict: Dict[str, dict] = json.load(terms_file.get()["Body"])
+        self.terms_courses_dict: Dict[str, List] = json.load(terms_courses_file.get()["Body"])
 
     def get_resource(self):
         return 's3'
@@ -63,4 +61,4 @@ class S3Database(CourseDatabase):
         '''
         Gets a list of the course codes and sections for a given term.
         '''
-        return self.terms_courses_dict.get(term, {}).get("Classes", [])
+        return self.terms_courses_dict.get(term, [])
