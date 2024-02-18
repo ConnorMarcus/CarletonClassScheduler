@@ -37,7 +37,6 @@ export const parseInputs = (inputs) => {
 
 export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
     const events = [];
-    const asyncEvents = [];
     schedules.forEach(schedule => {
         const eventsForCurrentSchedule = [];
         const asyncCoursesForCurrentSchedule = [];
@@ -78,7 +77,7 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
             if (courseData.Times.length === 0) {
                 const asyncData = {
                     title: `${courseCode}${section}`,
-                    crn: courseData.CRN
+                    crn: courseData.CRN,
                 }
                 asyncCoursesForCurrentSchedule.push(asyncData);
             }
@@ -86,12 +85,13 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
         if (eventsForCurrentSchedule.length > 0) {
             assignColoursToEvents(eventsForCurrentSchedule, colours);
         }
-        events.push(eventsForCurrentSchedule);
-        asyncEvents.push(asyncCoursesForCurrentSchedule)
+        events.push({
+            "sync": eventsForCurrentSchedule,
+            "async": asyncCoursesForCurrentSchedule
+        });
     });
     const uniqueEvents = removeDuplicateEvents(events);
-    const uniqueAsyncEvents = removeDuplicateAsyncEvents(asyncEvents);
-    return [uniqueEvents, uniqueAsyncEvents];
+    return uniqueEvents;
 };
 
 export const getCourseTime = (milliseconds) => {
@@ -253,21 +253,16 @@ const removeDuplicateEvents = (events) => {
     const uniqueLists = [];
     const seenLists = new Set();
 
-    for (const sublist of events) {
-        const sublistString = JSON.stringify(sublist);
+    for (let i = 0; i < events.length; i++) {
+        let obj = events[i];
+        const sublistString = JSON.stringify(obj["sync"]);
         if (!seenLists.has(sublistString)) {
-            uniqueLists.push(sublist);
+            uniqueLists.push({
+                "sync": obj["sync"],
+                "async": obj["async"]
+            });
             seenLists.add(sublistString);
         }
-    };
+    }
     return uniqueLists;
-};
-
-const removeDuplicateAsyncEvents = (events) => {
-    const flatArray = events.flat();
-    const uniqueEvents = new Set();
-    flatArray.forEach(obj => {
-        uniqueEvents.add(JSON.stringify(obj));
-    });
-    return Array.from(uniqueEvents).map(obj => JSON.parse(obj));
 };

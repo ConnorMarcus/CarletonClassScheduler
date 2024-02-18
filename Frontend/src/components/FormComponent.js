@@ -28,7 +28,6 @@ const FormComponent = () => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [events, setEvents] = useState([]);
-    const [asyncEvents, setAsyncEvents] = useState([]);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
     const [termsAndReadingWeek, setTermsAndReadingWeek] = useState({});
@@ -131,8 +130,7 @@ const FormComponent = () => {
 
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
             fetchSchedules(inputValues, termsAndReadingWeek).then((classes) => {
-                setEvents(classes[0]);
-                setAsyncEvents(classes[1])
+                setEvents(classes);
                 setIsFormSubmitted(true);
             }).catch((error) => {
                 if (error.name === NO_SCHEDULES_ERROR || error.name === ALL_ASYNC_COURSES_ERROR) {
@@ -150,7 +148,6 @@ const FormComponent = () => {
     const handleClear = () => {
         setIsFormSubmitted(false);
         setEvents([]);
-        setAsyncEvents([]);
     };
 
     const handleClearAll = () => {
@@ -182,7 +179,7 @@ const FormComponent = () => {
     return isFormSubmitted ? (
         <div className="schedule-view">
             <button id="back-to-form" type="button" onClick={() => setIsFormSubmitted(false)}>Back to Form</button>
-            <Calendar title={inputValues.term} events={events} asyncCourses={asyncEvents} />
+            <Calendar title={inputValues.term} events={events} />
         </div>
     ) : (
         <div className="form-container">
