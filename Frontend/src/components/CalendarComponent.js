@@ -99,7 +99,7 @@ const MyCalendar = ({ title, events }) => {
             />
             <div className="async-courses">
                 {events[scheduleCount]["async"].length !== 0 && (<p>Courses without assigned meeting times</p>)}
-                {events[scheduleCount]["async"]?.map((course, index) => (
+                {events[scheduleCount]["async"].length !== 0 && events[scheduleCount]["async"]?.map((course, index) => (
                     <span key={index}><b className="async-course-name">{course.title}</b> - {course.crn}</span>)).reduce((prev, curr) => [prev, ', ', curr])
                 }
             </div>
