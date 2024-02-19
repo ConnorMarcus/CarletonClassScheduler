@@ -5,7 +5,7 @@ import rrulePlugin from '@fullcalendar/rrule';
 import '../styles/CalendarComponent.css';
 import { getCourseTime } from '../common/utils';
 
-const MyCalendar = ({ title, events, asyncCourses }) => {
+const MyCalendar = ({ title, events }) => {
     const [scheduleCount, setScheduleCount] = useState(0);
 
     const handlePrevClick = () => {
@@ -17,9 +17,10 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
     };
 
     const earliestStartDate = (courses) => {
-        let earliestDate = courses[0][0].startRecur;
+        let earliestDate = courses[0]["sync"][0].startRecur;
         for (const schedule of courses) {
-            for (const course of schedule) {
+            const obj = schedule["sync"];
+            for (const course of obj) {
                 const currDate = course.startRecur;
                 if (currDate < earliestDate) {
                     earliestDate = currDate;
@@ -30,9 +31,9 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
     };
 
     const copyCRNsToClipboard = () => {
-        const syncCourseCRNs = Array.from(new Set(events[scheduleCount].map(event => event.crn)));
+        const syncCourseCRNs = Array.from(new Set(events[scheduleCount]["sync"].map(event => event.crn)));
         const syncStr = syncCourseCRNs.join(', ');
-        const asyncCourseCRNs = Array.from(new Set(asyncCourses.map(event => event.crn)));
+        const asyncCourseCRNs = Array.from(new Set(events[scheduleCount]["async"].map(event => event.crn)));
         let asyncStr;
         navigator.clipboard.writeText(syncStr)
             .then(() => {
@@ -47,7 +48,6 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
     };
 
     const handleEventClick = (event) => {
-        console.log("wtf")
         const title = event["event"]["_def"]["title"];
         const crn = event["event"]["_def"]["extendedProps"]["crn"];
         const instructor = event["event"]["_def"]["extendedProps"]["instructor"];
@@ -94,13 +94,14 @@ const MyCalendar = ({ title, events, asyncCourses }) => {
                 dayHeaderFormat={{ weekday: 'long' }}
                 height="auto"
                 initialDate={earliestStartDate(events)}
-                events={events[scheduleCount]}
+                events={events[scheduleCount]["sync"]}
                 eventClick={handleEventClick}
             />
             <div className="async-courses">
-                {asyncCourses.length > 0 && (<p><b>Courses without assigned meeting times</b></p>)}
-                {asyncCourses.length > 0 && (asyncCourses.map(course => (
-                    <span key={course.crn}><b className="async-course-name">{course.title}</b> - {course.crn}</span>)).reduce((prev, curr) => [prev, ', ', curr]))}
+                {events[scheduleCount]["async"].length !== 0 && (<p>Courses without assigned meeting times</p>)}
+                {events[scheduleCount]["async"].length !== 0 && events[scheduleCount]["async"]?.map((course, index) => (
+                    <span key={index}><b className="async-course-name">{course.title}</b> - {course.crn}</span>)).reduce((prev, curr) => [prev, ', ', curr])
+                }
             </div>
         </div >
     );
