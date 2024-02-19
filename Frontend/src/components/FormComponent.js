@@ -46,7 +46,7 @@ const FormComponent = () => {
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
     const [termsAndReadingWeek, setTermsAndReadingWeek] = useState({});
-    const [rows, setRows] = useState([{ id: 1, expanded: true }]);
+    const [rows, setRows] = useState([{ id: 1 }]);
     const [rowCount, setRowCount] = useState(1);
 
     useEffect(() => {
@@ -194,7 +194,7 @@ const FormComponent = () => {
 
     const addRow = () => {
         if (rowCount < 5) {
-            const newRow = { id: rows.length + 1, expanded: true };
+            const newRow = { id: rows.length + 1 };
             setRows([...rows, newRow]);
             setRowCount(rowCount + 1);
         }
