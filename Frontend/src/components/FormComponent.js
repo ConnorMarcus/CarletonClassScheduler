@@ -21,6 +21,21 @@ const initialFormState = {
     preferredDayOff: '',
     noClassBefore: '',
     noClassAfter: '',
+    extraDay1: '',
+    betweenDay1Start: '',
+    betweenDay1End: '',
+    extraDay2: '',
+    betweenDay2Start: '',
+    betweenDay2End: '',
+    extraDay3: '',
+    betweenDay3Start: '',
+    betweenDay3End: '',
+    extraDay4: '',
+    betweenDay4Start: '',
+    betweenDay4End: '',
+    extraDay5: '',
+    betweenDay5Start: '',
+    betweenDay5End: '',
 };
 
 const FormComponent = () => {
@@ -31,6 +46,8 @@ const FormComponent = () => {
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
     const [termsAndReadingWeek, setTermsAndReadingWeek] = useState({});
+    const [rows, setRows] = useState([{ id: 1 }]);
+    const [rowCount, setRowCount] = useState(1);
 
     useEffect(() => {
         const getAllCourses = async (term) => {
@@ -122,7 +139,10 @@ const FormComponent = () => {
                     return true;
                 } else if (key.includes("course") || key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter") {
                     return true;
-                } else {
+                } else if (key.includes("extraDay") || key.includes("betweenDay")) {
+                    return true;
+                }
+                else {
                     return false;
                 }
             }
@@ -159,7 +179,7 @@ const FormComponent = () => {
         const inputValuesCopy = inputValues;
         for (const key in inputValuesCopy) {
             if (filters) {
-                if (key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter") {
+                if (key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter" || key.includes("extraDay") || key.includes("betweenDay")) {
                     inputValuesCopy[key] = '';
                 }
             } else {
@@ -170,6 +190,14 @@ const FormComponent = () => {
         }
         setInputValues(inputValuesCopy);
         handleClear();
+    };
+
+    const addRow = () => {
+        if (rowCount < 5) {
+            const newRow = { id: rows.length + 1 };
+            setRows([...rows, newRow]);
+            setRowCount(rowCount + 1);
+        }
     };
 
     const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
@@ -209,7 +237,8 @@ const FormComponent = () => {
                     ))}
                 </div>
             </div>
-            <h2 className="Header">Filter<span className='optional-input'> (opt.)</span></h2>
+            <h2 className="Header">Filters<span className='optional-input'> (opt.)</span></h2>
+            <h3 className="Header">Weekly</h3>
             <div className="filters">
                 <label className="day-off-label">Preferred Day Off</label>
                 <Select
@@ -232,6 +261,45 @@ const FormComponent = () => {
                     onChange={(e) => handleTimeInputChange('noClassAfter', e)}
                     className="time-input"
                 />
+            </div>
+            <div className="daily-filters">
+                <div className="daily-filter-header">
+                    <h3 className="Header">Daily</h3>
+                    <button className="daily-filter-btn" onClick={addRow} disabled={rowCount === 5}>+</button>
+                </div>
+                <div className="filters-container">
+                    {rows.map(row => (
+                        <div key={row.id} className="filters-row">
+                            <div className="filters-column">
+                                <label className="day-off-label">Day</label>
+                                <Select
+                                    value={{ value: inputValues[`extraDay${row.id + 1}`], label: inputValues[`extraDay${row.id + 1}`] }}
+                                    onChange={(selectedOption) => handleInputChange(`extraDay${row.id + 1}`, selectedOption)}
+                                    options={selectOptionsDaysOff}
+                                    className="select-input"
+                                />
+                            </div>
+                            <div className="filters-column">
+                                <label className="label">No class between</label>
+                                <input
+                                    type="time"
+                                    value={inputValues[`betweenDay${row.id + 1}Start`]}
+                                    onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}Start`, e)}
+                                    className="time-input"
+                                />
+                            </div>
+                            <div className="filters-column">
+                                <label className="label">and</label>
+                                <input
+                                    type="time"
+                                    value={inputValues[`betweenDay${row.id + 1}End`]}
+                                    onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}End`, e)}
+                                    className="time-input"
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
             <div className="button-container">
                 <button type="submit" onClick={handleSubmit} className="submit-button">

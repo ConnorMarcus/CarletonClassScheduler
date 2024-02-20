@@ -38,6 +38,7 @@
 
 .button-container {
     text-align: center;
+    margin-top: 20px;
 }
 
 .submit-button,
@@ -79,4 +80,48 @@ span.optional-input {
     font-size: small;
     font-style: italic;
     font-weight: normal;
+}
+
+.filters-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filters-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.filters-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 20px;
+}
+
+.filters-column:last-child {
+    margin-right: 0;
+}
+
+.filters-row.collapsed {
+    display: none;
+}
+
+.daily-filters {
+    display: flex;
+    flex-direction: column;
+}
+
+.daily-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.daily-filter-btn {
+    border-radius: 12px;
+    border: 2px solid #BF122B;
+    background-color: white;
 }

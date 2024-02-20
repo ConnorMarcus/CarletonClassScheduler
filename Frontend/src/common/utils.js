@@ -25,12 +25,27 @@ export const parseInputs = (inputs) => {
         filters.DayOfWeek = convertToDayShortForm(inputs.preferredDayOff);
     }
 
+    const dailyBetweenTimes = [];
+    for (let i = 1; i <= 5; i++) {
+        const day = inputs[`extraDay${i}`];
+        const t1 = inputs[`betweenDay${i}Start`];
+        const t2 = inputs[`betweenDay${i}End`]
+        if (day !== "" && t1 !== "" && t2 !== "") {
+            const dailyFilter = {
+                "DayOfWeek": convertToDayShortForm(day),
+                "StartTime": t1,
+                "EndTime": t2
+            }
+            dailyBetweenTimes.push(dailyFilter);
+        }
+    }
+    filters.BetweenTimes = dailyBetweenTimes;
+
     const requestFormat = {
         Term: inputs.term,
         ...(Object.keys(filters).length > 0 ? { Filters: filters } : {}),
         Courses: courses.map(course => ({ SectionFilter: getCourseSection(course), Name: trimCourseSection(course) })),
     };
-
     return JSON.stringify(requestFormat, null, 5);
 }
 
