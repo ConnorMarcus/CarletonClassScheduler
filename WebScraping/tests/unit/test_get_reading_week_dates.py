@@ -9,6 +9,17 @@ TERMS_DICT = {
         "ReadingWeekStart": "2023-10-21", 
         "ReadingWeekEnd": "2023-10-30", 
         "ReadingWeekNext": "2023-11-06"
+    },
+    "Winter 2024": {
+        "ReadingWeekStart": "2024-02-17", 
+        "ReadingWeekEnd": "2024-02-26", 
+        "ReadingWeekNext": "2024-03-04"
+        
+    },
+    "Summer 2024": {
+        "ReadingWeekStart": "2024-06-18", 
+        "ReadingWeekEnd": "2024-07-02", 
+        "ReadingWeekNext": "2024-07-02"
     }
 }
 
@@ -85,32 +96,60 @@ MOCK_HTML = """
 """
 
 def test_lambda_handler():
-    with patch(f'{FILE_PATH}.get_parser') as mock_get_parser, \
-         patch(f'{FILE_PATH}.get_classes_dict') as mock_get_classes_dict, \
+    with patch(f'{FILE_PATH}.get_classes_dict') as mock_get_classes_dict, \
+         patch(f'{FILE_PATH}.make_http_request') as mock_make_http_request, \
+         patch(f'{FILE_PATH}.get_scraped_terms_dict') as mock_get_scraped_terms_dict, \
          patch(f'{FILE_PATH}.write_terms_file_to_s3') as mock_write_terms_file_to_s3:
         
-        mock_get_parser.return_value = BeautifulSoup(MOCK_HTML, "html.parser")
         mock_get_classes_dict.return_value = CLASSES_DICT
+        test_html = "<html><body>Mock HTML</body></html>"
+        mock_http_response = MagicMock()
+        mock_http_response.status = 200
+        mock_http_response.data = test_html.encode()
+        mock_make_http_request.return_value = mock_http_response
+
+        mock_get_scraped_terms_dict.return_value = TERMS_DICT
         mock_write_terms_file_to_s3.return_value = {"Response": json.dumps("Terms JSON written to s3 with reading week dates!")}
 
         lambda_handler({}, {})
 
-        mock_get_parser.assert_called_once()
         mock_get_classes_dict.assert_called_once()
+        mock_make_http_request.assert_called_once()
+        mock_get_scraped_terms_dict.assert_called_once()
+        mock_write_terms_file_to_s3.assert_called_once()
+
+        # Reset mocks and call again with status code 404
+        mock_get_classes_dict.reset_mock()  
+        mock_make_http_request.reset_mock()
+        mock_write_terms_file_to_s3.reset_mock()
+
+        mock_get_classes_dict.return_value = CLASSES_DICT
+        mock_http_response.status = 404
+        mock_make_http_request.return_value = mock_http_response
+
+        mock_get_scraped_terms_dict.return_value = TERMS_DICT
+        mock_write_terms_file_to_s3.return_value = {"Response": json.dumps("Terms JSON written to s3 with reading week dates!")}
+
+        lambda_handler({}, {})
+
+        mock_get_classes_dict.assert_called_once()
+        mock_make_http_request.assert_called_once()
         mock_write_terms_file_to_s3.assert_called_once()
 
 
-def test_get_parser():
-    test_html = "<html><body>Mocked HTML</body></html>"
-    expected_bs4 = BeautifulSoup(test_html, "html.parser")
+def test_make_http_request():
+    test_html = "<html><body>Mock HTML</body></html>"
+    expected_response = MagicMock()
+    expected_response.status = 200
+    expected_response.data = test_html.encode()
 
     with patch("urllib3.PoolManager.request") as mock_pool_manager:
-        mock_response = MagicMock()
-        mock_response.data = test_html.encode()
-        mock_pool_manager.return_value = mock_response
+        mock_pool_manager.return_value = expected_response
 
-        results = get_parser()
-        assert results == expected_bs4
+        actual_response = make_http_request()
+
+        assert actual_response.status == expected_response.status
+        assert actual_response.data.decode() == test_html
 
 
 def test_get_s3_object():
@@ -140,9 +179,21 @@ def test_get_classes_dict():
 
 
 def test_get_terms_from_class_dict():
+    expected_terms = list(TERMS_DICT.keys())
     results = get_terms_from_class_dict(CLASSES_DICT)
-    expected_terms = ["Fall 2023", "Winter 2024", "Summer 2024"]
     assert results == expected_terms
+
+
+def test_get_scraped_terms_dict():
+    terms = list(TERMS_DICT.keys())
+    results = get_scraped_terms_dict(terms, BeautifulSoup(MOCK_HTML, "html.parser"))
+    assert results == TERMS_DICT
+
+
+def test_get_default_terms_dict():
+    terms = list(TERMS_DICT.keys())
+    results = get_default_terms_dict(terms)
+    assert results == TERMS_DICT
 
 
 def test_get_formatted_fall_or_winter_dates():
