@@ -1,4 +1,3 @@
-import copy
 from typing import List, Dict
 import boto3
 import os

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Set
+from typing import List
 from ..model.course import Course
 from ..model.section import Section
 from ..model.term_duration import TermDuration
