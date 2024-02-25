@@ -11,6 +11,7 @@ from Backend.src.model.day_of_week import DayOfWeek
 from Backend.src.model.term_duration import TermDuration
 from Backend.src import endpoints
 from Backend.src.database.database_type import course_database as database
+from Backend.src.database.database_error import CouresDatabaseException
 from Backend.tests.unit.test_dynamo_database import test_scan_response1 as response1, test_scan_response2 as response2
 from Backend.tests.unit.test_s3_database import generate_db
 
@@ -74,6 +75,17 @@ def test_generate_schedules_invalid_json():
     assert "ErrorReason" in ret["body"]
     assert data["Error"] == True
     assert data["ErrorReason"] == "The body of the request must contain JSON!"
+
+@patch('Backend.src.endpoints.get_inputted_courses', side_effect=CouresDatabaseException())
+def test_generate_schedules_without_database(my_patch, generate_schedules_event):
+    ret = endpoints.generate_schedules_lambda_handler(generate_schedules_event, "")
+    data = json.loads(ret["body"])
+
+    assert ret["statusCode"] == 503
+    assert "Error" in ret["body"]
+    assert "ErrorReason" in ret["body"]
+    assert data["Error"] == True
+    assert data["ErrorReason"] == "This service is currently unavailable, please try again later!"
 
 def test_generate_schedules_without_term(empty_json_event):
     ret = endpoints.generate_schedules_lambda_handler(empty_json_event, "")
@@ -193,6 +205,18 @@ def test_get_terms(mock_db_class):
     assert data["ErrorReason"] == ""
     assert data["Terms"] == expected_dict
 
+@patch('Backend.src.database.dynamo_database.DynamoDatabase.get_terms', side_effect=CouresDatabaseException())
+@patch('Backend.src.database.s3_database.S3Database.get_terms', side_effect=CouresDatabaseException())
+def test_get_terms_without_database(dynamo_patch, s3_patch):
+    ret = endpoints.get_terms_lambda_handler({}, "")
+    data = json.loads(ret["body"])
+
+    assert ret["statusCode"] == 503
+    assert "Error" in ret["body"]
+    assert "ErrorReason" in ret["body"]
+    assert data["Error"] == True
+    assert data["ErrorReason"] == "This service is currently unavailable, please try again later!"
+
 def test_get_courses_without_term(get_courses_without_term_event):
     ret = endpoints.get_courses_lambda_handler(get_courses_without_term_event, "")
     
@@ -219,6 +243,18 @@ def test_get_courses(get_courses_event):
     assert data["Error"] == False
     assert data["ErrorReason"] == ""
     assert sorted(data["Courses"]) == ['ARCH 4505', 'ARCH 4505 A', 'SYSC 4001', 'SYSC 4001 B']
+
+@patch('Backend.src.database.dynamo_database.DynamoDatabase.get_course_code_and_section_list', side_effect=CouresDatabaseException())
+@patch('Backend.src.database.s3_database.S3Database.get_course_code_and_section_list', side_effect=CouresDatabaseException())
+def test_get_courses_without_database(dynamo_patch, s3_patch, get_courses_event):
+    ret = endpoints.get_courses_lambda_handler(get_courses_event, "")
+    data = json.loads(ret["body"])
+
+    assert ret["statusCode"] == 503
+    assert "Error" in ret["body"]
+    assert "ErrorReason" in ret["body"]
+    assert data["Error"] == True
+    assert data["ErrorReason"] == "This service is currently unavailable, please try again later!"
 
 def test_convert_to_classtime():
     classtime = endpoints.convert_to_classtime({"DayOfWeek":"Mon", "StartTime":"11:00", "EndTime":"15:00"})
