@@ -61,3 +61,7 @@
 .async-course-name {
     color: #BF122B;
 }
+
+.fc-event-main:hover {
+    cursor: pointer;
+}

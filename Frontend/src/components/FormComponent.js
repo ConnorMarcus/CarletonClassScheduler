@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import '../styles/FormComponent.css';
-import Calendar from './CalendarComponent'
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 
 const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -38,11 +37,8 @@ const initialFormState = {
     betweenDay5End: '',
 };
 
-const FormComponent = () => {
-
+const FormComponent = ({setDisplayCalendar, setTerm, setSchedules}) => {
     const [inputValues, setInputValues] = useState(initialFormState);
-    const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-    const [events, setEvents] = useState([]);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
     const [termsAndReadingWeek, setTermsAndReadingWeek] = useState({});
@@ -150,8 +146,9 @@ const FormComponent = () => {
 
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
             fetchSchedules(inputValues, termsAndReadingWeek).then((classes) => {
-                setEvents(classes);
-                setIsFormSubmitted(true);
+                setTerm(inputValues.term);
+                setSchedules(classes);
+                setDisplayCalendar(true);
             }).catch((error) => {
                 if (error.name === NO_SCHEDULES_ERROR || error.name === ALL_ASYNC_COURSES_ERROR) {
                     alert(error.message);
@@ -166,8 +163,8 @@ const FormComponent = () => {
     };
 
     const handleClear = () => {
-        setIsFormSubmitted(false);
-        setEvents([]);
+        setDisplayCalendar(false);
+        setSchedules([]);
     };
 
     const handleClearAll = () => {
@@ -204,14 +201,8 @@ const FormComponent = () => {
     const selectOptionsTerms = Object.keys(termsAndReadingWeek).map(day => ({ value: day, label: day }));
     const selectedTermCourses = coursesList[inputValues.term] || [];
 
-    return isFormSubmitted ? (
-        <div className="schedule-view">
-            <button id="back-to-form" type="button" onClick={() => setIsFormSubmitted(false)}>Back to Form</button>
-            <Calendar title={inputValues.term} events={events} />
-        </div>
-    ) : (
-        <div className="form-container">
-
+    return  (
+        <div className="form-container" id="form-component">
             <div className="courses">
                 <div className="term">
                     <label className='term-label'>Term<span className="required-input"> *</span></label>
@@ -222,7 +213,7 @@ const FormComponent = () => {
                         className="select-input"
                     />
                 </div>
-                <h2 className="header">Courses</h2>
+                <h2 className="header">Courses<span className="required-input"> *</span></h2>
                 <div className="grid-container">
                     {Object.keys(inputValues).slice(0, 9).map((inputName, index) => (
                         <Select
@@ -230,7 +221,6 @@ const FormComponent = () => {
                             value={{ value: inputValues[inputName], label: inputValues[inputName] }}
                             onChange={(selectedOption) => handleInputChange(inputName, selectedOption)}
                             options={selectedTermCourses.map(course => ({ value: course, label: course }))}
-                            //options={selectOptionsCourses}
                             className="select-input"
                             maxMenuHeight={115}
                         />

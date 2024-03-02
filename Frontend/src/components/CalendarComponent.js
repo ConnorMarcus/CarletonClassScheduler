@@ -5,7 +5,7 @@ import rrulePlugin from '@fullcalendar/rrule';
 import '../styles/CalendarComponent.css';
 import { getCourseTime } from '../common/utils';
 
-const MyCalendar = ({ title, events }) => {
+const MyCalendar = React.forwardRef(({ title, events }, ref) => {
     const [scheduleCount, setScheduleCount] = useState(0);
 
     const handlePrevClick = () => {
@@ -75,7 +75,7 @@ const MyCalendar = ({ title, events }) => {
     };
 
     return (
-        <div id="calendar">
+        <div id="calendar" ref={ref}>
             <h2 id="calendar-title">{title}</h2>
             <button className="crn-btn" type="button" onClick={copyCRNsToClipboard}>Export CRNs</button>
             <p id="schedule-carrousel">
@@ -105,6 +105,6 @@ const MyCalendar = ({ title, events }) => {
             </div>
         </div >
     );
-};
+});
 
 export default MyCalendar;

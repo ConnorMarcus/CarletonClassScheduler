@@ -1,0 +1,52 @@
+.landing-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: linear-gradient(-45deg, #8D0A21, #BF122B 40%, #b43040 60%, #8D0A21);
+    background-size: 200% 200%;
+    animation: gradient 10s ease infinite;
+    text-align: center;
+    margin-bottom: 200px;
+    color: white;
+}
+
+h1 {
+    font-size: 50px;
+    margin-bottom: 100px;
+}
+
+.button-wrapper {
+    display: flex;
+    gap: 30px;
+}
+
+.button {
+    color: white;
+    background-color: #BF122B;
+    text-decoration: none;
+    padding: 10px 15px;
+    border: solid black 2px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+}
+  
+.button:hover {
+    background-color: #9D0F26;
+}
+
+@keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+}
