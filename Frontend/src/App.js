@@ -15,12 +15,7 @@ const App = () => {
     }
   });
 
-  const displayCalendarComponent = () => {
-    if (displayCalendar) {
-      return <CalendarComponent title={term} events={schedules} ref={calendarRef}/>;
-    }
-    return null;
-  };
+  const displayCalendarComponent = () => (displayCalendar ? <CalendarComponent title={term} events={schedules} ref={calendarRef}/> : null);
 
   return (
     <div>
