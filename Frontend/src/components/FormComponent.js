@@ -37,7 +37,7 @@ const initialFormState = {
     betweenDay5End: '',
 };
 
-const FormComponent = ({setDisplayCalendar, setTerm, setSchedules}) => {
+const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCount}) => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
@@ -145,11 +145,13 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules}) => {
         );
 
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
+            setScheduleCount(0);
             fetchSchedules(inputValues, termsAndReadingWeek).then((classes) => {
                 setTerm(inputValues.term);
                 setSchedules(classes);
                 setDisplayCalendar(true);
             }).catch((error) => {
+                handleClear();
                 if (error.name === NO_SCHEDULES_ERROR || error.name === ALL_ASYNC_COURSES_ERROR) {
                     alert(error.message);
                 } else {
@@ -157,7 +159,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules}) => {
                 }
             });
         } else {
-            const error_msg = nonEmptyCoursesCount === 0 ? 'Please select a course' : "Please enter the Term";
+            const error_msg = inputValues.term !== '' ? 'Please select a course' : "Please enter the Term";
             alert(error_msg);
         }
     };
@@ -173,7 +175,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules}) => {
     }
 
     const handleClearOther = (filters = false) => {
-        const inputValuesCopy = inputValues;
+        const inputValuesCopy = { ...inputValues }; // Create shallow copy of object so that we are not modifying the object directly
         for (const key in inputValuesCopy) {
             if (filters) {
                 if (key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter" || key.includes("extraDay") || key.includes("betweenDay")) {

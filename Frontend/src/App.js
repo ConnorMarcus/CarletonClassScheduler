@@ -7,6 +7,7 @@ const App = () => {
   const [displayCalendar, setDisplayCalendar] = useState(false);
   const [term, setTerm] = useState('');
   const [schedules, setSchedules] = useState([]);
+  const [scheduleCount, setScheduleCount] = useState(0);
   const calendarRef = useRef();
   
   useEffect(() => {
@@ -15,12 +16,12 @@ const App = () => {
     }
   });
 
-  const displayCalendarComponent = () => (displayCalendar ? <CalendarComponent title={term} events={schedules} ref={calendarRef}/> : null);
+  const displayCalendarComponent = () => (displayCalendar ? <CalendarComponent title={term} events={schedules} scheduleCount={scheduleCount} setScheduleCount={setScheduleCount} ref={calendarRef}/> : null);
 
   return (
     <div>
       <LandingPageComponent />
-      <FormComponent setDisplayCalendar={setDisplayCalendar} setTerm={setTerm} setSchedules={setSchedules}/>
+      <FormComponent setDisplayCalendar={setDisplayCalendar} setTerm={setTerm} setSchedules={setSchedules} setScheduleCount={setScheduleCount}/>
       {displayCalendarComponent()}
     </div>
   );

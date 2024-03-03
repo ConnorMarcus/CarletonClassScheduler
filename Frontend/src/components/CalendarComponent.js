@@ -5,9 +5,7 @@ import rrulePlugin from '@fullcalendar/rrule';
 import '../styles/CalendarComponent.css';
 import { getCourseTime } from '../common/utils';
 
-const MyCalendar = React.forwardRef(({ title, events }, ref) => {
-    const [scheduleCount, setScheduleCount] = useState(0);
-
+const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCount }, ref) => {
     const handlePrevClick = () => {
         setScheduleCount((prevCount) => prevCount - 1);
     };
