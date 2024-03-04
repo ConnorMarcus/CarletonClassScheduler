@@ -37,7 +37,7 @@ const initialFormState = {
     betweenDay5End: '',
 };
 
-const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCount}) => {
+const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError}) => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
@@ -50,7 +50,8 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
             fetchCourses(term)
                 .then((result) => {
                     if (result.Error) {
-                        console.log("Failed to get courses: ", result.ErrorReason);
+                        console.log("Failed to get courses: ", result.ErrorReason); // Maybe remove console logs when done development
+                        setServerError(true);
                     } else {
                         setCoursesList(prev => ({
                             ...prev,
@@ -58,7 +59,8 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                         }));
                     }
                 }).catch((error) => {
-                    console.error("Error getting courses: ", error.message)
+                    console.error("Error getting courses: ", error.message) // Maybe remove console logs when done development
+                    setServerError(true);
                 });
         };
 
@@ -72,12 +74,14 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
         fetchTerms()
             .then((result) => {
                 if (result.Error) {
-                    console.log("Failed to get terms: ", result.ErrorReason);
+                    console.log("Failed to get terms: ", result.ErrorReason); // Maybe remove console logs when done development
+                    setServerError(true);
                 } else {
                     setTermsAndReadingWeek(result.Terms);
                 }
             }).catch((error) => {
-                console.error("Error getting terms: ", error.message);
+                console.error("Error getting terms: ", error.message); // Maybe remove console logs when done development
+                setServerError(true);
             })
     }, []);
 
@@ -155,7 +159,8 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                 if (error.name === NO_SCHEDULES_ERROR || error.name === ALL_ASYNC_COURSES_ERROR) {
                     alert(error.message);
                 } else {
-                    console.error("Error generating schedules: ", error.message);
+                    console.error("Error generating schedules: ", error.message); // Maybe remove console logs when done development
+                    setServerError(true);
                 }
             });
         } else {

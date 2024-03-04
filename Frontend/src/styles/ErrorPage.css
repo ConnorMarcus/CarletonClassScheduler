@@ -1,0 +1,16 @@
+.error-container {
+    text-align: center;
+    padding: 20px;
+    margin: auto;
+    max-width: 400px;
+    margin-top: 100px;
+  }
+  
+  .error-container h1 {
+    color: #ff5252;
+  }
+  
+  .error-container p {
+    color: #757575; 
+  }
+  
