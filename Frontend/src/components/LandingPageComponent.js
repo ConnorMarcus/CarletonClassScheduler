@@ -13,7 +13,7 @@ const LandingPageComponent = () => {
   return (
     <ThemeProvider theme={theme}>
       <Box className="landing-page">
-        <Typography variant="h2" sx={{marginBottom: '100px'}}>
+        <Typography variant="h2" sx={{ marginBottom: '100px' }}>
           Welcome to the Carleton University
           <br />
           Student Scheduler Tool
@@ -42,6 +42,7 @@ const LandingPageComponent = () => {
           <Grid item>
             <Button
               href="https://carleton.ca/"
+              target="_blank"
               variant="outlined"
               sx={{
                 borderColor: 'white',
