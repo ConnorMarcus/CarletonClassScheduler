@@ -4,8 +4,13 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import rrulePlugin from '@fullcalendar/rrule';
 import '../styles/CalendarComponent.css';
 import { getCourseTime } from '../common/utils';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCount }, ref) => {
+    const [open, setOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+
     const handlePrevClick = () => {
         setScheduleCount((prevCount) => prevCount - 1);
     };
@@ -38,7 +43,9 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
                 if (asyncCourseCRNs.length !== 0) {
                     asyncStr = `\nAsynchronous course CRNs: ${asyncCourseCRNs.join(', ')}`
                 }
-                alert(`CRNs copied to clipboard (${syncStr})` + (asyncStr ? asyncStr : ""));
+                //alert(`CRNs copied to clipboard (${syncStr})` + (asyncStr ? asyncStr : ""));
+                setAlertMessage(`CRNs copied to clipboard (${syncStr})` + (asyncStr ? asyncStr : ""));
+                setOpen(true);
             })
             .catch((error) => {
                 console.error('Error copying to clipboard:', error);
@@ -72,6 +79,10 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
         alert(alertMsg);
     };
 
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <div id="calendar" ref={ref}>
             <h2 id="calendar-title">{title}</h2>
@@ -101,6 +112,12 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
                     <span key={index}><b className="async-course-name">{course.title}</b> - {course.crn}</span>)).reduce((prev, curr) => [prev, ', ', curr])
                 }
             </div>
+
+            <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
+                <MuiAlert onClose={handleClose} severity="info">
+                    {alertMessage}
+                </MuiAlert>
+            </Snackbar>
         </div >
     );
 });
