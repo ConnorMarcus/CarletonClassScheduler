@@ -16,7 +16,7 @@ const LandingPageComponent = () => {
         <Typography variant="h2" sx={{marginBottom: '100px'}}>
           Welcome to the Carleton University
           <br />
-          Student Scheduler Tool!
+          Student Scheduler Tool
         </Typography>
         <Grid container spacing={4} justifyContent="center" alignItems="center">
           <Grid item>
@@ -28,7 +28,7 @@ const LandingPageComponent = () => {
                 color: 'white',
                 transition: 'opacity 0.3s ease-in-out',
                 '&:hover': {
-                  opacity: '0.72',
+                  opacity: '0.7',
                   borderColor: 'white',
                 },
                 width: '100%', // Ensure the button takes full width
@@ -49,7 +49,7 @@ const LandingPageComponent = () => {
                 color: 'white',
                 transition: 'opacity 0.3s ease-in-out',
                 '&:hover': {
-                  opacity: '0.72',
+                  opacity: '0.7',
                   borderColor: 'white',
                 },
                 width: '100%', // Ensure the button takes full width
