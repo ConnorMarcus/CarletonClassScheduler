@@ -31,7 +31,6 @@ const LandingPageComponent = () => {
                   opacity: '0.7',
                   borderColor: 'white',
                 },
-                width: '100%', // Ensure the button takes full width
               }}
               size="large"
               startIcon={<EditCalendarIcon />}
@@ -52,7 +51,6 @@ const LandingPageComponent = () => {
                   opacity: '0.7',
                   borderColor: 'white',
                 },
-                width: '100%', // Ensure the button takes full width
               }}
               size="large"
               startIcon={<InfoIcon />}
