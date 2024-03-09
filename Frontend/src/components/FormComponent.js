@@ -6,6 +6,8 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
 import '../styles/FormComponent.css';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 
@@ -214,12 +216,12 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
     return  (
         <Box id="form-component" className="form-container" sx={{ background: 'white', boxShadow: '10'}}>
             <Grid container spacing={2} >
-                <Grid item xs={12} sm={12} md={12} sx={{ textAlign: 'left'}}>
+                <Grid item xs={12} sx={{ textAlign: 'center'}}>
                     <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                         Enter Your Schedule<span className="required-input"> *</span>
                     </Typography>
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} sx={{ margin: '15px 0' }}>
+                <Grid item xs={12} sx={{ margin: '15px 0' }}>
                     <Autocomplete
                         id="term-select"
                         options={selectOptionsTerms}
@@ -241,114 +243,132 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                         />
                     </Grid>
                 ))}
-                <Grid item xs={12} sm={12} md={12} sx={{ textAlign: 'left' }}>
-                    <Typography variant="h5" sx={{ marginTop: '15px', fontWeight: 'bold'}}>
+                <Grid item xs={12} sx={{ textAlign: 'left' }}>
+                    <Typography variant="h5" sx={{ marginTop: '20px', fontWeight: 'bold', textAlign: 'center'}}>
                         Filters<span className='optional-input'> (opt.)</span>
                     </Typography>
-                    <Typography variant="h6" sx={{ marginTop: '15px', fontWeight: 'bold', fontSize: '16px'}}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '18px' }}>
                         Weekly
                     </Typography>
                 </Grid>
-                <Grid item xs={12} sm={12} md={12}>
+                <Grid item xs={12} sm={6} md={4}>
                     <Autocomplete
                         id="preferred-day-Off-select"
                         options={selectOptionsDaysOff}
                         value={inputValues.preferredDayOff || null} 
                         onChange={(_, selectedOption) => handleInputChange('preferredDayOff', selectedOption)}
                         renderInput={(params) => <TextField {...params} size="small" label="Preferred Day Off" />}
-                        sx={{ width: '290px', '& .MuiInputBase-input': { height: '25px' } }}
+                        sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
                     />
                 </Grid>
-            </Grid>
-            {/* <div className="courses">
-                <div className="term">
-                    <label className='term-label'>Term<span className="required-input"> *</span></label>
-                    <Select
-                        value={{ value: inputValues.term, label: inputValues.term }}
-                        onChange={(selectedOption) => handleInputChange('term', selectedOption)}
-                        options={selectOptionsTerms}
-                        className="select-input"
+                <Grid item xs={12} sm={6} md={4}>
+                    <TextField
+                        id="no-class-before-input"
+                        label="No Class Before"
+                        type="time"
+                        size='small'
+                        value={inputValues.noClassBefore}
+                        onChange={(e) => handleTimeInputChange('noClassBefore', e)}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        inputProps={{
+                            sx: { height: '25px' },
+                        }}
+                        sx={{ width: '100%' }}
                     />
-                </div>
-                <h2 className="header">Courses<span className="required-input"> *</span></h2>
-                <div className="grid-container">
-                    {Object.keys(inputValues).slice(0, 9).map((inputName, index) => (
-                        <Select
-                            key={index}
-                            value={{ value: inputValues[inputName], label: inputValues[inputName] }}
-                            onChange={(selectedOption) => handleInputChange(inputName, selectedOption)}
-                            options={selectedTermCourses.map(course => ({ value: course, label: course }))}
-                            className="select-input"
-                            maxMenuHeight={115}
-                        />
-                    ))}
-                </div>
-            </div> */}
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <TextField
+                        id="no-class-after-input"
+                        label="No Class After"
+                        type="time"
+                        size='small'
+                        value={inputValues.noClassAfter}
+                        onChange={(e) => handleTimeInputChange('noClassAfter', e)}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        inputProps={{
+                            sx: { height: '25px' },
+                        }}
+                        sx={{ width: '100%' }}
+                    />
+                </Grid>
+                <Grid item xs={12} sx={{ textAlign: 'left' }} display="flex" alignItems="center" justifyContent="space-between">
+                    <Typography variant="h6" sx={{ marginTop: '10px', fontWeight: 'bold', fontSize: '18px'}}>
+                        Daily
+                    </Typography>
+                </Grid>
+                {rows.map(row => (
+                    <React.Fragment key={row.id}>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <Autocomplete
+                                options={selectOptionsDaysOff}
+                                value={inputValues[`extraDay${row.id + 1}`] || null} 
+                                onChange={(_, selectedOption) => handleInputChange(`extraDay${row.id + 1}`, selectedOption)}
+                                renderInput={(params) => <TextField {...params} size="small" label="Day" />}
+                                sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <TextField
+                                label="No Class Between"
+                                type="time"
+                                size='small'
+                                value={inputValues[`betweenDay${row.id + 1}Start`]}
+                                onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}Start`, e)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                inputProps={{
+                                    sx: { height: '25px' },
+                                }}
+                                sx={{ width: '100%' }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <TextField
+                                label="And"
+                                type="time"
+                                size='small'
+                                value={inputValues[`betweenDay${row.id + 1}End`]}
+                                onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}End`, e)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                inputProps={{
+                                    sx: { height: '25px' },
+                                }}
+                                sx={{ width: '100%' }}
+                            />
+                        </Grid>
+                    </React.Fragment>
+                ))}
+                <Grid item xs={12} sx={{marginBottom: '10px'}}>
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderColor: '#BF122B',
+                            color: '#BF122B',
+                            height: '30px',
+                            textAlign: 'center',
+                            transition: 'opacity 0.3s ease-in-out',
+                            '&:hover': {
+                                opacity: '0.7',
+                                borderColor: '#BF122B',
+                            },
+                        }}
+                        size="small"
+                        onClick={addRow} 
+                        disabled={rowCount === 5}
+                        startIcon={<AddIcon />}
+                    >
+                        Add More
+                    </Button>
+                </Grid>
+            </Grid>
 
-            {/* <h2 className="Header">Filters<span className='optional-input'> (opt.)</span></h2>
-            <h3 className="Header">Weekly</h3> */}
-            <div className="filters">
-                {/* <label className="day-off-label">Preferred Day Off</label>
-                <Select
-                    value={{ value: inputValues.preferredDayOff, label: inputValues.preferredDayOff }}
-                    onChange={(selectedOption) => handleInputChange('preferredDayOff', selectedOption)}
-                    options={selectOptionsDaysOff}
-                    className="select-input"
-                /> */}
-                <label className="label">No Class Before</label>
-                <input
-                    type="time"
-                    value={inputValues.noClassBefore}
-                    onChange={(e) => handleTimeInputChange('noClassBefore', e)}
-                    className="time-input"
-                />
-                <label className="label">No Class After</label>
-                <input
-                    type="time"
-                    value={inputValues.noClassAfter}
-                    onChange={(e) => handleTimeInputChange('noClassAfter', e)}
-                    className="time-input"
-                />
-            </div>
-            <div className="daily-filters">
-                <div className="daily-filter-header">
-                    <h3 className="Header">Daily</h3>
-                    <button className="daily-filter-btn" onClick={addRow} disabled={rowCount === 5}>+</button>
-                </div>
-                <div className="filters-container">
-                    {rows.map(row => (
-                        <div key={row.id} className="filters-row">
-                            <div className="filters-column">
-                                <label className="day-off-label">Day</label>
-                                <Select
-                                    value={{ value: inputValues[`extraDay${row.id + 1}`], label: inputValues[`extraDay${row.id + 1}`] }}
-                                    onChange={(selectedOption) => handleInputChange(`extraDay${row.id + 1}`, selectedOption)}
-                                    options={selectOptionsDaysOff}
-                                    className="select-input"
-                                />
-                            </div>
-                            <div className="filters-column">
-                                <label className="label">No class between</label>
-                                <input
-                                    type="time"
-                                    value={inputValues[`betweenDay${row.id + 1}Start`]}
-                                    onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}Start`, e)}
-                                    className="time-input"
-                                />
-                            </div>
-                            <div className="filters-column">
-                                <label className="label">and</label>
-                                <input
-                                    type="time"
-                                    value={inputValues[`betweenDay${row.id + 1}End`]}
-                                    onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}End`, e)}
-                                    className="time-input"
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
             <div className="button-container">
                 <button type="submit" onClick={handleSubmit} className="submit-button">
                     Submit
