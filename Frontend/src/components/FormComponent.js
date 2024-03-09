@@ -1,10 +1,13 @@
 // FormComponent.js
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import '../styles/FormComponent.css';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
-
-const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 const initialFormState = {
     course1: '',
@@ -111,7 +114,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
     }, [inputValues.term]);
 
     const handleInputChange = (inputName, selectedOption) => {
-        const selectedTerm = selectedOption ? selectedOption.value : '';
+        const selectedTerm = selectedOption ? selectedOption : '';
 
         setInputValues({
             ...inputValues,
@@ -204,13 +207,60 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
         }
     };
 
-    const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
-    const selectOptionsTerms = Object.keys(termsAndReadingWeek).map(day => ({ value: day, label: day }));
+    const selectOptionsDaysOff = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const selectOptionsTerms = Object.keys(termsAndReadingWeek);
     const selectedTermCourses = coursesList[inputValues.term] || [];
 
     return  (
-        <div className="form-container" id="form-component">
-            <div className="courses">
+        <Box id="form-component" className="form-container" sx={{ background: 'white', boxShadow: '10'}}>
+            <Grid container spacing={2} >
+                <Grid item xs={12} sm={12} md={12} sx={{ textAlign: 'left'}}>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                        Enter Your Schedule<span className="required-input"> *</span>
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} sx={{ margin: '15px 0' }}>
+                    <Autocomplete
+                        id="term-select"
+                        options={selectOptionsTerms}
+                        value={inputValues.term || null} 
+                        onChange={(_, selectedOption) => handleInputChange('term', selectedOption)}
+                        renderInput={(params) => <TextField {...params} size="small" label="Term" />}
+                        sx={{ width: '290px', '& .MuiInputBase-input': { height: '25px' } }}
+                    />
+                </Grid>
+                {Object.keys(inputValues).slice(0, 9).map((inputName, index) => (
+                    <Grid item key={index} xs={6} sm={6} md={4}>
+                        <Autocomplete
+                            id={`course-select-${index}`}
+                            options={selectedTermCourses}
+                            value={inputValues[inputName] || null}
+                            onChange={(_, selectedOption) => handleInputChange(inputName, selectedOption)}
+                            renderInput={(params) => <TextField {...params} size="small" label={`Course ${index + 1}`} />}
+                            sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
+                        />
+                    </Grid>
+                ))}
+                <Grid item xs={12} sm={12} md={12} sx={{ textAlign: 'left' }}>
+                    <Typography variant="h5" sx={{ marginTop: '15px', fontWeight: 'bold'}}>
+                        Filters<span className='optional-input'> (opt.)</span>
+                    </Typography>
+                    <Typography variant="h6" sx={{ marginTop: '15px', fontWeight: 'bold', fontSize: '16px'}}>
+                        Weekly
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} sm={12} md={12}>
+                    <Autocomplete
+                        id="preferred-day-Off-select"
+                        options={selectOptionsDaysOff}
+                        value={inputValues.preferredDayOff || null} 
+                        onChange={(_, selectedOption) => handleInputChange('preferredDayOff', selectedOption)}
+                        renderInput={(params) => <TextField {...params} size="small" label="Preferred Day Off" />}
+                        sx={{ width: '290px', '& .MuiInputBase-input': { height: '25px' } }}
+                    />
+                </Grid>
+            </Grid>
+            {/* <div className="courses">
                 <div className="term">
                     <label className='term-label'>Term<span className="required-input"> *</span></label>
                     <Select
@@ -233,17 +283,18 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                         />
                     ))}
                 </div>
-            </div>
-            <h2 className="Header">Filters<span className='optional-input'> (opt.)</span></h2>
-            <h3 className="Header">Weekly</h3>
+            </div> */}
+
+            {/* <h2 className="Header">Filters<span className='optional-input'> (opt.)</span></h2>
+            <h3 className="Header">Weekly</h3> */}
             <div className="filters">
-                <label className="day-off-label">Preferred Day Off</label>
+                {/* <label className="day-off-label">Preferred Day Off</label>
                 <Select
                     value={{ value: inputValues.preferredDayOff, label: inputValues.preferredDayOff }}
                     onChange={(selectedOption) => handleInputChange('preferredDayOff', selectedOption)}
                     options={selectOptionsDaysOff}
                     className="select-input"
-                />
+                /> */}
                 <label className="label">No Class Before</label>
                 <input
                     type="time"
@@ -312,7 +363,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                     Clear Filters
                 </button>
             </div>
-        </div >
+        </Box>
     );
 };
 

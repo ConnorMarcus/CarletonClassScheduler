@@ -36,15 +36,9 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
     const copyCRNsToClipboard = () => {
         const syncCourseCRNs = Array.from(new Set(events[scheduleCount]["sync"].map(event => event.crn)));
         const syncStr = syncCourseCRNs.join(', ');
-        const asyncCourseCRNs = Array.from(new Set(events[scheduleCount]["async"].map(event => event.crn)));
-        let asyncStr;
         navigator.clipboard.writeText(syncStr)
             .then(() => {
-                if (asyncCourseCRNs.length !== 0) {
-                    asyncStr = `\nAsynchronous course CRNs: ${asyncCourseCRNs.join(', ')}`
-                }
-                //alert(`CRNs copied to clipboard (${syncStr})` + (asyncStr ? asyncStr : ""));
-                setAlertMessage(`CRNs copied to clipboard (${syncStr})` + (asyncStr ? asyncStr : ""));
+                setAlertMessage("CRNs copied to clipboard");
                 setOpen(true);
             })
             .catch((error) => {
@@ -99,12 +93,13 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
                 slotDuration="00:30:00"
                 allDaySlot={false}
                 slotMinTime={"8:00:00"}
-                slotMaxTime={"23:00:00"}
+                slotMaxTime={"21:00:00"}
                 dayHeaderFormat={{ weekday: 'long' }}
                 height="auto"
                 initialDate={earliestStartDate(events)}
                 events={events[scheduleCount]["sync"]}
                 eventClick={handleEventClick}
+                headerToolbar={{end:'prev,next'}}
             />
             <div className="async-courses">
                 {events[scheduleCount]["async"].length !== 0 && (<p>Courses without assigned meeting times</p>)}

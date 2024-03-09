@@ -41,6 +41,12 @@
 
 #calendar {
     padding: 10px;
+    background-color: white;
+    color: black;
+    margin: 25px;
+    padding: 0 20px 40px 40px;
+    border: thin solid black;
+    border-radius: 9px;
 }
 
 .fc-day-today {

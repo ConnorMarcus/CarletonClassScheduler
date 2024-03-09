@@ -12,7 +12,7 @@ const theme = responsiveFontSizes(createTheme());
 const LandingPageComponent = () => {
   return (
     <ThemeProvider theme={theme}>
-      <Box className="landing-page">
+      <Box className="landing-page" sx={{ marginBottom: '125px' }}>
         <Typography variant="h2" sx={{ marginBottom: '100px' }}>
           Welcome to the Carleton University
           <br />
