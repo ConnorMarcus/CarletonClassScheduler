@@ -10,31 +10,6 @@
     color: black;
 }
 
-.button-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.submit-button,
-.clear-all-button,
-.clear-courses-button,
-.clear-filters-button {
-    padding: 10px;
-    margin: 10px;
-    background-color: #BF122B;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.clear-all-button,
-.clear-courses-button,
-.clear-filters-button {
-    background-color: #080B07;
-}
-
-
 span.required-input {
     color: #BF122B;
 }

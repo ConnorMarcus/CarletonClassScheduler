@@ -1,6 +1,5 @@
 // FormComponent.js
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -8,6 +7,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+import DoneIcon from '@mui/icons-material/Done';
+import ClearIcon from '@mui/icons-material/Clear';
 import '../styles/FormComponent.css';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 
@@ -261,7 +262,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                         sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
                     />
                 </Grid>
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={6} md={4}>
                     <TextField
                         id="no-class-before-input"
                         label="No Class Before"
@@ -278,7 +279,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                         sx={{ width: '100%' }}
                     />
                 </Grid>
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={6} md={4}>
                     <TextField
                         id="no-class-after-input"
                         label="No Class After"
@@ -311,7 +312,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                                 sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
+                        <Grid item xs={6} md={4}>
                             <TextField
                                 label="No Class Between"
                                 type="time"
@@ -327,7 +328,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                                 sx={{ width: '100%' }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
+                        <Grid item xs={6} md={4}>
                             <TextField
                                 label="And"
                                 type="time"
@@ -345,14 +346,12 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                         </Grid>
                     </React.Fragment>
                 ))}
-                <Grid item xs={12} sx={{marginBottom: '10px'}}>
+                <Grid item xs={12} >
                     <Button
                         variant="outlined"
                         sx={{
                             borderColor: '#BF122B',
                             color: '#BF122B',
-                            height: '30px',
-                            textAlign: 'center',
                             transition: 'opacity 0.3s ease-in-out',
                             '&:hover': {
                                 opacity: '0.7',
@@ -364,25 +363,47 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                         disabled={rowCount === 5}
                         startIcon={<AddIcon />}
                     >
-                        Add More
+                        Add
+                    </Button>
+                </Grid>
+                <Grid item xs={12} sx={{ marginTop: '30px' }}>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            background: '#BF122B',
+                            fontSize: '15px',
+                            paddingRight: '15px',
+                            paddingLeft: '15px',
+                            marginRight: '20px',
+                            '&:hover': {
+                                background: '#BF122B'
+                            },
+                        }}
+                        size="small"
+                        onClick={handleSubmit}
+                        startIcon={<DoneIcon />}
+                    >
+                        Build
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            background: 'black',
+                            fontSize: '15px',
+                            paddingRight: '15px',
+                            paddingLeft: '15px',
+                            '&:hover': {
+                                background: 'black'
+                            },
+                        }}
+                        size="small"
+                        onClick={handleClearAll}
+                        startIcon={<ClearIcon />}
+                    >
+                        Clear All
                     </Button>
                 </Grid>
             </Grid>
-
-            <div className="button-container">
-                <button type="submit" onClick={handleSubmit} className="submit-button">
-                    Submit
-                </button>
-                <button type="button" onClick={handleClearAll} className="clear-all-button">
-                    Clear All
-                </button>
-                <button type="button" onClick={() => handleClearOther()} className="clear-courses-button">
-                    Clear Courses
-                </button>
-                <button type="button" onClick={() => handleClearOther(true)} className="clear-filters-button">
-                    Clear Filters
-                </button>
-            </div>
         </Box>
     );
 };
