@@ -10,6 +10,8 @@ import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
 import RemoveIcon from '@mui/icons-material/Remove';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import '../styles/FormComponent.css';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 
@@ -51,6 +53,8 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
     const [termsAndReadingWeek, setTermsAndReadingWeek] = useState({});
     const [rows, setRows] = useState([{ id: 1 }]);
     const [rowCount, setRowCount] = useState(1);
+    const [open, setOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         const getAllCourses = async (term) => {
@@ -164,7 +168,8 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
             }).catch((error) => {
                 handleClear();
                 if (error.name === NO_SCHEDULES_ERROR || error.name === ALL_ASYNC_COURSES_ERROR) {
-                    alert(error.message);
+                    setAlertMessage(error.message);
+                    setOpen(true);
                 } else {
                     console.error("Error generating schedules: ", error.message); // Maybe remove console logs when done development
                     setServerError(true);
@@ -172,7 +177,8 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
             });
         } else {
             const error_msg = inputValues.term !== '' ? 'Please select a course' : "Please enter the Term";
-            alert(error_msg);
+            setAlertMessage(error_msg);
+            setOpen(true);
         }
     };
 
@@ -205,6 +211,10 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
             setRows(rows.slice(0, -1));
             setRowCount(rowCount - 1);
         }
+    };
+
+    const handleCloseAlert = () => {
+        setOpen(false);
     };
 
     const selectOptionsDaysOff = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -420,6 +430,11 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
                     </Button>
                 </Grid>
             </Grid>
+            <Snackbar open={open} autoHideDuration={5000} onClose={handleCloseAlert}>
+                <MuiAlert onClose={handleCloseAlert} severity="error" style={{ fontSize: '1.25rem' }}>
+                    {alertMessage}
+                </MuiAlert>
+            </Snackbar>
         </Box >
     );
 };

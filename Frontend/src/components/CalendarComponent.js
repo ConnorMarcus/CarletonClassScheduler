@@ -99,7 +99,7 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
                 initialDate={earliestStartDate(events)}
                 events={events[scheduleCount]["sync"]}
                 eventClick={handleEventClick}
-                headerToolbar={{end:'prev,next'}}
+                headerToolbar={{ end: 'prev,next' }}
             />
             <div className="async-courses">
                 {events[scheduleCount]["async"].length !== 0 && (<p>Courses without assigned meeting times</p>)}
@@ -109,7 +109,7 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
             </div>
 
             <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
-                <MuiAlert onClose={handleClose} severity="info">
+                <MuiAlert onClose={handleClose} severity="info" style={{ fontSize: '1.25rem' }}>
                     {alertMessage}
                 </MuiAlert>
             </Snackbar>
