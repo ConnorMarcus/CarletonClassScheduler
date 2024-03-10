@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import ClearIcon from '@mui/icons-material/Clear';
+import RemoveIcon from '@mui/icons-material/Remove';
 import '../styles/FormComponent.css';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 
@@ -43,7 +44,7 @@ const initialFormState = {
     betweenDay5End: '',
 };
 
-const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError}) => {
+const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError }) => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
@@ -185,22 +186,6 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
         handleClear();
     }
 
-    const handleClearOther = (filters = false) => {
-        const inputValuesCopy = { ...inputValues }; // Create shallow copy of object so that we are not modifying the object directly
-        for (const key in inputValuesCopy) {
-            if (filters) {
-                if (key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter" || key.includes("extraDay") || key.includes("betweenDay")) {
-                    inputValuesCopy[key] = '';
-                }
-            } else {
-                if (key.startsWith("course")) {
-                    inputValuesCopy[key] = '';
-                }
-            }
-        }
-        setInputValues(inputValuesCopy);
-        handleClear();
-    };
 
     const addRow = () => {
         if (rowCount < 5) {
@@ -210,23 +195,35 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
         }
     };
 
+    const removeRow = () => {
+        if (rowCount > 1) {
+            const inputValuesCopy = { ...inputValues };
+            inputValuesCopy[`extraDay${rowCount}`] = '';
+            inputValuesCopy[`betweenDay${rowCount}Start`] = '';
+            inputValuesCopy[`betweenDay${rowCount}End`] = '';
+            setInputValues(inputValuesCopy);
+            setRows(rows.slice(0, -1));
+            setRowCount(rowCount - 1);
+        }
+    };
+
     const selectOptionsDaysOff = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     const selectOptionsTerms = Object.keys(termsAndReadingWeek);
     const selectedTermCourses = coursesList[inputValues.term] || [];
 
-    return  (
-        <Box id="form-component" className="form-container" sx={{ background: 'white', boxShadow: '10'}}>
+    return (
+        <Box id="form-component" className="form-container" sx={{ background: 'white', boxShadow: '10' }}>
             <Grid container spacing={2} >
-                <Grid item xs={12} sx={{ textAlign: 'center'}}>
+                <Grid item xs={12} sx={{ textAlign: 'center' }}>
                     <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                        Enter Your Schedule<span className="required-input"> *</span>
+                        Build your Schedule
                     </Typography>
                 </Grid>
                 <Grid item xs={12} sx={{ margin: '15px 0' }}>
                     <Autocomplete
                         id="term-select"
                         options={selectOptionsTerms}
-                        value={inputValues.term || null} 
+                        value={inputValues.term || null}
                         onChange={(_, selectedOption) => handleInputChange('term', selectedOption)}
                         renderInput={(params) => <TextField {...params} size="small" label="Term" />}
                         sx={{ width: '290px', '& .MuiInputBase-input': { height: '25px' } }}
@@ -245,7 +242,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                     </Grid>
                 ))}
                 <Grid item xs={12} sx={{ textAlign: 'left' }}>
-                    <Typography variant="h5" sx={{ marginTop: '20px', fontWeight: 'bold', textAlign: 'center'}}>
+                    <Typography variant="h5" sx={{ marginTop: '20px', marginBottom: '10px', fontWeight: 'bold', textAlign: 'left' }}>
                         Filters<span className='optional-input'> (opt.)</span>
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '18px' }}>
@@ -256,7 +253,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                     <Autocomplete
                         id="preferred-day-Off-select"
                         options={selectOptionsDaysOff}
-                        value={inputValues.preferredDayOff || null} 
+                        value={inputValues.preferredDayOff || null}
                         onChange={(_, selectedOption) => handleInputChange('preferredDayOff', selectedOption)}
                         renderInput={(params) => <TextField {...params} size="small" label="Preferred Day Off" />}
                         sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
@@ -297,7 +294,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                     />
                 </Grid>
                 <Grid item xs={12} sx={{ textAlign: 'left' }} display="flex" alignItems="center" justifyContent="space-between">
-                    <Typography variant="h6" sx={{ marginTop: '10px', fontWeight: 'bold', fontSize: '18px'}}>
+                    <Typography variant="h6" sx={{ marginTop: '10px', fontWeight: 'bold', fontSize: '18px' }}>
                         Daily
                     </Typography>
                 </Grid>
@@ -306,8 +303,8 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                         <Grid item xs={12} sm={6} md={4}>
                             <Autocomplete
                                 options={selectOptionsDaysOff}
-                                value={inputValues[`extraDay${row.id + 1}`] || null} 
-                                onChange={(_, selectedOption) => handleInputChange(`extraDay${row.id + 1}`, selectedOption)}
+                                value={inputValues[`extraDay${row.id}`] || null}
+                                onChange={(_, selectedOption) => handleInputChange(`extraDay${row.id}`, selectedOption)}
                                 renderInput={(params) => <TextField {...params} size="small" label="Day" />}
                                 sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
                             />
@@ -317,8 +314,8 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                                 label="No Class Between"
                                 type="time"
                                 size='small'
-                                value={inputValues[`betweenDay${row.id + 1}Start`]}
-                                onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}Start`, e)}
+                                value={inputValues[`betweenDay${row.id}Start`]}
+                                onChange={(e) => handleTimeInputChange(`betweenDay${row.id}Start`, e)}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
@@ -333,8 +330,8 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                                 label="And"
                                 type="time"
                                 size='small'
-                                value={inputValues[`betweenDay${row.id + 1}End`]}
-                                onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}End`, e)}
+                                value={inputValues[`betweenDay${row.id}End`]}
+                                onChange={(e) => handleTimeInputChange(`betweenDay${row.id}End`, e)}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
@@ -353,17 +350,36 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                             borderColor: '#BF122B',
                             color: '#BF122B',
                             transition: 'opacity 0.3s ease-in-out',
+                            marginRight: '20px',
                             '&:hover': {
                                 opacity: '0.7',
                                 borderColor: '#BF122B',
                             },
                         }}
                         size="small"
-                        onClick={addRow} 
+                        onClick={addRow}
                         disabled={rowCount === 5}
                         startIcon={<AddIcon />}
                     >
                         Add
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderColor: 'black',
+                            color: 'black',
+                            transition: 'opacity 0.3s ease-in-out',
+                            '&:hover': {
+                                opacity: '0.7',
+                                borderColor: 'black',
+                            },
+                        }}
+                        size="small"
+                        onClick={removeRow}
+                        disabled={rowCount === 1}
+                        startIcon={<RemoveIcon />}
+                    >
+                        Remove
                     </Button>
                 </Grid>
                 <Grid item xs={12} sx={{ marginTop: '30px' }}>
@@ -404,7 +420,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
                     </Button>
                 </Grid>
             </Grid>
-        </Box>
+        </Box >
     );
 };
 

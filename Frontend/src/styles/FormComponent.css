@@ -10,10 +10,6 @@
     color: black;
 }
 
-span.required-input {
-    color: #BF122B;
-}
-
 span.optional-input {
     font-size: small;
     font-style: italic;
