@@ -68,6 +68,10 @@
     color: #BF122B;
 }
 
+.async-courses {
+    text-align: left;
+}
+
 .fc-event-main:hover {
     cursor: pointer;
 }
