@@ -59,6 +59,8 @@ def handler(event=None, context=None) -> str:
 
             select_options(driver, option)
             
+            wait.until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+
             # Grab course href and linked courses
             parse(driver.page_source, class_info)
 
@@ -209,8 +211,6 @@ def select_terms(driver: webdriver, term: str) -> None:
     # Click on "Proceed to search"
     click_btn(driver, By.XPATH, SEARCH_XPATH)
 
-    select_undergrad(driver)
-
 def select_options(driver: webdriver, option: str) -> None:
     '''
     Selects a specific course option from subject dropdown. 
@@ -219,10 +219,10 @@ def select_options(driver: webdriver, option: str) -> None:
     - driver: The Chrome WebDriver object.
     - option: The string course option
     '''
+    select_undergrad(driver)
+
     # Find the subject dropdown element 
     subject_dropdown = driver.find_element(By.ID, "subj_id")
-
-    select_undergrad(driver)
 
     select_dropdown_by_value(subject_dropdown, option, True)
 
