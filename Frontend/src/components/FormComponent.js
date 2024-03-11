@@ -122,6 +122,7 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
     }, [inputValues.term]);
 
     const handleInputChange = (inputName, selectedOption) => {
+        setDisplayCalendar(false);
         const selectedTerm = selectedOption ? selectedOption : '';
 
         setInputValues({
