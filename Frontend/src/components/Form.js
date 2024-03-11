@@ -1,19 +1,8 @@
-// FormComponent.js
 import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import DoneIcon from '@mui/icons-material/Done';
-import ClearIcon from '@mui/icons-material/Clear';
-import RemoveIcon from '@mui/icons-material/Remove';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import '../styles/FormComponent.css';
+import { MuiAlert, Snackbar, Button, Autocomplete, TextField, Grid, Typography, Box } from '@mui/material';
+import { AddIcon, ClearIcon, DoneIcon, RemoveIcon } from '@mui/icons-material';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
+import '../styles/Form.css';
 
 const initialFormState = {
     course1: '',
@@ -46,7 +35,7 @@ const initialFormState = {
     betweenDay5End: '',
 };
 
-const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError }) => {
+const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError }) => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
@@ -440,4 +429,4 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
     );
 };
 
-export default FormComponent;
+export default Form;

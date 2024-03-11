@@ -1,5 +1,3 @@
-// Formatting functions 
-
 export const parseInputs = (inputs) => {
     const courses = [
         inputs.course1,
