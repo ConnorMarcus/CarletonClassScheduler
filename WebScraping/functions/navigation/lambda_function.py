@@ -55,10 +55,10 @@ def handler(event=None, context=None) -> str:
             if option == "":
                 continue
 
-            select_options(driver, option)
-
             wait.until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
 
+            select_options(driver, option)
+            
             # Grab course href and linked courses
             parse(driver.page_source, class_info)
 
