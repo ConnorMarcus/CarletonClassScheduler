@@ -4,125 +4,14 @@
     max-width: 600px;
     margin: auto;
     padding: 20px;
-    border: 5px solid #BF122B;
+    border: thin solid black;
     border-radius: 9px;
-    margin-bottom: 100px;
-}
-
-.courses,
-.filters {
-    margin-bottom: 20px;
-}
-
-.filters {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 15px
-}
-
-.header {
-    text-align: left;
-    margin-bottom: 15px;
-}
-
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 15px;
-}
-
-.select-input,
-.time-input {
-    width: 100%;
-    display: inline-block;
-}
-
-.button-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.submit-button,
-.clear-all-button,
-.clear-courses-button,
-.clear-filters-button {
-    padding: 10px;
-    margin: 10px;
-    background-color: #BF122B;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.clear-all-button,
-.clear-courses-button,
-.clear-filters-button {
-    background-color: #080B07;
-}
-
-.term {
-    margin-top: 25px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 15px;
-}
-
-.term-label {
-    font-weight: bold;
-    font-size: x-large;
-}
-
-span.required-input {
-    color: #BF122B;
+    margin-bottom: 350px;
+    color: black;
 }
 
 span.optional-input {
     font-size: small;
     font-style: italic;
     font-weight: normal;
-}
-
-.filters-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.filters-row {
-    display: flex;
-    justify-content: space-between;
-}
-
-.filters-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-right: 20px;
-}
-
-.filters-column:last-child {
-    margin-right: 0;
-}
-
-.filters-row.collapsed {
-    display: none;
-}
-
-.daily-filters {
-    display: flex;
-    flex-direction: column;
-}
-
-.daily-filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.daily-filter-btn {
-    border-radius: 12px;
-    border: 2px solid #BF122B;
-    background-color: white;
 }

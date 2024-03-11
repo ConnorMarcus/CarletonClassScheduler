@@ -1,10 +1,19 @@
 // FormComponent.js
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import DoneIcon from '@mui/icons-material/Done';
+import ClearIcon from '@mui/icons-material/Clear';
+import RemoveIcon from '@mui/icons-material/Remove';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import '../styles/FormComponent.css';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
-
-const daysOffList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 const initialFormState = {
     course1: '',
@@ -37,13 +46,15 @@ const initialFormState = {
     betweenDay5End: '',
 };
 
-const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError}) => {
+const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError }) => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
     const [termsAndReadingWeek, setTermsAndReadingWeek] = useState({});
     const [rows, setRows] = useState([{ id: 1 }]);
     const [rowCount, setRowCount] = useState(1);
+    const [open, setOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         const getAllCourses = async (term) => {
@@ -111,7 +122,7 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
     }, [inputValues.term]);
 
     const handleInputChange = (inputName, selectedOption) => {
-        const selectedTerm = selectedOption ? selectedOption.value : '';
+        const selectedTerm = selectedOption ? selectedOption : '';
 
         setInputValues({
             ...inputValues,
@@ -157,7 +168,8 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
             }).catch((error) => {
                 handleClear();
                 if (error.name === NO_SCHEDULES_ERROR || error.name === ALL_ASYNC_COURSES_ERROR) {
-                    alert(error.message);
+                    setAlertMessage(error.message);
+                    setOpen(true);
                 } else {
                     console.error("Error generating schedules: ", error.message); // Maybe remove console logs when done development
                     setServerError(true);
@@ -165,7 +177,8 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
             });
         } else {
             const error_msg = inputValues.term !== '' ? 'Please select a course' : "Please enter the Term";
-            alert(error_msg);
+            setAlertMessage(error_msg);
+            setOpen(true);
         }
     };
 
@@ -179,22 +192,6 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
         handleClear();
     }
 
-    const handleClearOther = (filters = false) => {
-        const inputValuesCopy = { ...inputValues }; // Create shallow copy of object so that we are not modifying the object directly
-        for (const key in inputValuesCopy) {
-            if (filters) {
-                if (key === "preferredDayOff" || key === "noClassBefore" || key === "noClassAfter" || key.includes("extraDay") || key.includes("betweenDay")) {
-                    inputValuesCopy[key] = '';
-                }
-            } else {
-                if (key.startsWith("course")) {
-                    inputValuesCopy[key] = '';
-                }
-            }
-        }
-        setInputValues(inputValuesCopy);
-        handleClear();
-    };
 
     const addRow = () => {
         if (rowCount < 5) {
@@ -204,115 +201,241 @@ const FormComponent = ({setDisplayCalendar, setTerm, setSchedules, setScheduleCo
         }
     };
 
-    const selectOptionsDaysOff = daysOffList.map(day => ({ value: day, label: day }));
-    const selectOptionsTerms = Object.keys(termsAndReadingWeek).map(day => ({ value: day, label: day }));
+    const removeRow = () => {
+        if (rowCount > 1) {
+            const inputValuesCopy = { ...inputValues };
+            inputValuesCopy[`extraDay${rowCount}`] = '';
+            inputValuesCopy[`betweenDay${rowCount}Start`] = '';
+            inputValuesCopy[`betweenDay${rowCount}End`] = '';
+            setInputValues(inputValuesCopy);
+            setRows(rows.slice(0, -1));
+            setRowCount(rowCount - 1);
+        }
+    };
+
+    const handleCloseAlert = () => {
+        setOpen(false);
+    };
+
+    const selectOptionsDaysOff = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const selectOptionsTerms = Object.keys(termsAndReadingWeek);
     const selectedTermCourses = coursesList[inputValues.term] || [];
 
-    return  (
-        <div className="form-container" id="form-component">
-            <div className="courses">
-                <div className="term">
-                    <label className='term-label'>Term<span className="required-input"> *</span></label>
-                    <Select
-                        value={{ value: inputValues.term, label: inputValues.term }}
-                        onChange={(selectedOption) => handleInputChange('term', selectedOption)}
+    return (
+        <Box id="form-component" className="form-container" sx={{ background: 'white', boxShadow: '10' }}>
+            <Grid container spacing={2} >
+                <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                        Build your Schedule
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} sx={{ margin: '15px 0' }}>
+                    <Autocomplete
+                        id="term-select"
                         options={selectOptionsTerms}
-                        className="select-input"
+                        value={inputValues.term || null}
+                        onChange={(_, selectedOption) => handleInputChange('term', selectedOption)}
+                        renderInput={(params) => <TextField {...params} size="small" label="Term" />}
+                        sx={{ width: '290px', '& .MuiInputBase-input': { height: '25px' } }}
                     />
-                </div>
-                <h2 className="header">Courses<span className="required-input"> *</span></h2>
-                <div className="grid-container">
-                    {Object.keys(inputValues).slice(0, 9).map((inputName, index) => (
-                        <Select
-                            key={index}
-                            value={{ value: inputValues[inputName], label: inputValues[inputName] }}
-                            onChange={(selectedOption) => handleInputChange(inputName, selectedOption)}
-                            options={selectedTermCourses.map(course => ({ value: course, label: course }))}
-                            className="select-input"
-                            maxMenuHeight={115}
+                </Grid>
+                {Object.keys(inputValues).slice(0, 9).map((inputName, index) => (
+                    <Grid item key={index} xs={6} sm={6} md={4}>
+                        <Autocomplete
+                            id={`course-select-${index}`}
+                            options={selectedTermCourses}
+                            value={inputValues[inputName] || null}
+                            onChange={(_, selectedOption) => handleInputChange(inputName, selectedOption)}
+                            renderInput={(params) => <TextField {...params} size="small" label={`Course ${index + 1}`} />}
+                            sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
                         />
-                    ))}
-                </div>
-            </div>
-            <h2 className="Header">Filters<span className='optional-input'> (opt.)</span></h2>
-            <h3 className="Header">Weekly</h3>
-            <div className="filters">
-                <label className="day-off-label">Preferred Day Off</label>
-                <Select
-                    value={{ value: inputValues.preferredDayOff, label: inputValues.preferredDayOff }}
-                    onChange={(selectedOption) => handleInputChange('preferredDayOff', selectedOption)}
-                    options={selectOptionsDaysOff}
-                    className="select-input"
-                />
-                <label className="label">No Class Before</label>
-                <input
-                    type="time"
-                    value={inputValues.noClassBefore}
-                    onChange={(e) => handleTimeInputChange('noClassBefore', e)}
-                    className="time-input"
-                />
-                <label className="label">No Class After</label>
-                <input
-                    type="time"
-                    value={inputValues.noClassAfter}
-                    onChange={(e) => handleTimeInputChange('noClassAfter', e)}
-                    className="time-input"
-                />
-            </div>
-            <div className="daily-filters">
-                <div className="daily-filter-header">
-                    <h3 className="Header">Daily</h3>
-                    <button className="daily-filter-btn" onClick={addRow} disabled={rowCount === 5}>+</button>
-                </div>
-                <div className="filters-container">
-                    {rows.map(row => (
-                        <div key={row.id} className="filters-row">
-                            <div className="filters-column">
-                                <label className="day-off-label">Day</label>
-                                <Select
-                                    value={{ value: inputValues[`extraDay${row.id + 1}`], label: inputValues[`extraDay${row.id + 1}`] }}
-                                    onChange={(selectedOption) => handleInputChange(`extraDay${row.id + 1}`, selectedOption)}
-                                    options={selectOptionsDaysOff}
-                                    className="select-input"
-                                />
-                            </div>
-                            <div className="filters-column">
-                                <label className="label">No class between</label>
-                                <input
-                                    type="time"
-                                    value={inputValues[`betweenDay${row.id + 1}Start`]}
-                                    onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}Start`, e)}
-                                    className="time-input"
-                                />
-                            </div>
-                            <div className="filters-column">
-                                <label className="label">and</label>
-                                <input
-                                    type="time"
-                                    value={inputValues[`betweenDay${row.id + 1}End`]}
-                                    onChange={(e) => handleTimeInputChange(`betweenDay${row.id + 1}End`, e)}
-                                    className="time-input"
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div className="button-container">
-                <button type="submit" onClick={handleSubmit} className="submit-button">
-                    Submit
-                </button>
-                <button type="button" onClick={handleClearAll} className="clear-all-button">
-                    Clear All
-                </button>
-                <button type="button" onClick={() => handleClearOther()} className="clear-courses-button">
-                    Clear Courses
-                </button>
-                <button type="button" onClick={() => handleClearOther(true)} className="clear-filters-button">
-                    Clear Filters
-                </button>
-            </div>
-        </div >
+                    </Grid>
+                ))}
+                <Grid item xs={12} sx={{ textAlign: 'left' }}>
+                    <Typography variant="h5" sx={{ marginTop: '20px', marginBottom: '10px', fontWeight: 'bold', textAlign: 'left' }}>
+                        Filters<span className='optional-input'> (opt.)</span>
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '18px' }}>
+                        Weekly
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Autocomplete
+                        id="preferred-day-Off-select"
+                        options={selectOptionsDaysOff}
+                        value={inputValues.preferredDayOff || null}
+                        onChange={(_, selectedOption) => handleInputChange('preferredDayOff', selectedOption)}
+                        renderInput={(params) => <TextField {...params} size="small" label="Preferred Day Off" />}
+                        sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
+                    />
+                </Grid>
+                <Grid item xs={6} md={4}>
+                    <TextField
+                        id="no-class-before-input"
+                        label="No Class Before"
+                        type="time"
+                        size='small'
+                        value={inputValues.noClassBefore}
+                        onChange={(e) => handleTimeInputChange('noClassBefore', e)}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        inputProps={{
+                            sx: { height: '25px' },
+                        }}
+                        sx={{ width: '100%' }}
+                    />
+                </Grid>
+                <Grid item xs={6} md={4}>
+                    <TextField
+                        id="no-class-after-input"
+                        label="No Class After"
+                        type="time"
+                        size='small'
+                        value={inputValues.noClassAfter}
+                        onChange={(e) => handleTimeInputChange('noClassAfter', e)}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        inputProps={{
+                            sx: { height: '25px' },
+                        }}
+                        sx={{ width: '100%' }}
+                    />
+                </Grid>
+                <Grid item xs={12} sx={{ textAlign: 'left' }} display="flex" alignItems="center" justifyContent="space-between">
+                    <Typography variant="h6" sx={{ marginTop: '10px', fontWeight: 'bold', fontSize: '18px' }}>
+                        Daily
+                    </Typography>
+                </Grid>
+                {rows.map(row => (
+                    <React.Fragment key={row.id}>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <Autocomplete
+                                options={selectOptionsDaysOff}
+                                value={inputValues[`extraDay${row.id}`] || null}
+                                onChange={(_, selectedOption) => handleInputChange(`extraDay${row.id}`, selectedOption)}
+                                renderInput={(params) => <TextField {...params} size="small" label="Day" />}
+                                sx={{ width: '100%', '& .MuiInputBase-input': { height: '25px' } }}
+                            />
+                        </Grid>
+                        <Grid item xs={6} md={4}>
+                            <TextField
+                                label="No Class Between"
+                                type="time"
+                                size='small'
+                                value={inputValues[`betweenDay${row.id}Start`]}
+                                onChange={(e) => handleTimeInputChange(`betweenDay${row.id}Start`, e)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                inputProps={{
+                                    sx: { height: '25px' },
+                                }}
+                                sx={{ width: '100%' }}
+                            />
+                        </Grid>
+                        <Grid item xs={6} md={4}>
+                            <TextField
+                                label="And"
+                                type="time"
+                                size='small'
+                                value={inputValues[`betweenDay${row.id}End`]}
+                                onChange={(e) => handleTimeInputChange(`betweenDay${row.id}End`, e)}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                inputProps={{
+                                    sx: { height: '25px' },
+                                }}
+                                sx={{ width: '100%' }}
+                            />
+                        </Grid>
+                    </React.Fragment>
+                ))}
+                <Grid item xs={12} >
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderColor: '#BF122B',
+                            color: '#BF122B',
+                            transition: 'opacity 0.3s ease-in-out',
+                            marginRight: '20px',
+                            '&:hover': {
+                                opacity: '0.7',
+                                borderColor: '#BF122B',
+                            },
+                        }}
+                        size="small"
+                        onClick={addRow}
+                        disabled={rowCount === 5}
+                        startIcon={<AddIcon />}
+                    >
+                        Add
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderColor: 'black',
+                            color: 'black',
+                            transition: 'opacity 0.3s ease-in-out',
+                            '&:hover': {
+                                opacity: '0.7',
+                                borderColor: 'black',
+                            },
+                        }}
+                        size="small"
+                        onClick={removeRow}
+                        disabled={rowCount === 1}
+                        startIcon={<RemoveIcon />}
+                    >
+                        Remove
+                    </Button>
+                </Grid>
+                <Grid item xs={12} sx={{ marginTop: '30px' }}>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            background: '#BF122B',
+                            fontSize: '15px',
+                            paddingRight: '15px',
+                            paddingLeft: '15px',
+                            marginRight: '20px',
+                            '&:hover': {
+                                background: '#BF122B'
+                            },
+                        }}
+                        size="small"
+                        onClick={handleSubmit}
+                        startIcon={<DoneIcon />}
+                    >
+                        Build
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            background: 'black',
+                            fontSize: '15px',
+                            paddingRight: '15px',
+                            paddingLeft: '15px',
+                            '&:hover': {
+                                background: 'black'
+                            },
+                        }}
+                        size="small"
+                        onClick={handleClearAll}
+                        startIcon={<ClearIcon />}
+                    >
+                        Clear All
+                    </Button>
+                </Grid>
+            </Grid>
+            <Snackbar open={open} autoHideDuration={5000} onClose={handleCloseAlert}>
+                <MuiAlert onClose={handleCloseAlert} severity="error" style={{ fontSize: '1.25rem' }}>
+                    {alertMessage}
+                </MuiAlert>
+            </Snackbar>
+        </Box >
     );
 };
 
