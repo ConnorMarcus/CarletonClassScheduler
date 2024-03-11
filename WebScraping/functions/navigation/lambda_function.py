@@ -48,6 +48,10 @@ def handler(event=None, context=None) -> str:
 
         select_terms(driver, term)
 
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+
+        select_undergrad(driver)
+
         options = scrape_course_options(driver)
 
         for option in options:
@@ -55,8 +59,10 @@ def handler(event=None, context=None) -> str:
             if option == "":
                 continue
 
-            select_options(driver, option)
+            wait.until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
 
+            select_options(driver, option)
+            
             wait.until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
 
             # Grab course href and linked courses
@@ -208,8 +214,6 @@ def select_terms(driver: webdriver, term: str) -> None:
 
     # Click on "Proceed to search"
     click_btn(driver, By.XPATH, SEARCH_XPATH)
-
-    select_undergrad(driver)
 
 def select_options(driver: webdriver, option: str) -> None:
     '''

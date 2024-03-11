@@ -11,6 +11,7 @@ def test_handler():
          patch(f'{FILE_PATH}.select_terms') as mock_select_terms, \
          patch(f'{FILE_PATH}.scrape_course_options') as mock_scrape_course_options, \
          patch(f'{FILE_PATH}.select_options') as mock_select_options, \
+         patch(f'{FILE_PATH}.select_undergrad') as mock_select_undergrad, \
          patch(f'{FILE_PATH}.parse') as mock_parse, \
          patch(f'{FILE_PATH}.click_btn') as mock_click_btn: 
         
@@ -21,6 +22,7 @@ def test_handler():
         mock_select_element.tag_name = 'select'
         mock_scrape_terms.return_value = ['term1', 'term2']
         mock_scrape_course_options.return_value = ['option1', 'option2', '']
+        mock_select_undergrad.return_value = ['UG']
         mock_driver_instance.find_element.return_value = mock_select_element
         with patch('boto3.resource') as mock_boto3_client:
             mock_s3_instance = MagicMock()
@@ -98,8 +100,8 @@ def test_select_terms():
 
         select_terms(mock_driver_instance, "202009")
 
-        assert mock_driver_instance.find_element.call_count == 3
-        assert mock_select_dropdown.call_count == 2
+        assert mock_driver_instance.find_element.call_count == 2
+        assert mock_select_dropdown.call_count == 1
         find_mock_calls = mock_select_dropdown.mock_calls
         expected_call = [call.find_element(mock_term_dropdown, "202009")]
         assert expected_call in find_mock_calls
