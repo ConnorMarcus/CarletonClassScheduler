@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MuiAlert, Snackbar, Button, Autocomplete, TextField, Grid, Typography, Box } from '@mui/material';
-import { AddIcon, ClearIcon, DoneIcon, RemoveIcon } from '@mui/icons-material';
+import { Alert, Autocomplete, Button, Grid, Snackbar, TextField, Typography, Box } from '@mui/material';
+import { Add, Clear, Done, Remove } from '@mui/icons-material';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 import '../styles/Form.css';
 
@@ -359,7 +359,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                         size="small"
                         onClick={addRow}
                         disabled={rowCount === 5}
-                        startIcon={<AddIcon />}
+                        startIcon={<Add />}
                     >
                         Add
                     </Button>
@@ -377,7 +377,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                         size="small"
                         onClick={removeRow}
                         disabled={rowCount === 1}
-                        startIcon={<RemoveIcon />}
+                        startIcon={<Remove />}
                     >
                         Remove
                     </Button>
@@ -397,7 +397,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                         }}
                         size="small"
                         onClick={handleSubmit}
-                        startIcon={<DoneIcon />}
+                        startIcon={<Done />}
                     >
                         Build
                     </Button>
@@ -414,16 +414,16 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                         }}
                         size="small"
                         onClick={handleClearAll}
-                        startIcon={<ClearIcon />}
+                        startIcon={<Clear />}
                     >
                         Clear All
                     </Button>
                 </Grid>
             </Grid>
             <Snackbar open={open} autoHideDuration={5000} onClose={handleCloseAlert}>
-                <MuiAlert onClose={handleCloseAlert} severity="error" style={{ fontSize: '1.25rem' }}>
+                <Alert onClose={handleCloseAlert} severity="error" style={{ fontSize: '1.25rem' }}>
                     {alertMessage}
-                </MuiAlert>
+                </Alert>
             </Snackbar>
         </Box >
     );

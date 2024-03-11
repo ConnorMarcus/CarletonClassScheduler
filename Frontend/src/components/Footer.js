@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
-import { GitHubIcon } from '@mui/icons-material';
+import { GitHub } from '@mui/icons-material';
 import '../styles/Footer.css';
 
 const theme = responsiveFontSizes(createTheme());
@@ -32,7 +32,7 @@ const Footer = () => {
                                 },
                                 alignContent: 'right',
                             }}
-                            startIcon={<GitHubIcon />}
+                            startIcon={<GitHub />}
                         >
                             View on GitHub
                         </Button>

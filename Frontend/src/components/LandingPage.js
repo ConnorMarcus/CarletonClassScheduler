@@ -1,5 +1,5 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
-import { EditCalendarIcon, InfoIcon } from '@mui/icons-material';
+import { EditCalendar, Info } from '@mui/icons-material';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
 import '../styles/LandingPage.css';
 
@@ -29,7 +29,7 @@ const LandingPage = () => {
                 },
               }}
               size="large"
-              startIcon={<EditCalendarIcon />}
+              startIcon={<EditCalendar />}
             >
               Build Your Schedule
             </Button>
@@ -50,7 +50,7 @@ const LandingPage = () => {
                 },
               }}
               size="large"
-              startIcon={<InfoIcon />}
+              startIcon={<Info />}
             >
               Need Assistance
             </Button>

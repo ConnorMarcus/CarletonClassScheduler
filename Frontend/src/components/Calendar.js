@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import rrulePlugin from '@fullcalendar/rrule';
 import { getCourseTime } from '../common/utils';
-import { Box, Modal, MuiAlert, Snackbar } from '@mui/material';
+import { Alert, Box, Modal, Snackbar } from '@mui/material';
 import '../styles/Calendar.css';
 
 const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCount }, ref) => {
@@ -123,9 +123,9 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
             </div>
 
             <Snackbar open={openAlert} autoHideDuration={5000} onClose={handleCloseAlert}>
-                <MuiAlert onClose={handleCloseAlert} severity="info" style={{ fontSize: '1.25rem' }}>
+                <Alert onClose={handleCloseAlert} severity="info" style={{ fontSize: '1.25rem' }}>
                     {alertMessage}
-                </MuiAlert>
+                </Alert>
             </Snackbar>
 
             <Modal

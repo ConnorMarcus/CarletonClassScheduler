@@ -1,5 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Calendar, ErrorPage, Footer, Form, LandingPage } from './components'
+import Calendar from './components/Calendar';
+import ErrorPage from './components/ErrorPage';
+import Footer from './components/Footer';
+import Form from './components/Form';
+import LandingPage from './components/LandingPage';
+
 
 const App = () => {
   const [displayCalendar, setDisplayCalendar] = useState(false);
