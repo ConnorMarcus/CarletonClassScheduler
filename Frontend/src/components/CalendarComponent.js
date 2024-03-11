@@ -6,10 +6,14 @@ import '../styles/CalendarComponent.css';
 import { getCourseTime } from '../common/utils';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
 
 const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCount }, ref) => {
-    const [open, setOpen] = useState(false);
+    const [openAlert, setOpenAlert] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
+    const [eventDetails, setEventDetails] = useState(null);
 
     const handlePrevClick = () => {
         setScheduleCount((prevCount) => prevCount - 1);
@@ -39,7 +43,7 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
         navigator.clipboard.writeText(syncStr)
             .then(() => {
                 setAlertMessage("CRNs copied to clipboard");
-                setOpen(true);
+                setOpenAlert(true);
             })
             .catch((error) => {
                 console.error('Error copying to clipboard:', error);
@@ -68,14 +72,18 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
             startTimeStr = getCourseTime(startTimeMsec);
             endTimeStr = getCourseTime(endTimeMsec);
         }
-
-        const alertMsg = `Title: ${title}\nTime: ${startTimeStr} - ${endTimeStr}\nInstructor: ${instructor}\nCRN: ${crn}\nStatus: ${status}`;
-        alert(alertMsg);
+        const eventDetails = { title, startTimeStr, endTimeStr, instructor, crn, status }
+        setEventDetails(eventDetails);
+        setOpenModal(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleCloseAlert = () => {
+        setOpenAlert(false);
     };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    }
 
     return (
         <div id="calendar" ref={ref}>
@@ -99,7 +107,7 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
                 initialDate={earliestStartDate(events)}
                 events={events[scheduleCount]["sync"]}
                 eventClick={handleEventClick}
-                headerToolbar={{end:'prev,next'}}
+                headerToolbar={{ end: 'prev,next' }}
             />
             <div className="async-courses">
                 {events[scheduleCount]["async"].length !== 0 && (<p>Courses without assigned meeting times</p>)}
@@ -108,11 +116,28 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
                 }
             </div>
 
-            <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
-                <MuiAlert onClose={handleClose} severity="info">
+            <Snackbar open={openAlert} autoHideDuration={5000} onClose={handleCloseAlert}>
+                <MuiAlert onClose={handleCloseAlert} severity="info" style={{ fontSize: '1.25rem' }}>
                     {alertMessage}
                 </MuiAlert>
             </Snackbar>
+
+            <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+            >
+                <Box sx={{ color: 'black', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', height: 'fit-content', width: 275, bgcolor: 'background.paper', border: '1px solid #BF122B', boxShadow: 24, p: 2, borderRadius: '10px', }}>
+                    <h2 id="modal-title">{eventDetails?.title}</h2>
+                    <p id="modal-description" style={{ textAlign: 'left' }}>
+                        <b>Time: </b>{eventDetails?.startTimeStr} - {eventDetails?.endTimeStr}<br />
+                        <b>Instructor: </b>{eventDetails?.instructor}<br />
+                        <b>CRN: </b>{eventDetails?.crn}<br />
+                        <b>Status: </b>{eventDetails?.status}
+                    </p>
+                </Box>
+            </Modal>
         </div >
     );
 });
