@@ -38,9 +38,18 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
     };
 
     const copyCRNsToClipboard = () => {
+        let courseCRNs;
         const syncCourseCRNs = Array.from(new Set(events[scheduleCount]["sync"].map(event => event.crn)));
         const syncStr = syncCourseCRNs.join(', ');
-        navigator.clipboard.writeText(syncStr)
+        const asyncCourseCRNs = Array.from(new Set(events[scheduleCount]["async"].map(event => event.crn)));
+        let asyncStr;
+        if (asyncCourseCRNs.length !== 0) {
+            asyncStr = asyncCourseCRNs.join(', ');
+            courseCRNs = `${syncStr}, ${asyncStr}`;
+        } else {
+            courseCRNs = syncStr;
+        }
+        navigator.clipboard.writeText(courseCRNs)
             .then(() => {
                 setAlertMessage("CRNs copied to clipboard");
                 setOpenAlert(true);
