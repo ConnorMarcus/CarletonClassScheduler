@@ -48,6 +48,10 @@ def handler(event=None, context=None) -> str:
 
         select_terms(driver, term)
 
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+
+        select_undergrad(driver)
+
         options = scrape_course_options(driver)
 
         for option in options:
@@ -219,10 +223,10 @@ def select_options(driver: webdriver, option: str) -> None:
     - driver: The Chrome WebDriver object.
     - option: The string course option
     '''
-    select_undergrad(driver)
-
     # Find the subject dropdown element 
     subject_dropdown = driver.find_element(By.ID, "subj_id")
+
+    select_undergrad(driver)
 
     select_dropdown_by_value(subject_dropdown, option, True)
 
