@@ -16,7 +16,7 @@ from Backend.tests.unit.test_dynamo_database import test_scan_response1 as respo
 from Backend.tests.unit.test_s3_database import generate_db
 
 TEST_TERM = "Fall 2023"
-SAMPLE_SCHEDULE = [[Section("SYSC 4001", "B", "35905", "Test Prof 2", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "08:35", "11:25")], "Registration Closed", [], "2023-09-06", "2023-12-08").to_dict()]]
+SAMPLE_SCHEDULE = [[Section("SYSC 4001", "B", "35905", "Test Prof 2", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "08:35", "11:25")], "Registration Closed", "Operating Systems", TEST_TERM, "fourth-year standing.", [], "2023-09-06", "2023-12-08").to_dict()]]
 
 @pytest.fixture()
 def empty_json_event():

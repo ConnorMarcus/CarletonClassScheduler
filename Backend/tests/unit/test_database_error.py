@@ -25,7 +25,7 @@ def test_convert_to_course():
 
 def test_convert_to_section():
     with pytest.raises(CouresDatabaseException):
-        error_db.convert_to_section(None, None)
+        error_db.convert_to_section(None, None, None, None, None)
     
 def test_convert_to_classtime():
     with pytest.raises(CouresDatabaseException):
