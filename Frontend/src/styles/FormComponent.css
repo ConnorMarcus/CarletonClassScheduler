@@ -8,6 +8,7 @@
     border-radius: 9px;
     margin-bottom: 350px;
     color: black;
+    scroll-margin-top: 50px;
 }
 
 span.optional-input {
