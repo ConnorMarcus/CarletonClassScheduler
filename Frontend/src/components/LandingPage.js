@@ -1,15 +1,11 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import EditCalendarIcon from '@mui/icons-material/EditCalendar';
-import InfoIcon from '@mui/icons-material/Info';
+import { Box, Button, Grid, Typography } from '@mui/material';
+import { EditCalendar, Info } from '@mui/icons-material';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
-import '../styles/LandingPageComponent.css';
+import '../styles/LandingPage.css';
 
 const theme = responsiveFontSizes(createTheme());
 
-const LandingPageComponent = () => {
+const LandingPage = () => {
   return (
     <ThemeProvider theme={theme}>
       <Box className="landing-page" sx={{ marginBottom: '125px' }}>
@@ -33,7 +29,7 @@ const LandingPageComponent = () => {
                 },
               }}
               size="large"
-              startIcon={<EditCalendarIcon />}
+              startIcon={<EditCalendar />}
             >
               Build Your Schedule
             </Button>
@@ -54,7 +50,7 @@ const LandingPageComponent = () => {
                 },
               }}
               size="large"
-              startIcon={<InfoIcon />}
+              startIcon={<Info />}
             >
               Need Assistance
             </Button>
@@ -65,4 +61,4 @@ const LandingPageComponent = () => {
   );
 };
 
-export default LandingPageComponent;
+export default LandingPage;

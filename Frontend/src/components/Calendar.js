@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import rrulePlugin from '@fullcalendar/rrule';
-import '../styles/CalendarComponent.css';
 import { getCourseTime } from '../common/utils';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
+import { Alert, Box, Modal, Snackbar } from '@mui/material';
+import '../styles/Calendar.css';
 
-const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCount }, ref) => {
+const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCount }, ref) => {
     const [openAlert, setOpenAlert] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
@@ -113,7 +110,7 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
                 allDaySlot={false}
                 slotMinTime={"8:00:00"}
                 slotMaxTime={"21:00:00"}
-                dayHeaderFormat={{ weekday: 'long' }}
+                dayHeaderFormat={{ weekday: 'short' }}
                 height="auto"
                 initialDate={earliestStartDate(events)}
                 events={events[scheduleCount]["sync"]}
@@ -128,9 +125,9 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
             </div>
 
             <Snackbar open={openAlert} autoHideDuration={5000} onClose={handleCloseAlert}>
-                <MuiAlert onClose={handleCloseAlert} severity="info" style={{ fontSize: '1.25rem' }}>
+                <Alert onClose={handleCloseAlert} severity="info" style={{ fontSize: '1.25rem' }}>
                     {alertMessage}
-                </MuiAlert>
+                </Alert>
             </Snackbar>
 
             <Modal
@@ -155,4 +152,4 @@ const MyCalendar = React.forwardRef(({ title, events, scheduleCount, setSchedule
     );
 });
 
-export default MyCalendar;
+export default Calendar;

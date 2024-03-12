@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import LandingPageComponent from './components/LandingPageComponent';
-import FormComponent from './components/FormComponent';
-import CalendarComponent from './components/CalendarComponent';
+import Calendar from './components/Calendar';
 import ErrorPage from './components/ErrorPage';
-import Footer from './components/Footer'
+import Footer from './components/Footer';
+import Form from './components/Form';
+import LandingPage from './components/LandingPage';
+
 
 const App = () => {
   const [displayCalendar, setDisplayCalendar] = useState(false);
@@ -19,7 +20,7 @@ const App = () => {
     }
   });
 
-  const displayCalendarComponent = () => (displayCalendar ? <CalendarComponent title={term} events={schedules} scheduleCount={scheduleCount} setScheduleCount={setScheduleCount} ref={calendarRef} /> : null);
+  const displayCalendarComponent = () => (displayCalendar ? <Calendar title={term} events={schedules} scheduleCount={scheduleCount} setScheduleCount={setScheduleCount} ref={calendarRef} /> : null);
 
   if (serverError) {
     return <ErrorPage />
@@ -27,8 +28,8 @@ const App = () => {
 
   return (
     <div>
-      <LandingPageComponent />
-      <FormComponent setDisplayCalendar={setDisplayCalendar} setTerm={setTerm} setSchedules={setSchedules} setScheduleCount={setScheduleCount} setServerError={setServerError} />
+      <LandingPage />
+      <Form setDisplayCalendar={setDisplayCalendar} setTerm={setTerm} setSchedules={setSchedules} setScheduleCount={setScheduleCount} setServerError={setServerError} />
       {displayCalendarComponent()}
       <Footer />
     </div>
