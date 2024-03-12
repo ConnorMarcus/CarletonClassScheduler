@@ -1,78 +1,27 @@
-#calendar-title {
-    text-align: center;
-}
-
-
-#back-to-form {
-    display: block;
-    padding: 10px;
-    margin: 0 auto;
-    background-color: #BF122B;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-
-}
-
-#schedule-carrousel {
-    text-align: center;
-    padding-top: 10px;
-}
-
-#schedule-count-text {
-    padding: 10px;
-}
-
-.prev-next-btn {
-    padding: 10px;
-    margin: 0 auto;
-    background-color: #BF122B;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.prev-next-btn:disabled {
-    opacity: 60%;
-    cursor: default;
-}
-
 #calendar {
-    padding: 10px;
     background-color: white;
     color: black;
-    margin: 25px;
-    padding: 0 20px 40px 40px;
     border: thin solid black;
     border-radius: 9px;
-    scroll-margin-top: 50px;
+    scroll-margin-top: 5px;
 }
 
 .fc-day-today {
     background: inherit !important;
 }
 
-.crn-btn {
-    display: block;
-    padding: 10px;
-    margin: 0 auto;
-    background-color: #BF122B;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
 .async-course-name {
     color: #BF122B;
 }
 
-.async-courses {
-    text-align: left;
-}
-
 .fc-event-main:hover {
     cursor: pointer;
+}
+
+.fc-button {
+    background-color: black !important;
+}
+
+.fc-prev-button {
+    margin-right: 2px !important;
 }
