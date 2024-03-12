@@ -29,7 +29,7 @@ class ErrorCourseDatabase(CourseDatabase):
     def convert_to_course(self, course_map: dict):
         self.exception()
     
-    def convert_to_section(self, course_code: str, section_map: dict):
+    def convert_to_section(self, course_code: str, title: str, term: str, prerequisite: str, section_map: dict):
         self.exception()
         
     def convert_to_classtime(self, term_duration: TermDuration, meeting_date_map: dict, week_schedule: WeekSchedule):

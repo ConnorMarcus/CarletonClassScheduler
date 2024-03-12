@@ -60,13 +60,13 @@ class CourseDatabase(ABC):
         term = course_map.get(self.term_column, "")
         prerequisite = course_map.get(self.prerequisite_column, "")
         lecture_section_list = course_map.get(self.lecture_sections_column, [])
-        lecture_sections = [self.convert_to_section(subject, section_map) for section_map in lecture_section_list]
+        lecture_sections = [self.convert_to_section(subject, title, term, prerequisite, section_map) for section_map in lecture_section_list]
         lab_section_list = course_map.get(self.lab_sections_column, [])
-        lab_sections = [self.convert_to_section(subject, section_map) for section_map in lab_section_list]
+        lab_sections = [self.convert_to_section(subject, title, term, prerequisite, section_map) for section_map in lab_section_list]
 
         return Course(subject, title, term, prerequisite, lecture_sections, lab_sections, None)
     
-    def convert_to_section(self, course_code: str, section_map: dict) -> Section:
+    def convert_to_section(self, course_code: str, title: str, term: str, prerequisite: str, section_map: dict) -> Section:
         section_id = section_map.get(self.section_id_column, "")
         crn = section_map.get(self.crn_column, "")
         status = section_map.get(self.status_column, "")
@@ -78,7 +78,8 @@ class CourseDatabase(ABC):
         week_schedule = WeekSchedule(section_map.get(self.week_schedule_column, WeekSchedule.EVERY_WEEK))
         meeting_dates_list = section_map.get(self.meeting_dates_column, [])
         meeting_times = [self.convert_to_classtime(term_duration, meeting_date_map, week_schedule) for meeting_date_map in meeting_dates_list]
-        return Section(course_code, section_id, crn, instructor, meeting_times, status, related_sections, start_date, end_date)
+        return Section(course_code, section_id, crn, instructor, meeting_times, status, title, 
+                       term, prerequisite, related_sections, start_date, end_date)
 
     def convert_to_classtime(self, term_duration: TermDuration, meeting_date_map: dict, week_schedule: WeekSchedule) -> ClassTime:
         day_of_week = DayOfWeek(meeting_date_map.get(self.day_of_week_column))
