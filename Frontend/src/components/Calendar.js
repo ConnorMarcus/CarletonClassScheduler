@@ -61,6 +61,8 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
         const crn = event["event"]["_def"]["extendedProps"]["crn"];
         const instructor = event["event"]["_def"]["extendedProps"]["instructor"];
         const status = event["event"]["_def"]["extendedProps"]["status"];
+        const name = event["event"]["_def"]["extendedProps"]["name"];
+        const prereq = event["event"]["_def"]["extendedProps"]["prereq"];
 
         let startTimeStr, endTimeStr;
 
@@ -78,7 +80,7 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
             startTimeStr = getCourseTime(startTimeMsec);
             endTimeStr = getCourseTime(endTimeMsec);
         }
-        const eventDetails = { title, startTimeStr, endTimeStr, instructor, crn, status }
+        const eventDetails = { title, startTimeStr, endTimeStr, instructor, crn, status, name, prereq }
         setEventDetails(eventDetails);
         setOpenModal(true);
     };
@@ -136,11 +138,13 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
             >
                 <Box sx={{ color: 'black', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', height: 'fit-content', width: 275, bgcolor: 'background.paper', border: '1px solid #BF122B', boxShadow: 24, p: 2, borderRadius: '10px', }}>
                     <h2 id="modal-title">{eventDetails?.title}</h2>
+                    <h3>{eventDetails?.name}</h3>
                     <p id="modal-description" style={{ textAlign: 'left' }}>
                         <b>Time: </b>{eventDetails?.startTimeStr} - {eventDetails?.endTimeStr}<br />
                         <b>Instructor: </b>{eventDetails?.instructor}<br />
                         <b>CRN: </b>{eventDetails?.crn}<br />
-                        <b>Status: </b>{eventDetails?.status}
+                        <b>Status: </b>{eventDetails?.status}<br />
+                        {eventDetails?.prereq && <><b>Prerequisites: </b>{eventDetails?.prereq}<br /></>}
                     </p>
                 </Box>
             </Modal>
