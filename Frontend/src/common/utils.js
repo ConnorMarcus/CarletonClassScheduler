@@ -235,7 +235,7 @@ const getParity = (termStartDate, lastDayBeforeReadingWeek, labParity) => {
 
 const createEvent = (courseCode, section, time, startDate, endDate, crn, instructor, status, title, prereq) => {
     return {
-        title: `${courseCode}${section}`,
+        title: `${courseCode} ${section}`,
         startTime: `${time.StartTime}:00`,
         endTime: `${time.EndTime}:00`,
         daysOfWeek: [convertDayToInt(time.DayOfWeek)],
@@ -252,7 +252,7 @@ const createEvent = (courseCode, section, time, startDate, endDate, crn, instruc
 
 const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate, crn, instructor, status, title, prereq) => {
     return {
-        title: `${courseCode}${section}`,
+        title: `${courseCode} ${section}`,
         rrule: {
             freq: "weekly",
             interval: 2,
