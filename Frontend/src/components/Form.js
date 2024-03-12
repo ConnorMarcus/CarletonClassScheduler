@@ -1,19 +1,8 @@
-// FormComponent.js
 import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import DoneIcon from '@mui/icons-material/Done';
-import ClearIcon from '@mui/icons-material/Clear';
-import RemoveIcon from '@mui/icons-material/Remove';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import '../styles/FormComponent.css';
+import { Alert, Autocomplete, Button, Grid, Snackbar, TextField, Typography, Box } from '@mui/material';
+import { Add, Clear, Done, Remove } from '@mui/icons-material';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
+import '../styles/Form.css';
 
 const initialFormState = {
     course1: '',
@@ -46,7 +35,7 @@ const initialFormState = {
     betweenDay5End: '',
 };
 
-const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError }) => {
+const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, setServerError }) => {
     const [inputValues, setInputValues] = useState(initialFormState);
     const [nonEmptyCoursesCount, setNoneEmptyCoursesCount] = useState(0);
     const [coursesList, setCoursesList] = useState({});
@@ -370,7 +359,7 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
                         size="small"
                         onClick={addRow}
                         disabled={rowCount === 5}
-                        startIcon={<AddIcon />}
+                        startIcon={<Add />}
                     >
                         Add
                     </Button>
@@ -388,7 +377,7 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
                         size="small"
                         onClick={removeRow}
                         disabled={rowCount === 1}
-                        startIcon={<RemoveIcon />}
+                        startIcon={<Remove />}
                     >
                         Remove
                     </Button>
@@ -408,7 +397,7 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
                         }}
                         size="small"
                         onClick={handleSubmit}
-                        startIcon={<DoneIcon />}
+                        startIcon={<Done />}
                     >
                         Build
                     </Button>
@@ -425,19 +414,19 @@ const FormComponent = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleC
                         }}
                         size="small"
                         onClick={handleClearAll}
-                        startIcon={<ClearIcon />}
+                        startIcon={<Clear />}
                     >
                         Clear All
                     </Button>
                 </Grid>
             </Grid>
             <Snackbar open={open} autoHideDuration={5000} onClose={handleCloseAlert}>
-                <MuiAlert onClose={handleCloseAlert} severity="error" style={{ fontSize: '1.25rem' }}>
+                <Alert onClose={handleCloseAlert} severity="error" style={{ fontSize: '1.25rem' }}>
                     {alertMessage}
-                </MuiAlert>
+                </Alert>
             </Snackbar>
         </Box >
     );
 };
 
-export default FormComponent;
+export default Form;
