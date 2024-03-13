@@ -230,7 +230,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                     />
                 </Grid>
                 {Object.keys(inputValues).slice(0, 9).map((inputName, index) => (
-                    <Grid item key={index} xs={6} sm={6} md={4}>
+                    <Grid item key={index} xs={10} sm={6} md={4}>
                         <Autocomplete
                             id={`course-select-${index}`}
                             options={selectedTermCourses}
@@ -249,7 +249,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                         Weekly
                     </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} md={4}>
                     <Autocomplete
                         id="preferred-day-Off-select"
                         options={selectOptionsDaysOff}
@@ -300,7 +300,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                 </Grid>
                 {rows.map(row => (
                     <React.Fragment key={row.id}>
-                        <Grid item xs={12} sm={6} md={4}>
+                        <Grid item xs={12}  md={4}>
                             <Autocomplete
                                 options={selectOptionsDaysOff}
                                 value={inputValues[`extraDay${row.id}`] || null}
