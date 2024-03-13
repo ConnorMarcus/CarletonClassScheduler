@@ -100,9 +100,21 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
     // Handle responsiveness
     const theme = responsiveFontSizes(createTheme());
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-    const dayHeaderFormat = isSmallScreen ? { weekday: 'short' } : { weekday: 'long' };
-    const responsiveMargin = isSmallScreen ? '0' : '25px';
-    const responsivePadding = isSmallScreen ? '0 10px 0 10px' : '0 40px 20px 40px;';
+    const responsiveValues = {
+        small: {
+          dayHeaderFormat: { weekday: 'short' },
+          responsiveMargin: '0',
+          responsivePadding: '0 10px 25px 10px',
+          responsiveButtonSize: 'small'
+        },
+        medium: {
+          dayHeaderFormat: { weekday: 'long' },
+          responsiveMargin: '25px',
+          responsivePadding: '0 40px 20px 40px',
+          responsiveButtonSize: 'medium'
+        }
+    };
+    const { dayHeaderFormat, responsiveMargin, responsivePadding, responsiveButtonSize } = isSmallScreen ? responsiveValues.small : responsiveValues.medium;
 
     return (
         <ThemeProvider theme={theme}>
@@ -200,7 +212,7 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
                             },
                             marginTop: '20px'
                         }}
-                        size="medium"
+                        size={responsiveButtonSize}
                         onClick={copyCRNsToClipboard}
                         startIcon={<ContentCopy />}
                     >
