@@ -46,7 +46,7 @@ def get_classes_list() -> List[dict]:
     classes_file = get_s3_object(CLASSES_FILENAME)
     classes = json.load(classes_file.get()["Body"])
 
-    return list(classes.values())
+    return [sorted(classes_lst, key=sort_key) for classes_lst in classes.values()]
     
 
 def write_terms_courses_to_s3(terms_courses: dict[str, str]) -> str:
@@ -66,3 +66,16 @@ def write_terms_courses_to_s3(terms_courses: dict[str, str]) -> str:
     return {
         "Response": json.dumps("Terms and Courses written to s3!")
     }
+
+def sort_key(class_item: str) -> List[str]:
+    '''
+    Sorting key to be used when sorting classes in alphabetical order.
+
+    Parameters: 
+    class_item: class str.
+
+    Returns: 
+    List[str]: list of sorted classes by alphabetical order.
+    '''
+    part = class_item.split()
+    return (part[0], int(part[1]), part[2] if len(part) > 2 else '')
