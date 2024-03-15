@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Autocomplete, Button, Grid, Snackbar, TextField, Typography, Box } from '@mui/material';
+import { Alert, Autocomplete, Button, Grid, Snackbar, TextField, Typography, Box, CircularProgress } from '@mui/material';
 import { Add, Clear, Done, Remove } from '@mui/icons-material';
 import { ALL_ASYNC_COURSES_ERROR, fetchCourses, fetchSchedules, fetchTerms, NO_SCHEDULES_ERROR } from '../common/APIutils';
 import '../styles/Form.css';
@@ -44,6 +44,8 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
     const [rowCount, setRowCount] = useState(1);
     const [open, setOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
+
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const getAllCourses = async (term) => {
@@ -134,6 +136,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setIsLoading(true);
         const isValidSubmission = Object.entries(inputValues).every(
             ([key, value]) => {
                 if (Object.keys(termsAndReadingWeek).includes(value)) {
@@ -155,7 +158,9 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                 setTerm(inputValues.term);
                 setSchedules(classes);
                 setDisplayCalendar(true);
+                setIsLoading(false);
             }).catch((error) => {
+                setIsLoading(false);
                 handleClear();
                 if (error.name === NO_SCHEDULES_ERROR || error.name === ALL_ASYNC_COURSES_ERROR) {
                     setAlertMessage(error.message);
@@ -169,6 +174,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
             const error_msg = inputValues.term !== '' ? 'Please select a course' : "Please enter the Term";
             setAlertMessage(error_msg);
             setOpen(true);
+            setIsLoading(false);
         }
     };
 
@@ -300,7 +306,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                 </Grid>
                 {rows.map(row => (
                     <React.Fragment key={row.id}>
-                        <Grid item xs={12}  md={4}>
+                        <Grid item xs={12} md={4}>
                             <Autocomplete
                                 options={selectOptionsDaysOff}
                                 value={inputValues[`extraDay${row.id}`] || null}
@@ -382,43 +388,51 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                         Remove
                     </Button>
                 </Grid>
-                <Grid item xs={12} sx={{ marginTop: '30px' }}>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            background: '#BF122B',
-                            fontSize: '15px',
-                            paddingRight: '15px',
-                            paddingLeft: '15px',
-                            marginRight: '20px',
-                            '&:hover': {
-                                background: '#BF122B'
-                            },
-                        }}
-                        size="small"
-                        onClick={handleSubmit}
-                        startIcon={<Done />}
-                    >
-                        Build
-                    </Button>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            background: 'black',
-                            fontSize: '15px',
-                            paddingRight: '15px',
-                            paddingLeft: '15px',
-                            '&:hover': {
-                                background: 'black'
-                            },
-                        }}
-                        size="small"
-                        onClick={handleClearAll}
-                        startIcon={<Clear />}
-                    >
-                        Clear All
-                    </Button>
-                </Grid>
+                {isLoading ? (
+                    <Box item sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px', alignItems: 'center', width: '100%' }}>
+                        <CircularProgress color='inherit' />
+                    </Box>
+                ) : (
+                    <>
+                        <Grid item xs={12} sx={{ marginTop: '30px' }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    background: '#BF122B',
+                                    fontSize: '15px',
+                                    paddingRight: '15px',
+                                    paddingLeft: '15px',
+                                    marginRight: '20px',
+                                    '&:hover': {
+                                        background: '#BF122B'
+                                    },
+                                }}
+                                size="small"
+                                onClick={handleSubmit}
+                                startIcon={<Done />}
+                            >
+                                Build
+                            </Button>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    background: 'black',
+                                    fontSize: '15px',
+                                    paddingRight: '15px',
+                                    paddingLeft: '15px',
+                                    '&:hover': {
+                                        background: 'black'
+                                    },
+                                }}
+                                size="small"
+                                onClick={handleClearAll}
+                                startIcon={<Clear />}
+                            >
+                                Clear All
+                            </Button>
+                        </Grid>
+                    </>
+                )}
             </Grid>
             <Snackbar open={open} autoHideDuration={5000} onClose={handleCloseAlert}>
                 <Alert onClose={handleCloseAlert} severity="error" style={{ fontSize: '1.25rem' }}>
