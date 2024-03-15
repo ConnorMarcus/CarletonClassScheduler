@@ -24,14 +24,6 @@ CLASSES_DICT = {"AERO 2001-Fall 2023":
               "TermDuration": "Full Term", "AlsoRegister": [["A"]], "StartDate": "2023-09-06", "EndDate": "2023-12-08", "WeekSchedule": "Every Week"}]
     }
 }
-CLASS_LST = {"Fall 2023": [
-                "SYSC 3700", "AERO 3700 A", "AERO 2001",
-                "AERO 2001 A", "AERO 3240", "AERO 3240 A"]
-}
-SORTED_LST = {"Fall 2023": [
-                "AERO 2001", "AERO 2001 A", "AERO 3240", "AERO 3240 A", 
-                "AERO 3700 A", "SYSC 3700"]
-}
 
 def test_lambda_handler():
     class_list = list(CLASSES_DICT.values())
@@ -62,14 +54,14 @@ def test_get_s3_object():
 
 def test_get_classes_list():
     s3_object = MagicMock()
-    class_dict = json.dumps(CLASS_LST)
+    class_dict = json.dumps(CLASSES_DICT)
     s3_object.get.return_value = {"Body": MagicMock(read=lambda: class_dict)}
 
     with patch(f"{FILE_PATH}.get_s3_object", return_value=s3_object) as mock_s3:
         result = get_classes_list()
         mock_s3.assert_called_once_with(CLASSES_FILENAME)
 
-        assert result == list(SORTED_LST.values())
+        assert result == list(CLASSES_DICT.values())
 
 
 def test_write_terms_courses_to_s3():
@@ -85,3 +77,5 @@ def test_write_terms_courses_to_s3():
         s3_object.put.assert_called_once_with(Body=expected_result)
 
         assert result == {"Response": json.dumps("Terms and Courses written to s3!")}
+
+    
