@@ -19,6 +19,9 @@ def lambda_handler(event: dict, context: dict) -> str:
         for lecture in course["LectureSections"]:
             terms_courses_dict.get(term_key).append(f"{subject} {lecture['SectionID']}")
 
+        for term, course in terms_courses_dict.items():
+            terms_courses_dict[term] = sorted(course)
+            
     return write_terms_courses_to_s3(terms_courses_dict)
             
 
