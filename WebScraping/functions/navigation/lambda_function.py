@@ -71,7 +71,9 @@ def handler(event=None, context=None) -> str:
             # When done, click on "Return to Search"
             click_btn(driver, By.NAME, "search_selected")
 
-        # Select change term 
+        # Wait until form loads, select change term 
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, 'form')))
+
         click_btn(driver, By.XPATH, CHANGE_TERM_BTN_XPATH)
 
     s3 = boto3.resource("s3")
