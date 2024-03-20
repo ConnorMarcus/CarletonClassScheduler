@@ -97,7 +97,7 @@ def test_generate_schedules_with_no_courses():
     schedule = [
         Section("CODE1000", "A", "11111", "Alice", [ClassTime(DayOfWeek.MONDAY, TermDuration.FULL_TERM, "09:05", "10:35"), ClassTime(DayOfWeek.WEDNESDAY, TermDuration.FULL_TERM, "09:05", "10:35") ], "", "CLASS TITLE", "TERM", "NONE", [], "2023-09-06", "2023-12-08")
     ]
-    assert scheduler.generate_schedules([], schedule) == [schedule]
+    assert scheduler.generate_schedules([], schedule) == ([schedule], False)
 
 def test_generate_schedules_with_max_schedules():
     '''
@@ -113,7 +113,7 @@ def test_generate_schedules_with_max_schedules():
         section1,
         sectionL
     ]
-    assert scheduler.generate_schedules([course1], []) == [schedule]
+    assert scheduler.generate_schedules([course1], []) == ([schedule], True)
     scheduler.MAX_SCHEDULES = max_schedules # reset constant
 
 
@@ -136,7 +136,7 @@ def test_generate_schedules_with_lab_sections():
     expected_schedule2 = [
        section3, section4, section1, section2B
     ]
-    assert scheduler.generate_schedules([course1], schedule1) == [expected_schedule1, expected_schedule2]
+    assert scheduler.generate_schedules([course1], schedule1) == ([expected_schedule1, expected_schedule2], False)
 
 
 def test_generate_schedules_without_lab_sections():
@@ -155,7 +155,7 @@ def test_generate_schedules_without_lab_sections():
         section3,
         section1
     ]
-    assert scheduler.generate_schedules([course1], schedule1) == [expected_schedule]
+    assert scheduler.generate_schedules([course1], schedule1) == ([expected_schedule], False)
 
 def test_generate_schedules_with_incompatible_lab():
     '''
@@ -168,7 +168,7 @@ def test_generate_schedules_with_incompatible_lab():
     expected_schedule = [
        section1, section2
     ]
-    assert scheduler.generate_schedules([course1]) == [expected_schedule]
+    assert scheduler.generate_schedules([course1]) == ([expected_schedule], False)
 
 
 def test_generate_schedules_with_unschedulable_section():
@@ -184,8 +184,8 @@ def test_generate_schedules_with_unschedulable_section():
     schedule1 = [
         section4
     ]
-    assert scheduler.generate_schedules([course1], schedule1) == []
-    assert scheduler.generate_schedules([course2], schedule1) == []
+    assert scheduler.generate_schedules([course1], schedule1) == ([], False)
+    assert scheduler.generate_schedules([course2], schedule1) == ([], False)
 
 def test_generate_schedules_with_lab_and_tutorials():
     '''
@@ -208,4 +208,4 @@ def test_generate_schedules_with_lab_and_tutorials():
     expected_schedule2 = [
        section4, section1, section2C, section2A
     ]
-    assert scheduler.generate_schedules([course1, course2]) == [expected_schedule1, expected_schedule2]
+    assert scheduler.generate_schedules([course1, course2]) == ([expected_schedule1, expected_schedule2], False)

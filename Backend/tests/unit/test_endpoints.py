@@ -16,7 +16,7 @@ from Backend.tests.unit.test_dynamo_database import test_scan_response1 as respo
 from Backend.tests.unit.test_s3_database import generate_db
 
 TEST_TERM = "Fall 2023"
-SAMPLE_SCHEDULE = [[Section("SYSC 4001", "B", "35905", "Test Prof 2", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "08:35", "11:25")], "Registration Closed", "Operating Systems", TEST_TERM, "fourth-year standing.", [], "2023-09-06", "2023-12-08").to_dict()]]
+SAMPLE_SCHEDULE = [[Section("SYSC 4001", "B", "35905", "Test Prof 2", [ClassTime(DayOfWeek.TUESDAY, TermDuration.FULL_TERM, "08:35", "11:25")], "Registration Closed", "Operating Systems", TEST_TERM, "fourth-year standing.", [], "2023-09-06", "2023-12-08", "Online").to_dict()]]
 
 @pytest.fixture()
 def empty_json_event():
@@ -133,9 +133,11 @@ def test_generate_schedules_success(generate_schedules_event):
     assert "Error" in ret["body"]
     assert "ErrorReason" in ret["body"]
     assert "Schedules" in ret["body"]
+    assert "ReachedScheduleLimit" in ret["body"]
     assert data["Error"] == False
     assert data["ErrorReason"] == ""
     assert data["Schedules"] == SAMPLE_SCHEDULE
+    assert data["ReachedScheduleLimit"] == False
 
 def test_generate_schedules_with_filters(generate_schedules_with_filters_event):
     stubber = Stubber(database.dynamodb)
@@ -149,9 +151,11 @@ def test_generate_schedules_with_filters(generate_schedules_with_filters_event):
     assert "Error" in ret["body"]
     assert "ErrorReason" in ret["body"]
     assert "Schedules" in ret["body"]
+    assert "ReachedScheduleLimit" in ret["body"]
     assert data["Error"] == False
     assert data["ErrorReason"] == ""
     assert data["Schedules"] == []
+    assert data["ReachedScheduleLimit"] == False
 
 def test_generate_schedules_with_empty_filters(generate_schedules_with_empty_filters_event):
     stubber = Stubber(database.dynamodb)
@@ -165,9 +169,11 @@ def test_generate_schedules_with_empty_filters(generate_schedules_with_empty_fil
     assert "Error" in ret["body"]
     assert "ErrorReason" in ret["body"]
     assert "Schedules" in ret["body"]
+    assert "ReachedScheduleLimit" in ret["body"]
     assert data["Error"] == False
     assert data["ErrorReason"] == ""
     assert data["Schedules"] == SAMPLE_SCHEDULE
+    assert data["ReachedScheduleLimit"] == False
 
 def test_generate_schedules_with_invalid_filters(generate_schedules_with_invalid_filter_event):
     stubber = Stubber(database.dynamodb)

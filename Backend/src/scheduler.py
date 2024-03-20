@@ -1,4 +1,4 @@
-from typing import Iterable, List
+from typing import Iterable, List, Tuple
 from .model.section import Section
 from .model.course import Course
 import itertools
@@ -6,9 +6,9 @@ import itertools
 MAX_SCHEDULES = 25 # Maximum number of schedules to generate (to avoid overwhelming the user)
 
 # Note: filter sections (based on times, etc.) before passing to this function
-def generate_schedules(courses: List[Course], current_schedule: List[Section] = []) -> List[List[Section]]:
+def generate_schedules(courses: List[Course], current_schedule: List[Section] = []) -> Tuple[List[List[Section]], bool]:
     if len(courses) == 0:
-        return [current_schedule[:]]
+        return [current_schedule[:]], False
 
     res = []
     for lecture_section in courses[-1].lecture_sections:
@@ -22,23 +22,23 @@ def generate_schedules(courses: List[Course], current_schedule: List[Section] = 
                     # Must check to make sure that all related sections exists (i.e. none were filtered out)
                     if None not in related_sections and not do_section_times_overlap(related_sections) and are_sections_schedulable(related_sections, current_schedule):
                         current_schedule.extend(related_sections)
-                        schedules = generate_schedules(courses[:-1], current_schedule)
+                        schedules, _ = generate_schedules(courses[:-1], current_schedule)
                         res.extend(schedules)
                         for _ in range(len(related_sections)):
                             current_schedule.pop()
             
             # There are no related sections
             else:
-                schedules = generate_schedules(courses[:-1], current_schedule)
+                schedules, _ = generate_schedules(courses[:-1], current_schedule)
                 res.extend(schedules)
             
             # remove lecture section from current schedule
             current_schedule.pop()
 
         if len(res) >= MAX_SCHEDULES: # Limit number of schedule results
-            break
+            return res, True
 
-    return res
+    return res, False
 
 
 def is_section_schedulable(section: Section, current_schedule: List[Section]) -> bool:

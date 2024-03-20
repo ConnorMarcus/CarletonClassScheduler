@@ -47,7 +47,8 @@ test_scan_response2 = {
                 'SectionID': {'S': 'B'}, 
                 'CRN': {'S': '35905'},
                 'StartDate': {'S': '2023-09-06'},
-                'EndDate': {'S': '2023-12-08'}}}]}, 
+                'EndDate': {'S': '2023-12-08'},
+                'SectionType': {'S': 'Online'}}}]}, 
             'Subject': {'S': 'SYSC 4001'}
         } 
     ]
