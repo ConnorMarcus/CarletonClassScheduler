@@ -17,9 +17,11 @@ class Section:
                                          # i.e. [["ETU"], ["L1", "L2"]] would represent ETU and (L1 or L2)
     start_date: str
     end_date: str
+    section_type: str = ""
 
     def to_dict(self) -> dict:
         return {"CourseCode":self.course_code, "SectionID":self.section_id, "CRN":self.crn, 
                 "Instructor":self.instructor, "Times":[time.to_dict() for time in self.times],
                 "Status":self.status, "StartDate": self.start_date, "EndDate": self.end_date,
-                "Title":self.title, "Term":self.term, "Prerequisite":self.prerequisite}
+                "Title":self.title, "Term":self.term, "Prerequisite":self.prerequisite, 
+                "SectionType":self.section_type}
