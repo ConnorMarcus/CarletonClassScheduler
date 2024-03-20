@@ -34,7 +34,8 @@ def generate_schedules_lambda_handler(event: dict, context: object) -> dict:
             return lambda_response(BAD_REQUEST_CODE, True, str(error))
             
         #Generate Schedules
-        schedules, reached_schedule_limit = generate_schedules(inputted_courses)[:MAX_SCHEDULES]
+        schedules, reached_schedule_limit = generate_schedules(inputted_courses)
+        schedules = schedules[:MAX_SCHEDULES]
         return lambda_response(SUCCESS_CODE, False, "", {"Schedules": [[section.to_dict() for section in schedule] for schedule in schedules], "ReachedScheduleLimit": reached_schedule_limit})
 
     except (botocore.exceptions.ClientError, CouresDatabaseException) as error:
