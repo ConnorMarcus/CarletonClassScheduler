@@ -31,7 +31,7 @@ describe("App tests", () => {
 
     it("should display the correct content on the LandingPage", () => {
         cy.get("h2").eq(0).should("exist")
-            .and("contain.text", "Welcome to the Carleton UniversityStudent Scheduler Tool");
+            .and("contain", "Welcome to the Carleton UniversityStudent Scheduler Tool");
         cy.get("a").contains("Build Your Schedule").should("exist");
         cy.get("a").contains("Need Assistance").should("exist");
     });
@@ -43,7 +43,7 @@ describe("App tests", () => {
 
     it("should display the correct content in the footer", () => {
         cy.get(".MuiTypography-body1").should("exist")
-            .and("contain.text", "© 2024 CarletonClassScheduler. All rights reserved.");
+            .and("contain", "© 2024 CarletonClassScheduler. All rights reserved.");
         cy.get("a").contains("View on GitHub").should("exist");
     });
 });

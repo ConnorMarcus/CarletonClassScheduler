@@ -6,17 +6,23 @@ describe("Form Component", () => {
     it("should display an error alert when no term is selected", () => {
         // Try and build schedule
         cy.get("#build-button").click();
-        cy.get(".MuiAlert-message").should("exist").and("contain.text", "Please enter the Term");
+        cy.get(".MuiAlert-message").should("exist").and("contain", "Please enter the Term");
     });
 
     it("should display an error alert when no courses are selected", () => {
         // Add first term
         cy.get("#term-select").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
 
         // Try and build schedule
         cy.get("#build-button").click();
-        cy.get(".MuiAlert-message").should("exist").and("contain.text", "Please select a course");
+        cy.get(".MuiAlert-message").should("exist").and("contain", "Please select a course");
+    });
+
+    it("should have no course options if a term is not selected", () => {
+        // Open courses drop down and make sure its empty
+        cy.get("#course-select-0").click();
+        cy.get(".MuiAutocomplete-popper li").should("not.exist");
     });
 
     it("should allow you to build a schedule", () => {
@@ -25,9 +31,9 @@ describe("Form Component", () => {
 
         // Add first term and course
         cy.get("#term-select").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
         cy.get("#course-select-0").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
 
         // Build schedule then check for calendar component
         cy.get("#build-button").click().wait(1000);
@@ -40,9 +46,9 @@ describe("Form Component", () => {
     it("should clear the entire form when clear all is clicked", () => {
         // Add first term and course
         cy.get("#term-select").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
         cy.get("#course-select-0").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
 
         // Clear form
         cy.get("#clear-button").click();
@@ -74,9 +80,9 @@ describe("Form Component", () => {
     it("should remove calendar component when form is cleared", () => {
         // Add first term and course
         cy.get("#term-select").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
         cy.get("#course-select-0").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
 
         // Build schedule then check for calendar component
         cy.get("#build-button").click().wait(1000);
@@ -90,9 +96,9 @@ describe("Form Component", () => {
     it("should remove calendar component when any input in the form is changed", () => {
         // Add first term and course
         cy.get("#term-select").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
         cy.get("#course-select-0").click();
-        cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
+        cy.get(".MuiAutocomplete-popper li").eq(0).click();
 
         // Build schedule then check for calendar component
         cy.get("#build-button").click().wait(1000);
@@ -103,5 +109,4 @@ describe("Form Component", () => {
         cy.get("button[title='Clear']").eq(1).click().wait(1000);
         cy.get("#calendar").should("not.exist");
     });
-
 });
