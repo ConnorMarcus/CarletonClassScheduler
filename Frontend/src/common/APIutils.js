@@ -42,7 +42,7 @@ export const fetchSchedules = async (inputs, readingWeekDates) => {
             allAsyncCoursesError.name = ALL_ASYNC_COURSES_ERROR;
             throw allAsyncCoursesError;
         } else {
-            return parseScheduleIntoEvents(response.data.Schedules, inputs.term, readingWeekDates);
+            return [parseScheduleIntoEvents(response.data.Schedules, inputs.term, readingWeekDates), response.data.ReachedScheduleLimit];
         }
     } catch (error) {
         throw error;

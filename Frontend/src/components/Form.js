@@ -44,7 +44,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
     const [rowCount, setRowCount] = useState(1);
     const [open, setOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
-
+    const [alertSeverity, setAlertSeverity] = useState('error');
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -154,11 +154,18 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
 
         if (isValidSubmission && nonEmptyCoursesCount > 0) {
             setScheduleCount(0);
-            fetchSchedules(inputValues, termsAndReadingWeek).then((classes) => {
+            fetchSchedules(inputValues, termsAndReadingWeek).then((results) => {
+                const classes = results[0];
+                const reachedScheduleLimit = results[1];
                 setTerm(inputValues.term);
                 setSchedules(classes);
                 setDisplayCalendar(true);
                 setIsLoading(false);
+                if (reachedScheduleLimit) {
+                    setAlertMessage("There are more than 25 results. Narrow your search to see more");
+                    setAlertSeverity("info");
+                    setOpen(true);
+                }
             }).catch((error) => {
                 setIsLoading(false);
                 handleClear();
@@ -188,7 +195,6 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
         handleClear();
     }
 
-
     const addRow = () => {
         if (rowCount < 5) {
             const newRow = { id: rows.length + 1 };
@@ -211,6 +217,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
 
     const handleCloseAlert = () => {
         setOpen(false);
+        setAlertSeverity('error');
     };
 
     const selectOptionsDaysOff = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -389,7 +396,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                     </Button>
                 </Grid>
                 {isLoading ? (
-                    <Box item sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px', alignItems: 'center', width: '100%' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px', alignItems: 'center', width: '100%' }}>
                         <CircularProgress color='inherit' />
                     </Box>
                 ) : (
@@ -435,7 +442,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                 )}
             </Grid>
             <Snackbar open={open} autoHideDuration={5000} onClose={handleCloseAlert}>
-                <Alert onClose={handleCloseAlert} severity="error" style={{ fontSize: '1.25rem' }}>
+                <Alert onClose={handleCloseAlert} severity={alertSeverity} style={{ fontSize: '1.25rem', textAlign: 'left' }}>
                     {alertMessage}
                 </Alert>
             </Snackbar>
