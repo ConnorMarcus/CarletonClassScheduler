@@ -195,7 +195,6 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
         handleClear();
     }
 
-
     const addRow = () => {
         if (rowCount < 5) {
             const newRow = { id: rows.length + 1 };
@@ -397,7 +396,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                     </Button>
                 </Grid>
                 {isLoading ? (
-                    <Box item sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px', alignItems: 'center', width: '100%' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px', alignItems: 'center', width: '100%' }}>
                         <CircularProgress color='inherit' />
                     </Box>
                 ) : (
