@@ -4,8 +4,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import rrulePlugin from '@fullcalendar/rrule';
 import { getCourseTime } from '../common/utils';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
-import { Alert, Box,  Button,  Modal, Snackbar, Typography } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos, ContentCopy } from '@mui/icons-material';
+import { Alert, Box, Button, Modal, Snackbar, Typography } from '@mui/material';
+import { ArrowBackIos, ArrowForwardIos, ContentCopy, LaptopMac } from '@mui/icons-material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import '../styles/Calendar.css';
 
@@ -66,6 +66,7 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
         const instructor = event["event"]["_def"]["extendedProps"]["instructor"];
         const status = event["event"]["_def"]["extendedProps"]["status"];
         const name = event["event"]["_def"]["extendedProps"]["name"];
+        const type = event["event"]["_def"]["extendedProps"]["type"];
         const prereq = event["event"]["_def"]["extendedProps"]["prereq"];
 
         let startTimeStr, endTimeStr;
@@ -84,10 +85,26 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
             startTimeStr = getCourseTime(startTimeMsec);
             endTimeStr = getCourseTime(endTimeMsec);
         }
-        const eventDetails = { title, startTimeStr, endTimeStr, instructor, crn, status, name, prereq }
+        const eventDetails = { title, startTimeStr, endTimeStr, instructor, crn, status, name, type, prereq }
         setEventDetails(eventDetails);
         setOpenModal(true);
     };
+
+    const renderOnlineCourseIcon = (eventInfo) => {
+        const icon = eventInfo.event.extendedProps.type === 'Online' ? <LaptopMac /> : null;
+        return (
+            <div className="fc-event-main-frame">
+                <div className="fc-event-time">{eventInfo.timeText}</div>
+                <div className="fc-event-title-container">
+                    <div className="fc-event-title fc-sticky">
+                        {eventInfo.event.title}
+                    </div>
+                    {icon}
+                </div>
+
+            </div >
+        );
+    }
 
     const handleCloseAlert = () => {
         setOpenAlert(false);
@@ -102,16 +119,16 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const responsiveValues = {
         small: {
-          dayHeaderFormat: { weekday: 'short' },
-          responsiveMargin: '0',
-          responsivePadding: '0 10px 25px 10px',
-          responsiveButtonSize: 'small'
+            dayHeaderFormat: { weekday: 'short' },
+            responsiveMargin: '0',
+            responsivePadding: '0 10px 25px 10px',
+            responsiveButtonSize: 'small'
         },
         medium: {
-          dayHeaderFormat: { weekday: 'long' },
-          responsiveMargin: '25px',
-          responsivePadding: '0 40px 20px 40px',
-          responsiveButtonSize: 'medium'
+            dayHeaderFormat: { weekday: 'long' },
+            responsiveMargin: '25px',
+            responsivePadding: '0 40px 20px 40px',
+            responsiveButtonSize: 'medium'
         }
     };
     const { dayHeaderFormat, responsiveMargin, responsivePadding, responsiveButtonSize } = isSmallScreen ? responsiveValues.small : responsiveValues.medium;
@@ -184,6 +201,7 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
                     initialDate={earliestStartDate(events)}
                     events={events[scheduleCount]["sync"]}
                     eventClick={handleEventClick}
+                    eventContent={renderOnlineCourseIcon}
                     headerToolbar={{ end: 'prev,next' }}
                 />
                 <Box className="async-courses" display="flex" justifyContent="space-between" alignItems="center">
@@ -232,13 +250,14 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
                     aria-labelledby="modal-title"
                     aria-describedby="modal-description"
                 >
-                    <Box sx={{ color: 'black', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', height: 'fit-content', width: 275, bgcolor: 'background.paper', border: '1px solid #BF122B', boxShadow: 24, p: 2, borderRadius: '10px', }}>
+                    <Box sx={{ color: 'black', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', height: 'fit-content', width: 275, bgcolor: 'background.paper', border: '4px solid #BF122B', boxShadow: 24, p: 2, borderRadius: '10px', }}>
                         <h2 id="modal-title">{eventDetails?.title}</h2>
                         <h3>{eventDetails?.name}</h3>
                         <p id="modal-description" style={{ textAlign: 'left' }}>
                             <b>Time: </b>{eventDetails?.startTimeStr} - {eventDetails?.endTimeStr}<br />
                             <b>Instructor: </b>{eventDetails?.instructor}<br />
                             <b>CRN: </b>{eventDetails?.crn}<br />
+                            <b>Section Type: </b>{eventDetails?.type}<br />
                             <b>Status: </b>{eventDetails?.status}<br />
                             {eventDetails?.prereq && <><b>Prerequisites: </b>{eventDetails?.prereq}<br /></>}
                         </p>

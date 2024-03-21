@@ -61,6 +61,7 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
             const instructor = courseData.Instructor;
             const status = courseData.Status;
             const courseTitle = courseData.Title;
+            const sectionType = courseData.SectionType;
             const prerequisites = courseData.Prerequisite;
             const originalEndDate = new Date(courseData.EndDate);
             // Logic to increment end date by 1
@@ -69,7 +70,7 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
             const updatedEndDateStr = updatedEndDate.toISOString().split('T')[0];
             courseData.Times.forEach(time => {
                 if (time.WeekSchedule === "Even Week" || time.WeekSchedule === "Odd Week") {
-                    const biWeeklyEvent = createBiWeeklyEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"], crn, instructor, status, courseTitle, prerequisites);
+                    const biWeeklyEvent = createBiWeeklyEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"], crn, instructor, status, courseTitle, sectionType, prerequisites);
                     eventsForCurrentSchedule.push(biWeeklyEvent);
 
                     const parity = getParity(startDate, readingWeekDates[term]["ReadingWeekStart"], time.WeekSchedule);
@@ -80,12 +81,12 @@ export const parseScheduleIntoEvents = (schedules, term, readingWeekDates) => {
                         updatedStartDate = readingWeekDates[term]["ReadingWeekNext"];
                     }
 
-                    const biWeeklyEvent2 = createBiWeeklyEvent(courseCode, section, time, updatedStartDate, updatedEndDateStr, crn, instructor, status, courseTitle, prerequisites);
+                    const biWeeklyEvent2 = createBiWeeklyEvent(courseCode, section, time, updatedStartDate, updatedEndDateStr, crn, instructor, status, courseTitle, sectionType, prerequisites);
                     eventsForCurrentSchedule.push(biWeeklyEvent2);
                 } else {
-                    const event = createEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"], crn, instructor, status, courseTitle, prerequisites);
+                    const event = createEvent(courseCode, section, time, startDate, readingWeekDates[term]["ReadingWeekStart"], crn, instructor, status, courseTitle, sectionType, prerequisites);
                     eventsForCurrentSchedule.push(event);
-                    const event2 = createEvent(courseCode, section, time, readingWeekDates[term]["ReadingWeekEnd"], updatedEndDateStr, crn, instructor, status, courseTitle, prerequisites);
+                    const event2 = createEvent(courseCode, section, time, readingWeekDates[term]["ReadingWeekEnd"], updatedEndDateStr, crn, instructor, status, courseTitle, sectionType, prerequisites);
                     eventsForCurrentSchedule.push(event2);
                 }
             });
@@ -231,7 +232,7 @@ const getParity = (termStartDate, lastDayBeforeReadingWeek, labParity) => {
     return currentParity;
 }
 
-const createEvent = (courseCode, section, time, startDate, endDate, crn, instructor, status, title, prereq) => {
+const createEvent = (courseCode, section, time, startDate, endDate, crn, instructor, status, title, type, prereq) => {
     return {
         title: `${courseCode} ${section}`,
         startTime: `${time.StartTime}:00`,
@@ -244,11 +245,12 @@ const createEvent = (courseCode, section, time, startDate, endDate, crn, instruc
         instructor: instructor,
         status: status,
         name: title,
+        type: type,
         prereq: prereq
     };
 };
 
-const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate, crn, instructor, status, title, prereq) => {
+const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate, crn, instructor, status, title, type, prereq) => {
     return {
         title: `${courseCode} ${section}`,
         rrule: {
@@ -263,6 +265,7 @@ const createBiWeeklyEvent = (courseCode, section, time, startDate, endDate, crn,
         instructor: instructor,
         status: status,
         name: title,
+        type: type,
         prereq: prereq
     };
 };
