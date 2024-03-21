@@ -366,6 +366,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                         onClick={addRow}
                         disabled={rowCount === 5}
                         startIcon={<Add />}
+                        id="add-button"
                     >
                         Add
                     </Button>
@@ -384,6 +385,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                         onClick={removeRow}
                         disabled={rowCount === 1}
                         startIcon={<Remove />}
+                        id="remove-button"
                     >
                         Remove
                     </Button>
@@ -410,6 +412,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                                 size="small"
                                 onClick={handleSubmit}
                                 startIcon={<Done />}
+                                id="build-button"
                             >
                                 Build
                             </Button>
@@ -427,6 +430,7 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                                 size="small"
                                 onClick={handleClearAll}
                                 startIcon={<Clear />}
+                                id="clear-button"
                             >
                                 Clear All
                             </Button>
