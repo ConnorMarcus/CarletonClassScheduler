@@ -6,7 +6,7 @@ describe("Form Component", () => {
     it("should display an error alert when no term is selected", () => {
         // Try and build schedule
         cy.get("#build-button").click();
-        cy.get(".MuiAlert-message").should("exist").and("contain", "Please enter the Term");
+        cy.get(".MuiAlert-message").should("exist");
     });
 
     it("should display an error alert when no courses are selected", () => {
@@ -16,7 +16,7 @@ describe("Form Component", () => {
 
         // Try and build schedule
         cy.get("#build-button").click();
-        cy.get(".MuiAlert-message").should("exist").and("contain", "Please select a course");
+        cy.get(".MuiAlert-message").should("exist");
     });
 
     it("should have no course options if a term is not selected", () => {

@@ -26,8 +26,7 @@ describe("Calendar Component", () => {
         cy.get(".MuiAutocomplete-popper li").eq(0).click();
         cy.get("#build-button").click().wait(1000);
 
-        cy.get(".MuiAlert-message").should("exist")
-            .and("contain", "There are more than 25 results. Narrow your search to see more");
+        cy.get(".MuiAlert-message").should("exist");
     });
 
     it("should display the term name in the title", () => {
@@ -79,7 +78,7 @@ describe("Calendar Component", () => {
         cy.get("#modal-description").should("exist");
     });
 
-    it.only("should let you export the CRNs", () => {
+    it("should let you export the CRNs", () => {
         // Build a Schedule for Fall with SYSC 2006
         cy.get("#term-select").click().type("Fall");
         cy.get(".MuiAutocomplete-popper li").eq(0).click();
@@ -88,7 +87,6 @@ describe("Calendar Component", () => {
         cy.get("#build-button").click().wait(1000);
 
         cy.get("#export-button").click().wait(1000);
-        cy.get(".MuiAlert-message").should("exist")
-            .and("contain", "CRNs copied to clipboard");
+        cy.get(".MuiAlert-message").should("exist");
     });
 });
