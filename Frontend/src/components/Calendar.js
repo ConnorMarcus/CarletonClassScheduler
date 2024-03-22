@@ -159,6 +159,7 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
                         onClick={handlePrevClick}
                         disabled={scheduleCount === 0}
                         startIcon={<ArrowBackIos />}
+                        id="prev-button"
                     >
                         prev
                     </Button>
@@ -184,6 +185,7 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
                         onClick={handleNextClick}
                         disabled={scheduleCount === events.length - 1}
                         endIcon={<ArrowForwardIos />}
+                        id="next-button"
                     >
                         Next
                     </Button>
@@ -233,6 +235,7 @@ const Calendar = React.forwardRef(({ title, events, scheduleCount, setScheduleCo
                         size={responsiveButtonSize}
                         onClick={copyCRNsToClipboard}
                         startIcon={<ContentCopy />}
+                        id="export-button"
                     >
                         Export CRNs
                     </Button>
