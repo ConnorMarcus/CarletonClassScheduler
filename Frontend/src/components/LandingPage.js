@@ -2,6 +2,7 @@ import { Box, Button, Grid, Typography } from '@mui/material';
 import { EditCalendar, Info } from '@mui/icons-material';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
 import '../styles/LandingPage.css';
+import User_Guide from "../documents/User_Guide.pdf";
 
 const theme = responsiveFontSizes(createTheme());
 
@@ -37,7 +38,7 @@ const LandingPage = () => {
           {/* Add space between buttons */}
           <Grid item>
             <Button
-              href="https://carleton.ca/"
+              href={User_Guide}
               target="_blank"
               variant="outlined"
               sx={{
