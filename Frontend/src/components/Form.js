@@ -134,6 +134,74 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
         });
     };
 
+    const hasDuplicateCourses = (form, term) => {
+        const inputCourses = {};
+        const coursesSubString = new Set([]);
+        // Check for exact matching courses that are duplicates
+        for (const key in form) {
+            if (key.startsWith('course') && form[key].trim() !== '') {
+                const value = form[key].trim();
+                coursesSubString.add(value.split(" ").slice(0, 2).join(" "));
+                if (inputCourses[value]) {
+                    return true;
+                } else {
+                    inputCourses[value] = true;
+                }
+            }
+        }
+        const sectionsPerCourse = amountOfSectionsPerCourse(coursesSubString, term);
+        const allCourses = Object.keys(inputCourses);
+
+        /* Check if number of courses inputed with a shared prefix (department + code)
+           is equal to the amount of sections of that class. 
+           For example: if SYSC 3200 has three sections A, B, and C, the user can input
+           each of the 3 sections and see a schedule, but if the user enters each of the
+           3 sections + SYSC 3200, they will be warned of a duplicate. 
+        */
+        for (let i = 0; i < allCourses.length; i++) {
+            for (let j = i + 1; j < allCourses.length; j++) {
+                const prefix1 = allCourses[i].match(/^([A-Za-z]+ \d+)/)[0];
+                const prefix2 = allCourses[j].match(/^([A-Za-z]+ \d+)/)[0];
+                if (prefix1 === prefix2) {
+                    const count = sectionsPerCourse[prefix1];
+                    if (count && count === countCommonPrefix(allCourses, prefix1)) {
+                        if ((allCourses[i].length > prefix1.length && allCourses[j].length === prefix2.length) ||
+                            (allCourses[j].length > prefix1.length && allCourses[i].length === prefix1.length)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    };
+
+    const countCommonPrefix = (courses, prefix) => {
+        let count = 0;
+        for (let course of courses) {
+            if (course.startsWith(prefix)) {
+                count++;
+            }
+        }
+        return count;
+    };
+
+    const amountOfSectionsPerCourse = (subStrings, term) => {
+        const sectionCount = {}
+        coursesList[term].forEach(course => {
+            subStrings.forEach(subString => {
+                if (course.includes(subString)) {
+                    if (sectionCount[subString]) {
+                        sectionCount[subString]++;
+                    } else {
+                        sectionCount[subString] = 1;
+                    }
+                }
+            });
+        });
+        return sectionCount;
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
@@ -151,8 +219,9 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                 }
             }
         );
+        const hasDuplicates = hasDuplicateCourses(inputValues, inputValues.term);
 
-        if (isValidSubmission && nonEmptyCoursesCount > 0) {
+        if (isValidSubmission && nonEmptyCoursesCount > 0 && !hasDuplicates) {
             setScheduleCount(0);
             fetchSchedules(inputValues, termsAndReadingWeek).then((results) => {
                 const classes = results[0];
@@ -178,7 +247,14 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                 }
             });
         } else {
-            const error_msg = inputValues.term !== '' ? 'Please select a course' : "Please enter the Term";
+            var error_msg = "";
+            if (inputValues.term === "") {
+                error_msg = 'Please enter the Term';
+            } else if (hasDuplicates) {
+                error_msg = 'Remove duplicate Course(s)';
+            } else {
+                error_msg = "Please select a Course";
+            }
             setAlertMessage(error_msg);
             setOpen(true);
             setIsLoading(false);
