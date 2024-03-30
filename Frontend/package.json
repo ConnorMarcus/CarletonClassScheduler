@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "cypress": "^13.7.0"
+    "cypress": "^13.7.0",
+    "cypress-axe": "^1.5.0"
   }
 }
