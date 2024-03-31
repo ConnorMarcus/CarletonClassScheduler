@@ -1,6 +1,8 @@
 describe("App tests", () => {
     beforeEach(() => {
         cy.visit("/");
+        cy.injectAxe();
+        cy.checkAccessibility();
     });
 
     it("should render the LandingPage, Form & Footer initially with no errors", () => {

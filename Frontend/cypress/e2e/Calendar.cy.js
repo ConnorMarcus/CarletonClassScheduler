@@ -1,6 +1,7 @@
 describe("Calendar Component", () => {
     beforeEach(() => {
         cy.visit("/");
+        cy.injectAxe();
     });
     
     it("should NOT display an alert when the 25 schedule limit is NOT hit", () => {
@@ -12,6 +13,7 @@ describe("Calendar Component", () => {
         cy.get("#build-button").click().wait(1000);
 
         cy.get(".MuiAlert-message").should("not.exist");
+        cy.checkAccessibility();
     });
 
     it("should display an alert when the 25 schedule limit is hit", () => {
@@ -27,6 +29,7 @@ describe("Calendar Component", () => {
         cy.get("#build-button").click().wait(1000);
 
         cy.get(".MuiAlert-message").should("exist");
+        cy.checkAccessibility();
     });
 
     it("should display the term name in the title", () => {
@@ -38,6 +41,7 @@ describe("Calendar Component", () => {
         cy.get("#build-button").click().wait(1000);
 
         cy.get("h4").should("contain", "Fall");
+        cy.checkAccessibility();
     });
 
     it("should have the prev button disabled before clicking next", () => {
@@ -51,6 +55,7 @@ describe("Calendar Component", () => {
         cy.get("#prev-button").should("be.disabled");
         cy.get("#next-button").click();
         cy.get("#prev-button").should("be.enabled");
+        cy.checkAccessibility();
     });
 
     it("should have the next button enabled, then disabled on last schedule", () => {
@@ -63,6 +68,7 @@ describe("Calendar Component", () => {
 
         cy.get("#next-button").should("be.enabled");
         cy.get("#next-button").click().click().should("be.disabled");
+        cy.checkAccessibility();
     });
 
     it("should display a pop up when a event is clicked", () => {
@@ -76,6 +82,7 @@ describe("Calendar Component", () => {
         cy.get(".fc-event-main").eq(0).click();
         cy.get("#modal-title").should("exist");
         cy.get("#modal-description").should("exist");
+        cy.checkAccessibility();
     });
 
     it("should let you export the CRNs", () => {
@@ -88,5 +95,6 @@ describe("Calendar Component", () => {
 
         cy.get("#export-button").click().wait(1000);
         cy.get(".MuiAlert-message").should("exist");
+        cy.checkAccessibility();
     });
 });

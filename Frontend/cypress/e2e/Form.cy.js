@@ -1,12 +1,14 @@
 describe("Form Component", () => {
     beforeEach(() => {
         cy.visit('/');
+        cy.injectAxe();
     });
 
     it("should display an error alert when no term is selected", () => {
         // Try and build schedule
         cy.get("#build-button").click();
-        cy.get(".MuiAlert-message").should("exist");
+        cy.get(".MuiAlert-message").should("exist").wait(100);
+        cy.checkAccessibility();
     });
 
     it("should display an error alert when no courses are selected", () => {
@@ -16,13 +18,15 @@ describe("Form Component", () => {
 
         // Try and build schedule
         cy.get("#build-button").click();
-        cy.get(".MuiAlert-message").should("exist");
+        cy.get(".MuiAlert-message").should("exist").wait(100);
+        cy.checkAccessibility();
     });
 
     it("should have no course options if a term is not selected", () => {
         // Open courses drop down and make sure its empty
         cy.get("#course-select-0").click();
         cy.get(".MuiAutocomplete-popper li").should("not.exist");
+        cy.checkAccessibility();
     });
 
     it("should allow you to build a schedule", () => {
@@ -41,6 +45,7 @@ describe("Form Component", () => {
             expect(req.response.statusCode).to.equal(200);
         });   
         cy.get("#calendar").should("exist");
+        cy.checkAccessibility();
     });
 
     it("should clear the entire form when clear all is clicked", () => {
@@ -54,6 +59,7 @@ describe("Form Component", () => {
         cy.get("#clear-button").click();
         cy.get("#term-select").should("have.value", "");
         cy.get("#course-select-0").should("have.value", "");
+        cy.checkAccessibility();
     });
 
     it("should allow you to add up to 5 daily filters", () => {
@@ -63,6 +69,7 @@ describe("Form Component", () => {
             cy.get("#add-button").click();
         }
         cy.get("#add-button").should("be.disabled");
+        cy.checkAccessibility();
     });
 
     it("should allow you to remove up to 4 daily filters", () => {
@@ -75,6 +82,7 @@ describe("Form Component", () => {
         for (let i = 0; i < 4; i++) {
             cy.get("#remove-button").click();
         }
+        cy.checkAccessibility();
     });
 
     it("should remove calendar component when form is cleared", () => {
@@ -91,6 +99,7 @@ describe("Form Component", () => {
         // Clear form and make sure calendar component is removed
         cy.get("#clear-button").click().wait(1000);
         cy.get("#calendar").should("not.exist");
+        cy.checkAccessibility();
     });
 
     it("should remove calendar component when any input in the form is changed", () => {
@@ -108,5 +117,6 @@ describe("Form Component", () => {
         cy.get("#course-select-0").click();
         cy.get("button[title='Clear']").eq(1).click().wait(1000);
         cy.get("#calendar").should("not.exist");
+        cy.checkAccessibility();
     });
 });

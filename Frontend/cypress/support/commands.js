@@ -23,3 +23,31 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("checkAccessibility", (context, options) => {
+    const terminalLog = violations => {
+      cy.task(
+        "log",
+        `${violations.length} accessibility violation${
+          violations.length === 1 ? "" : "s"
+        } ${violations.length === 1 ? "was" : "were"} detected`,
+      );
+  
+      const violationData = violations.map(
+        ({ id, impact, description, nodes }) => ({
+          id,
+          impact,
+          description,
+          nodes: nodes.length,
+        })
+      );
+  
+      cy.task("table", violationData);
+    };
+    const axeOptions = {
+        rules: {"role-img-alt": { enabled: false }}, // Disabled due to issue in Full Calendar
+        includedImpacts: ["critical", "serious"],
+    };
+    cy.checkA11y(context || null,  {...options, ...axeOptions} || null, terminalLog);
+  });
+  
