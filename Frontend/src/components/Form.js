@@ -134,6 +134,22 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
         });
     };
 
+    const hasDuplicateCourses = (form, term) => {
+        const inputCourses = {};
+        for (const key in form) {
+            if (key.startsWith('course') && form[key].trim() !== '') {
+                const value = (form[key].trim()).split(" ").slice(0, 2).join(" ");
+                console.log(value);
+                if (inputCourses[value]) {
+                    return true;
+                } else {
+                    inputCourses[value] = true;
+                }
+            }
+        }
+        return false;
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
@@ -152,7 +168,9 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
             }
         );
 
-        if (isValidSubmission && nonEmptyCoursesCount > 0) {
+        const hasDuplicates = hasDuplicateCourses(inputValues, inputValues.term);
+
+        if (isValidSubmission && nonEmptyCoursesCount > 0 && !hasDuplicates) {
             setScheduleCount(0);
             fetchSchedules(inputValues, termsAndReadingWeek).then((results) => {
                 const classes = results[0];
@@ -178,7 +196,14 @@ const Form = ({ setDisplayCalendar, setTerm, setSchedules, setScheduleCount, set
                 }
             });
         } else {
-            const error_msg = inputValues.term !== '' ? 'Please select a course' : "Please enter the Term";
+            var error_msg = "";
+            if (inputValues.term === "") {
+                error_msg = 'Please enter the Term';
+            } else if (hasDuplicates) {
+                error_msg = 'Remove duplicate Course(s)';
+            } else {
+                error_msg = "Please select a Course";
+            }
             setAlertMessage(error_msg);
             setOpen(true);
             setIsLoading(false);
