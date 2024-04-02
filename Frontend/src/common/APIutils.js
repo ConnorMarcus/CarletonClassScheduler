@@ -34,11 +34,11 @@ export const fetchSchedules = async (inputs, readingWeekDates) => {
             return schedule.every(course => course.Times.length === 0)
         });
         if (response.data.Schedules.length === 0) {
-            const noScheduleError = new Error('No schedules found that matches your criteria');
+            const noScheduleError = new Error('No schedules found that match your criteria');
             noScheduleError.name = NO_SCHEDULES_ERROR;
             throw noScheduleError;
         } else if (allAsync) {
-            const allAsyncCoursesError = new Error('All inputted courses were asynchronous');
+            const allAsyncCoursesError = new Error('All inputted courses are asynchronous');
             allAsyncCoursesError.name = ALL_ASYNC_COURSES_ERROR;
             throw allAsyncCoursesError;
         } else {
