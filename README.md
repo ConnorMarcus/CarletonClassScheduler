@@ -7,7 +7,7 @@ Carleton Class Scheduler is Carleton University's best scheduling tool that allo
 ### Motivation
 Our tool addresses issues students experience when creating their desired schedule before each term. The complexity that can arise from multiple timetable combinations when attempting to coordinate course sections calls for an innovative solution for this problem. The Carleton Class Scheduler **minimizes the time** to build your schedule, allows you to **view up to 25 combinations of classes**, and **avoids conflicting timeslots**. It also lets students find schedules where they have a **day off**, or they can **block off a chunk of time** where they don't want class. 
 ## Usage 
-Available online at [https://www.carletonuniversityscheduler.systems/](https://www.carletonuniversityscheduler.systems/)
+Available online at [https://www.carletonuniversityscheduler.systems/](https://www.carletonuniversityscheduler.systems/) (No longer available)
 
 ## Architecture and Design
 The application is comprised of three main components:
